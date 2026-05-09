@@ -1,0 +1,142 @@
+"use client";
+
+import { ExternalLink, Bookmark, Share2, Calendar, Sparkles, Check } from "lucide-react";
+import Link from "next/link";
+import { useState, useEffect } from "react";
+
+interface SchemeSidebarProps {
+  schemeName: string;
+  externalUrl?: string;
+  apiId: string;
+}
+
+export default function SchemeSidebar({ schemeName, externalUrl, apiId }: SchemeSidebarProps) {
+  const [isSaved, setIsSaved] = useState(false);
+  const [showCopyTooltip, setShowCopyTooltip] = useState(false);
+
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem("saved_schemes") || "[]");
+    setIsSaved(saved.some((s: any) => s.apiId === apiId));
+  }, [apiId]);
+
+  const handleApplyClick = () => {
+    if (externalUrl) {
+      window.open(externalUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      window.open(`https://www.myscheme.gov.in/search`, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  const handleSave = () => {
+    const saved = JSON.parse(localStorage.getItem("saved_schemes") || "[]");
+    if (isSaved) {
+      const filtered = saved.filter((s: any) => s.apiId !== apiId);
+      localStorage.setItem("saved_schemes", JSON.stringify(filtered));
+      setIsSaved(false);
+    } else {
+      saved.push({ apiId, schemeName, savedAt: new Date().toISOString() });
+      localStorage.setItem("saved_schemes", JSON.stringify(saved));
+      setIsSaved(true);
+    }
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      title: schemeName,
+      text: `Check out this government scheme: ${schemeName}`,
+      url: window.location.href,
+    };
+
+    if (navigator.share && navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.error("Error sharing:", err);
+      }
+    } else {
+      // Fallback: Copy to clipboard
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        setShowCopyTooltip(true);
+        setTimeout(() => setShowCopyTooltip(false), 2000);
+      } catch (err) {
+        console.error("Failed to copy:", err);
+      }
+    }
+  };
+
+  return (
+    <div className="sticky top-32 space-y-6">
+      <div className="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100">
+        <div className="space-y-4">
+          <button 
+            onClick={handleApplyClick}
+            className="w-full py-5 bg-slate-900 text-white font-bold rounded-2xl hover:bg-blue-600 shadow-2xl shadow-slate-900/10 flex items-center justify-center gap-3 group transition-all active:scale-95"
+          >
+            {externalUrl ? "Apply Now" : "Apply via MyScheme"}
+            <ExternalLink size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+          </button>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <button 
+              onClick={handleSave}
+              className={`flex items-center justify-center gap-2 py-4 border rounded-2xl font-bold text-sm transition-all ${
+                isSaved 
+                  ? "bg-blue-50 border-blue-200 text-blue-600" 
+                  : "border-slate-200 text-slate-600 hover:bg-slate-50"
+              }`}
+            >
+              {isSaved ? <Check size={18} /> : <Bookmark size={18} />}
+              {isSaved ? "Saved" : "Save"}
+            </button>
+            <div className="relative">
+              <button 
+                onClick={handleShare}
+                className="w-full flex items-center justify-center gap-2 py-4 border border-slate-200 rounded-2xl font-bold text-sm text-slate-600 hover:bg-slate-50 transition-colors"
+              >
+                <Share2 size={18} />
+                Share
+              </button>
+              {showCopyTooltip && (
+                <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1 bg-slate-900 text-white text-[10px] font-bold rounded-full whitespace-nowrap">
+                  Link Copied!
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-10 pt-8 border-t border-slate-100">
+          <div className="flex items-center gap-3 text-amber-600 mb-4 font-black text-xs uppercase tracking-widest">
+            <Calendar size={16} />
+            Application Timeline
+          </div>
+          <p className="text-sm text-slate-500 leading-relaxed font-medium">
+            Most applications for this scheme are processed within 30-45 business days after submission of all documents.
+          </p>
+        </div>
+      </div>
+
+      <div className="bg-gradient-to-br from-indigo-600 via-blue-700 to-blue-600 p-8 rounded-[32px] shadow-2xl shadow-blue-500/20 text-white relative overflow-hidden group">
+        <div className="relative z-10">
+          <div className="flex items-center gap-3 mb-4">
+            <Sparkles className="text-white/80" size={24} />
+            <h4 className="font-black uppercase tracking-widest text-sm">AI Quick Insight</h4>
+          </div>
+          <p className="text-blue-100 leading-relaxed mb-8 font-medium italic">
+            "This scheme is highly recommended for startups in their first 2 years. Ensure your GST registration is active before applying."
+          </p>
+          <Link 
+            href={`/ai?q=${encodeURIComponent(schemeName)}`} 
+            className="inline-flex items-center gap-3 px-6 py-3 bg-white text-blue-700 font-bold rounded-xl hover:bg-blue-50 transition-all shadow-lg text-sm"
+          >
+            ASK AI MORE
+          </Link>
+        </div>
+        <div className="absolute -right-8 -bottom-8 opacity-10 group-hover:scale-110 transition-transform duration-700">
+          <Sparkles size={200} />
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,6 +1,7 @@
 "use client";
 
-import { ExternalLink, Award, Building2, ChevronRight } from "lucide-react";
+import { Award, Building2, ChevronRight } from "lucide-react";
+import Link from "next/link";
 import type { SchemeResult } from "@/types/questionnaire";
 
 interface SchemeCardProps {
@@ -65,21 +66,13 @@ export default function SchemeCard({ scheme, rank }: SchemeCardProps) {
             <div className="w-1.5 h-1.5 rounded-full bg-blue-600" />
             Score: {scheme.relevanceScore}
           </div>
-          {scheme.slug ? (
-            <a
-              href={`https://www.myscheme.gov.in/schemes/${scheme.slug}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 transition-all"
-            >
-              View Details
-              <ExternalLink size={12} />
-            </a>
-          ) : (
-            <button className="flex items-center gap-1 text-xs font-bold text-blue-600 hover:underline">
-              Learn more <ChevronRight size={12} />
-            </button>
-          )}
+          <Link
+            href={`/schemes/${scheme.api_id}`}
+            className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 transition-all"
+          >
+            View Details
+            <ChevronRight size={14} />
+          </Link>
         </div>
       </div>
     </div>

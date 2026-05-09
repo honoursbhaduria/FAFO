@@ -57,18 +57,21 @@ export default function Hero() {
               className="flex flex-col sm:flex-row items-center gap-4 mb-12"
             >
               <Link 
-                href="/business" 
+                href="/dashboard" 
                 className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-5 bg-slate-900 text-white rounded-2xl font-bold text-lg hover:bg-blue-600 transition-all shadow-2xl shadow-slate-900/10 active:scale-95 group"
               >
-                Register Your Business
+                Access Your Dashboard
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <button className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-5 text-slate-600 font-bold text-lg hover:text-slate-900 transition-colors group">
+              <Link 
+                href="/schemes"
+                className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-5 text-slate-600 font-bold text-lg hover:text-slate-900 transition-colors group"
+              >
                 <div className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center group-hover:bg-white group-hover:shadow-md transition-all">
                   <Play className="w-4 h-4 fill-current ml-1" />
                 </div>
-                How it works
-              </button>
+                Browse Schemes
+              </Link>
             </motion.div>
 
             <motion.div 

@@ -54,7 +54,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { href: "/consultant", icon: UserRound, label: "Consultant Hub" },
     { href: "/documents", icon: FolderOpen, label: "Documents" },
     { href: "/ai", icon: MessageSquare, label: "AI Assistant" },
-    { href: "/news/bookmarks", icon: BookmarkCheck, label: "Bookmarks" },
+    { href: "/schemes/saved", icon: BookmarkCheck, label: "Saved Schemes" },
+    { href: "/news/bookmarks", icon: BookmarkCheck, label: "News Bookmarks" },
     { href: "/profile", icon: User, label: "Profile" },
   ];
 

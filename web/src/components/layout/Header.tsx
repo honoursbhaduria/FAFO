@@ -65,6 +65,7 @@ export default function Header() {
             
             <nav className="hidden lg:flex items-center gap-6">
               {[
+                { label: "Dashboard", href: "/dashboard" },
                 { label: "Schemes", href: "/schemes" },
                 { label: "Consultants", href: "/consultant" },
                 { label: "Compliance", href: "/compliance" },
@@ -83,18 +84,6 @@ export default function Header() {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Search Shortcut */}
-            <button className="hidden md:flex items-center gap-3 px-3 py-1.5 bg-slate-100/50 hover:bg-slate-100 border border-slate-200/60 rounded-lg transition-all group">
-              <Search className="w-4 h-4 text-slate-400 group-hover:text-slate-900" />
-              <span className="text-xs font-medium text-slate-400">Search...</span>
-              <div className="flex items-center gap-0.5 px-1.5 py-0.5 bg-white border border-slate-200 rounded text-[10px] font-bold text-slate-400">
-                <Command className="w-2.5 h-2.5" />
-                K
-              </div>
-            </button>
-
-            <div className="h-6 w-[1px] bg-slate-200 mx-2 hidden md:block" />
-
             <button className="hidden sm:flex items-center gap-2 p-2 text-slate-500 hover:text-slate-900 transition-colors">
               <Globe className="w-5 h-5" />
               <span className="text-xs font-bold">EN</span>
@@ -135,6 +124,7 @@ export default function Header() {
           >
             <div className="bg-white/90 backdrop-blur-2xl p-8 rounded-3xl shadow-2xl border border-white/50 flex flex-col gap-6">
               <nav className="flex flex-col gap-6">
+                <Link href="/dashboard" className="text-lg font-bold text-slate-900">Dashboard</Link>
                 <Link href="/schemes" className="text-lg font-bold text-slate-900">Discover Schemes</Link>
                 <Link href="/consultant" className="text-lg font-bold text-slate-900">Consultant Hub</Link>
                 <Link href="/compliance" className="text-lg font-bold text-slate-900">Compliance</Link>

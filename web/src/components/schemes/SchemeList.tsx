@@ -21,17 +21,21 @@ export default function SchemeList() {
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState(searchParams.get("q") || "");
   const [category, setCategory] = useState(searchParams.get("category") || "");
+  const [page, setPage] = useState(parseInt(searchParams.get("page") || "1"));
+  const [pagination, setPagination] = useState<any>(null);
 
-  const fetchSchemes = async () => {
+  const fetchSchemes = async (pageNum = page) => {
     setLoading(true);
     const params = new URLSearchParams();
     if (query) params.append("q", query);
     if (category) params.append("category", category);
+    params.append("page", pageNum.toString());
     
     try {
       const res = await fetch(`/api/schemes?${params.toString()}`);
       const data = await res.json();
       setSchemes(data.items || []);
+      setPagination(data.pagination);
     } catch (err) {
       console.error(err);
     } finally {
@@ -40,22 +44,35 @@ export default function SchemeList() {
   };
 
   useEffect(() => {
-    fetchSchemes();
+    const p = parseInt(searchParams.get("page") || "1");
+    setPage(p);
+    fetchSchemes(p);
   }, [searchParams]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams(window.location.search);
     if (query) params.set("q", query); else params.delete("q");
+    params.set("page", "1");
     window.history.pushState(null, "", `?${params.toString()}`);
-    fetchSchemes();
+    setPage(1);
+    fetchSchemes(1);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || (pagination && newPage > pagination.totalPages)) return;
+    const params = new URLSearchParams(window.location.search);
+    params.set("page", newPage.toString());
+    window.history.pushState(null, "", `?${params.toString()}`);
+    setPage(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
     <div className="flex flex-col lg:flex-row gap-8">
       {/* Sidebar Filters */}
       <aside className="w-full lg:w-80 shrink-0">
-        <div className="bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm sticky top-32">
+        <div className="bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm lg:sticky lg:top-32">
           <div className="flex items-center justify-between mb-8">
             <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
               <Filter className="w-5 h-5 text-blue-600" />
@@ -67,8 +84,10 @@ export default function SchemeList() {
                   setCategory("");
                   const params = new URLSearchParams(window.location.search);
                   params.delete("category");
+                  params.set("page", "1");
                   window.history.pushState(null, "", `?${params.toString()}`);
-                  fetchSchemes();
+                  setPage(1);
+                  fetchSchemes(1);
                 }}
                 className="text-[10px] font-black text-blue-600 uppercase hover:underline"
               >
@@ -92,8 +111,10 @@ export default function SchemeList() {
                   setCategory(newCat);
                   const params = new URLSearchParams(window.location.search);
                   if (newCat) params.set("category", newCat); else params.delete("category");
+                  params.set("page", "1");
                   window.history.pushState(null, "", `?${params.toString()}`);
-                  fetchSchemes();
+                  setPage(1);
+                  fetchSchemes(1);
                 }}
                 className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-between group ${
                   category === cat 
@@ -241,19 +262,39 @@ export default function SchemeList() {
         </AnimatePresence>
 
         {/* Pagination */}
-        {!loading && schemes.length > 0 && (
-          <div className="flex items-center justify-center gap-3 pt-8">
-            <button className="p-3 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-slate-900 hover:border-slate-900 transition-all">
+        {!loading && pagination && pagination.totalPages > 1 && (
+          <div className="flex items-center justify-center gap-3 pt-12">
+            <button 
+              onClick={() => handlePageChange(page - 1)}
+              disabled={page === 1}
+              className="p-3 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-slate-900 hover:border-slate-900 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+            >
               <ChevronLeft size={20} />
             </button>
             <div className="flex items-center gap-2">
-              {[1, 2, 3].map(p => (
-                <button key={p} className={`w-12 h-12 rounded-2xl font-bold text-sm transition-all ${p === 1 ? 'bg-slate-900 text-white shadow-xl shadow-slate-200' : 'bg-white text-slate-500 border border-slate-200 hover:border-slate-900 hover:text-slate-900'}`}>
-                  {p}
-                </button>
-              ))}
+              {[...Array(Math.min(pagination.totalPages, 5))].map((_, i) => {
+                const p = i + 1;
+                // Simple logic for showing pages around current page
+                return (
+                  <button 
+                    key={p} 
+                    onClick={() => handlePageChange(p)}
+                    className={`w-12 h-12 rounded-2xl font-bold text-sm transition-all ${
+                      p === page 
+                        ? 'bg-slate-900 text-white shadow-xl shadow-slate-200' 
+                        : 'bg-white text-slate-500 border border-slate-200 hover:border-slate-900 hover:text-slate-900'
+                    }`}
+                  >
+                    {p}
+                  </button>
+                );
+              })}
             </div>
-            <button className="p-3 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-slate-900 hover:border-slate-900 transition-all">
+            <button 
+              onClick={() => handlePageChange(page + 1)}
+              disabled={page === pagination.totalPages}
+              className="p-3 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-slate-900 hover:border-slate-900 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+            >
               <ChevronRight size={20} />
             </button>
           </div>

@@ -60,21 +60,7 @@ async function fetchSchemes(topic: string) {
     })
   );
 
-  // Filter for India-relevant results
-  const indiaSchemes = schemes.filter((s) => {
-    const text = `${s.title} ${s.summary}`.toLowerCase();
-    return (
-      text.includes("india") || text.includes("pradhan mantri") ||
-      text.includes("bharat") || text.includes("government of india") ||
-      text.includes("ministry") || text.includes("rupee") ||
-      text.includes("crore") || text.includes("lakh") ||
-      text.includes("indian") || text.includes("yojana") ||
-      text.includes("abhiyan") || text.includes("mission") ||
-      text.includes("scheme")
-    );
-  });
-
-  return indiaSchemes.length > 0 ? indiaSchemes.slice(0, 6) : schemes.slice(0, 6);
+  return schemes.slice(0, 6);
 }
 
 // Groq tool definition for searching government schemes
@@ -101,6 +87,12 @@ const tools: Groq.Chat.Completions.ChatCompletionTool[] = [
 export async function POST(request: Request) {
   try {
     const { message, history } = await request.json();
+    console.log("AI Chat Request:", { message, historyLength: history?.length });
+
+    if (!process.env.GROQ_API_KEY) {
+      console.error("GROQ_API_KEY is missing");
+      return NextResponse.json({ error: "API Key missing" }, { status: 500 });
+    }
 
     const formattedHistory = history
       ? history.map((msg: any) => ({
@@ -112,9 +104,15 @@ export async function POST(request: Request) {
     const messages: Groq.Chat.Completions.ChatCompletionMessageParam[] = [
       {
         role: "system",
-        content: `You are OneClickSathi AI, a premium assistant for MSMEs in India. Your goal is to help entrepreneurs find government schemes, understand compliance requirements (GST, TDS, etc.), and manage business growth. Be professional, encouraging, and provide clear, actionable advice. Keep your answers concise.
+        content: `You are OneClickSathi AI, a premium assistant for MSMEs and citizens in India. 
 
-IMPORTANT: When the user asks about government schemes, welfare programs, yojanas, subsidies, or any India-related policy programs, you MUST use the search_government_schemes tool to look up real information. Do not make up scheme names or details — always search first.`
+STRICT TOOL USAGE RULES:
+1. You have ONLY ONE tool available: 'search_government_schemes'.
+2. You MUST use 'search_government_schemes' when a user mentions a scheme, yojana, or asks for information about a specific program.
+3. NEVER attempt to call tools named 'brave_search', 'google_search', 'web_search', or any tool other than 'search_government_schemes'.
+4. If you need to find information, you MUST use 'search_government_schemes' with a 'topic' parameter.
+
+Be professional, concise, and prioritize using your provided search tool for real-time information.`
       },
       ...formattedHistory,
       { role: "user", content: message }
@@ -123,23 +121,28 @@ IMPORTANT: When the user asks about government schemes, welfare programs, yojana
     // First call: let Groq decide if it needs to use tools
     const firstResponse = await groq.chat.completions.create({
       messages,
-      model: "llama-3.3-70b-versatile",
+      model: "llama-3.1-8b-instant",
       tools,
       tool_choice: "auto",
     });
 
+    console.log("Groq First Response received");
     const firstChoice = firstResponse.choices[0]?.message;
 
     // Check if Groq wants to call a tool
     if (firstChoice?.tool_calls && firstChoice.tool_calls.length > 0) {
       const toolCall = firstChoice.tool_calls[0];
+      const toolName = toolCall.function.name;
+      console.log("Tool Call detected:", toolName);
 
-      if (toolCall.function.name === "search_government_schemes") {
+      if (toolName === "search_government_schemes") {
         const args = JSON.parse(toolCall.function.arguments);
         const topic = args.topic || message;
+        console.log("Searching schemes for topic:", topic);
 
         // Fetch schemes from Wikipedia
         const schemes = await fetchSchemes(topic);
+        console.log(`Found ${schemes.length} schemes`);
 
         // Send tool result back to Groq for a nice summary
         const followUpMessages: Groq.Chat.Completions.ChatCompletionMessageParam[] = [
@@ -148,21 +151,29 @@ IMPORTANT: When the user asks about government schemes, welfare programs, yojana
           {
             role: "tool",
             tool_call_id: toolCall.id,
-            content: JSON.stringify(schemes),
+            content: JSON.stringify({ results: schemes }),
           }
         ];
 
         const secondResponse = await groq.chat.completions.create({
           messages: followUpMessages,
-          model: "llama-3.3-70b-versatile",
+          model: "llama-3.1-8b-instant",
         });
 
+        console.log("Groq Second Response received");
         const responseText = secondResponse.choices[0]?.message?.content || "Here are the government schemes I found:";
 
         return NextResponse.json({
           text: responseText,
           type: "schemes",
           schemes,
+        });
+      } else {
+        console.warn(`AI hallucinated tool name: ${toolName}. Falling back to text response.`);
+        // If it hallucinated a tool name, we can't fulfill the tool call, so we just return the AI's natural response
+        return NextResponse.json({
+          text: firstChoice.content || "I'm looking into that for you. Could you please specify which sector or scheme you're interested in?",
+          type: "text"
         });
       }
     }
@@ -172,10 +183,14 @@ IMPORTANT: When the user asks about government schemes, welfare programs, yojana
       text: firstChoice?.content || "",
       type: "text",
     });
-  } catch (error) {
-    console.error("AI Chat Error:", error);
+  } catch (error: any) {
+    console.error("AI Chat Error Details:", error);
     return NextResponse.json(
-      { error: "Failed to get response from AI", text: "Sorry, I encountered an error. Please try again." },
+      { 
+        error: "Failed to get response from AI", 
+        text: "Sorry, I encountered an error. Please try again.",
+        details: error?.message || String(error)
+      },
       { status: 500 }
     );
   }

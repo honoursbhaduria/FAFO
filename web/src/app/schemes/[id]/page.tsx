@@ -5,17 +5,37 @@ import {
   ArrowLeft, 
   Building2, 
   MapPin, 
-  Calendar, 
   CheckCircle2, 
-  ExternalLink,
-  Share2,
-  Bookmark
+  Zap,
+  FileText
 } from "lucide-react";
 import Link from "next/link";
+import SchemeSidebar from "@/components/schemes/SchemeSidebar";
 
-export default async function SchemeDetailsPage({ params }: { params: { id: string } }) {
+// Wikipedia fetching helpers
+async function getWikipediaData(query: string) {
+  try {
+    const searchQuery = `${query} government scheme India`;
+    const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(searchQuery)}&srlimit=1&format=json&origin=*`;
+    const searchRes = await fetch(searchUrl);
+    const searchData = await searchRes.json();
+    const pageId = searchData.query?.search?.[0]?.pageid;
+
+    if (!pageId) return null;
+
+    const extractUrl = `https://en.wikipedia.org/w/api.php?action=query&pageids=${pageId}&prop=extracts&exintro=true&explaintext=true&exsentences=5&format=json&origin=*`;
+    const extractRes = await fetch(extractUrl);
+    const extractData = await extractRes.json();
+    return extractData.query?.pages[String(pageId)]?.extract || null;
+  } catch (err) {
+    return null;
+  }
+}
+
+export default async function SchemeDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const scheme = await prisma.schemes.findUnique({
-    where: { api_id: params.id }
+    where: { api_id: id }
   });
 
   if (!scheme) {
@@ -23,12 +43,13 @@ export default async function SchemeDetailsPage({ params }: { params: { id: stri
   }
 
   const data = (scheme.raw_data as any)?.fields || {};
+  const wikiExtract = await getWikipediaData(scheme.scheme_name);
   
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-slate-50 py-12">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <main className="min-h-screen bg-slate-50 pt-32 pb-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
           <Link 
             href="/schemes" 
             className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-blue-600 mb-8 transition-colors"
@@ -37,113 +58,133 @@ export default async function SchemeDetailsPage({ params }: { params: { id: stri
             Back to Discovery
           </Link>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Main Content */}
-            <div className="lg:col-span-2 space-y-8">
-              <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-                <div className="flex flex-wrap gap-2 mb-4">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* Main Content - Bento Grid Layout */}
+            <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6 auto-rows-min">
+              
+              {/* Large Card: Main Info */}
+              <div className="md:col-span-2 bg-white p-8 rounded-[32px] shadow-sm border border-slate-100">
+                <div className="flex flex-wrap gap-2 mb-6">
                   {(scheme.categories as string[])?.map((cat) => (
-                    <span key={cat} className="px-3 py-1 bg-blue-50 text-blue-600 text-xs font-bold rounded-full">
+                    <span key={cat} className="px-4 py-1.5 bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-widest rounded-full">
                       {cat}
                     </span>
                   ))}
-                  <span className="px-3 py-1 bg-emerald-50 text-emerald-600 text-xs font-bold rounded-full">
+                  <span className="px-4 py-1.5 bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-widest rounded-full">
                     {data.level || "Central"}
                   </span>
                 </div>
                 
-                <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-6 leading-tight">
+                <h1 className="text-3xl sm:text-5xl font-black text-slate-900 mb-8 leading-[1.1] tracking-tight">
                   {scheme.scheme_name}
                 </h1>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8 py-6 border-y border-slate-50">
-                  <div className="flex items-start gap-3">
-                    <Building2 className="text-slate-400 mt-1" size={20} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-8 py-8 border-y border-slate-50">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center shrink-0">
+                      <Building2 className="text-slate-400" size={24} />
+                    </div>
                     <div>
-                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Ministry / Department</p>
-                      <p className="text-slate-700 font-medium">{data.nodalMinistryName || "N/A"}</p>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Ministry / Department</p>
+                      <p className="text-slate-900 font-bold leading-tight">{data.nodalMinistryName || "N/A"}</p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <MapPin className="text-slate-400 mt-1" size={20} />
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center shrink-0">
+                      <MapPin className="text-slate-400" size={24} />
+                    </div>
                     <div>
-                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">State / Region</p>
-                      <p className="text-slate-700 font-medium">{data.beneficiaryState?.join(", ") || "All India"}</p>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">State / Region</p>
+                      <p className="text-slate-900 font-bold leading-tight">{data.beneficiaryState?.join(", ") || "All India"}</p>
                     </div>
                   </div>
                 </div>
 
                 <div className="prose prose-slate max-w-none">
-                  <h3 className="text-xl font-bold text-slate-900 mb-4">Description</h3>
-                  <p className="text-slate-600 leading-relaxed whitespace-pre-wrap">
+                  <h3 className="text-xl font-black text-slate-900 mb-4">Description</h3>
+                  <p className="text-slate-500 leading-relaxed font-medium">
                     {data.briefDescription || "No detailed description provided."}
                   </p>
+                  {wikiExtract && (
+                    <p className="text-slate-500 mt-4 leading-relaxed font-medium border-l-4 border-blue-100 pl-6 py-2 bg-blue-50/30 rounded-r-2xl">
+                      {wikiExtract}
+                    </p>
+                  )}
                 </div>
               </div>
 
-              <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-                <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-                  <CheckCircle2 className="text-emerald-500" size={24} />
-                  Eligibility Criteria
+              {/* Bento Card: Eligibility */}
+              <div className="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100">
+                <h3 className="text-lg font-black text-slate-900 mb-6 flex items-center gap-3">
+                  <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center">
+                    <CheckCircle2 className="text-emerald-500" size={20} />
+                  </div>
+                  Eligibility
                 </h3>
-                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {[
-                    { label: "Gender", value: data.gender || "All" },
-                    { label: "Caste", value: data.caste || "All" },
-                    { label: "Residence", value: data.residence || "Both Urban & Rural" },
-                    { label: "Employment", value: data.employmentStatus || "N/A" }
-                  ].map((item) => (
-                    <li key={item.label} className="flex flex-col p-4 bg-slate-50 rounded-2xl">
-                      <span className="text-xs font-bold text-slate-400 uppercase">{item.label}</span>
-                      <span className="text-slate-700 font-semibold">{item.value}</span>
-                    </li>
-                  ))}
-                </ul>
+                
+                {data.eligibility ? (
+                  <p className="text-slate-500 text-sm font-medium leading-relaxed whitespace-pre-wrap">{data.eligibility}</p>
+                ) : (
+                  <div className="grid grid-cols-2 gap-4">
+                    {[
+                      { label: "Gender", value: data.gender || "All" },
+                      { label: "Caste", value: data.caste || "All" },
+                      { label: "Residence", value: data.residence || "Both" },
+                      { label: "Status", value: data.employmentStatus || "N/A" }
+                    ].map((item) => (
+                      <div key={item.label} className="p-4 bg-slate-50 rounded-2xl">
+                        <span className="block text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">{item.label}</span>
+                        <span className="text-slate-700 font-bold text-xs">{item.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
+
+              {/* Bento Card: Benefits */}
+              <div className="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100">
+                <h3 className="text-lg font-black text-slate-900 mb-6 flex items-center gap-3">
+                  <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center">
+                    <Zap className="text-amber-500" size={20} />
+                  </div>
+                  Benefits
+                </h3>
+                <p className="text-slate-500 text-sm font-medium leading-relaxed line-clamp-6">
+                  {data.benefits || "Financial assistance and subsidies tailored for business growth and operational support."}
+                </p>
+              </div>
+
+              {/* Bento Card: Process (Wide) */}
+              {data.application && (
+                <div className="md:col-span-2 bg-white p-8 rounded-[32px] shadow-sm border border-slate-100">
+                  <h3 className="text-lg font-black text-slate-900 mb-6 flex items-center gap-3">
+                    <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+                      <FileText className="text-blue-500" size={20} />
+                    </div>
+                    Application Process
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-8">
+                    <p className="text-slate-500 text-sm font-medium leading-relaxed whitespace-pre-wrap">
+                      {data.application}
+                    </p>
+                    <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-4">Required Documents</h4>
+                      <div className="text-slate-500 text-sm font-medium leading-relaxed">
+                        {data.documents || "Please keep your Aadhaar, PAN, and Business Registration certificates ready."}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
-            <div className="space-y-6">
-              <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 sticky top-24">
-                <div className="space-y-4">
-                  <button className="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-700 shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 group transition-all">
-                    Apply Now
-                    <ExternalLink size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                  </button>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button className="flex items-center justify-center gap-2 py-3 border border-slate-200 rounded-2xl font-bold text-slate-600 hover:bg-slate-50 transition-colors">
-                      <Bookmark size={18} />
-                      Save
-                    </button>
-                    <button className="flex items-center justify-center gap-2 py-3 border border-slate-200 rounded-2xl font-bold text-slate-600 hover:bg-slate-50 transition-colors">
-                      <Share2 size={18} />
-                      Share
-                    </button>
-                  </div>
-                </div>
-
-                <div className="mt-8 pt-8 border-t border-slate-50">
-                  <div className="flex items-center gap-2 text-amber-600 mb-4 font-bold text-sm">
-                    <Calendar size={16} />
-                    Application Timeline
-                  </div>
-                  <p className="text-sm text-slate-500 leading-relaxed">
-                    Most applications for this scheme are processed within 30-45 business days after submission of all documents.
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-gradient-to-br from-indigo-600 to-blue-700 p-6 rounded-3xl shadow-lg text-white">
-                <h4 className="font-bold mb-2">AI Quick Insight</h4>
-                <p className="text-sm text-blue-100 leading-relaxed mb-4">
-                  "This scheme is highly recommended for startups in their first 2 years. Ensure your GST registration is active before applying."
-                </p>
-                <Link 
-                  href="/ai" 
-                  className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full transition-colors"
-                >
-                  Ask AI More
-                </Link>
-              </div>
+            {/* Sidebar - Client Component */}
+            <div className="lg:col-span-4">
+              <SchemeSidebar 
+                schemeName={scheme.scheme_name}
+                externalUrl={data.url}
+                apiId={scheme.api_id}
+              />
             </div>
           </div>
         </div>

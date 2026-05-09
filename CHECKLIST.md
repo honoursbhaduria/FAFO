@@ -25,7 +25,7 @@ This checklist tracks the implementation status of the "OneClickSathi" platform 
 - [x] Search: Name-based filtering
 - [x] Filters: Category-based filtering
 - [x] UI: Scheme Cards with Brief Descriptions
-- [ ] Scheme Details Page (Dynamic route `[id]`)
+- [x] Scheme Details Page (Dynamic route `[id]`)
 - [ ] "Save Scheme" functionality
 
 ## 4. Compliance & Regulatory
