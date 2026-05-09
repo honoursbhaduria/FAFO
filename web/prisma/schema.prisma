@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model api_responses {
+  id            Int       @id @default(autoincrement())
+  fetched_at    DateTime? @default(now()) @db.Timestamp(6)
+  response_data Json?
+}
+
+model schemes {
+  api_id      String    @id
+  slug        String?
+  scheme_name String?
+  categories  Json?
+  raw_data    Json?
+  fetched_at  DateTime? @default(now()) @db.Timestamp(6)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  name          String?
+  profile       BusinessProfile?
+  documents     Document[]
+  applications  Application[]
+  tasks         ComplianceTask[]
+  createdAt     DateTime  @default(now())
+}
+
+model BusinessProfile {
+  id              String  @id @default(cuid())
+  userId          String  @unique
+  user            User    @relation(fields: [userId], references: [id])
+  businessName    String
+  industry        String
+  entityType      String
+  state           String
+  district        String
+  isWomenOwned    Boolean @default(false)
+  isScStOwned     Boolean @default(false)
+  isStartup       Boolean @default(false)
+  gstin           String?
+  udyamReg        String?
+  pan             String?
+  annualTurnover  String?
+  employeeCount   Int?
+  goals           String[]
+  createdAt       DateTime @default(now())
+}
+
+model ComplianceTask {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  title       String
+  description String?
+  dueDate     DateTime
+  status      String   @default("PENDING") // PENDING, COMPLETED, OVERDUE
+  type        String   // GST, TDS, ITR, etc.
+  createdAt   DateTime @default(now())
+}
+
+model Document {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  name        String
+  type        String   // PAN, GST, etc.
+  url         String
+  extractedData Json?
+  expiryDate  DateTime?
+  createdAt   DateTime @default(now())
+}
+
+model Application {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  schemeId    String
+  status      String   @default("DRAFT") // DRAFT, SUBMITTED, APPROVED
+  timeline    Json?    // Array of status changes
+  createdAt   DateTime @default(now())
+}
