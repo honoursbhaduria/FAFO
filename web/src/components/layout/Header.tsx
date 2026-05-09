@@ -97,7 +97,7 @@ export default function Header() {
             </Link>
             
             <Link 
-              href="/business" 
+              href="/login?mode=register" 
               className="px-5 py-2.5 text-sm font-bold text-white bg-slate-900 rounded-xl hover:bg-blue-600 hover:shadow-xl hover:shadow-blue-200/50 transition-all active:scale-95 flex items-center gap-2"
             >
               Get Started
@@ -130,7 +130,7 @@ export default function Header() {
                 <Link href="/compliance" className="text-lg font-bold text-slate-900">Compliance</Link>
                 <div className="pt-6 border-t border-slate-100 flex flex-col gap-4">
                   <Link href="/login" className="text-lg font-bold text-slate-500 text-center">Sign In</Link>
-                  <Link href="/business" className="py-4 bg-slate-900 text-white font-bold rounded-2xl text-center shadow-xl shadow-slate-900/20">Get Started</Link>
+                  <Link href="/login?mode=register" className="py-4 bg-slate-900 text-white font-bold rounded-2xl text-center shadow-xl shadow-slate-900/20">Get Started</Link>
                 </div>
               </nav>
             </div>

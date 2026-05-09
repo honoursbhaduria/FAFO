@@ -1,18 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
-import { User, Lock, ArrowRight, Mail, ShieldCheck, Globe } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { User, Lock, ArrowRight, Mail, ShieldCheck, Globe, Loader2, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const Logo = () => (
-  <div className="flex flex-col items-center gap-4 group">
+  <div className="flex items-center gap-3 group">
     <div className="relative">
-      <div className="absolute inset-0 bg-blue-600 blur-2xl opacity-20 group-hover:opacity-40 transition-opacity" />
-      <div className="relative bg-slate-900 p-4 rounded-3xl group-hover:rotate-6 transition-transform duration-500 shadow-2xl shadow-slate-900/20">
+      <div className="absolute inset-0 bg-blue-600 blur-xl opacity-20 group-hover:opacity-40 transition-opacity" />
+      <div className="relative bg-slate-900 p-2.5 rounded-2xl group-hover:rotate-6 transition-transform duration-500 shadow-xl shadow-slate-900/20">
         <svg
-          width="40"
-          height="40"
+          width="24"
+          height="24"
           viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -28,63 +29,101 @@ const Logo = () => (
         </svg>
       </div>
     </div>
-    <span className="text-3xl font-black tracking-tight text-slate-900">
+    <span className="text-2xl font-black tracking-tight text-slate-900">
       OneClick<span className="text-blue-600">Sathi</span>
     </span>
   </div>
 );
 
-export default function LoginPage() {
-  const [isLogin, setIsLogin] = useState(true);
+function LoginForm() {
+  const searchParams = useSearchParams();
+  const initialMode = searchParams.get("mode") === "register" ? false : true;
+  const [isLogin, setIsLogin] = useState(initialMode);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
+
+  // Form states
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+
+    const endpoint = isLogin ? "/api/auth/login" : "/api/auth/register";
+    const body = isLogin ? { email, password } : { name, email, password };
+
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Something went wrong");
+      }
+
+      // Success
+      router.push("/dashboard");
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-[#fcfcfd] flex flex-col items-center justify-center p-6 relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute top-0 left-0 w-full h-full -z-10 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-blue-400/5 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-indigo-400/5 rounded-full blur-[100px]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15] mix-blend-overlay" />
-      </div>
-
-      <div className="w-full max-w-[480px] relative">
-        <div className="text-center mb-12">
+    <div className="min-h-screen bg-white flex">
+      {/* Left Side: Form */}
+      <div className="w-full lg:w-1/2 flex flex-col p-8 sm:p-12 lg:p-20">
+        <div className="mb-12">
           <Link href="/" className="inline-block hover:scale-[1.02] transition-transform active:scale-95">
             <Logo />
           </Link>
         </div>
 
-        <motion.div 
-          layout
-          className="bg-white rounded-[40px] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] border border-slate-100/60 p-10 relative overflow-hidden"
-        >
-          {/* Top accent line */}
-          <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-600 to-indigo-600" />
-
+        <div className="max-w-[440px] w-full mx-auto lg:mx-0 flex-1 flex flex-col justify-center">
           <AnimatePresence mode="wait">
             <motion.div
               key={isLogin ? "login" : "register"}
-              initial={{ opacity: 0, x: 10 }}
+              initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
+              exit={{ opacity: 0, x: 20 }}
               transition={{ duration: 0.3 }}
             >
-              <h1 className="text-3xl font-black text-slate-900 mb-2">
-                {isLogin ? "Welcome Back" : "Get Started"}
+              <h1 className="text-4xl font-black text-slate-900 mb-3 tracking-tight">
+                {isLogin ? "Welcome Back" : "Create Account"}
               </h1>
-              <p className="text-slate-500 font-medium mb-10">
+              <p className="text-slate-500 font-medium mb-10 leading-relaxed">
                 {isLogin 
-                  ? "Access your business dashboard and schemes." 
-                  : "Join 2,000+ Indian MSMEs growing with AI."}
+                  ? "Access your business dashboard and discover new schemes." 
+                  : "Join thousands of entrepreneurs growing with AI-powered insights."}
               </p>
 
-              <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
+              {error && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 text-sm font-bold rounded-2xl flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full bg-red-600" />
+                  {error}
+                </div>
+              )}
+
+              <form className="space-y-5" onSubmit={handleSubmit}>
                 {!isLogin && (
                   <div className="space-y-2">
-                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
                     <div className="relative group">
                       <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-blue-600 transition-colors" />
                       <input
                         type="text"
+                        required
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
                         placeholder="Arjun Sharma"
                         className="w-full pl-12 pr-4 py-4 bg-slate-50/50 border border-slate-100 rounded-2xl focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 outline-none transition-all font-medium text-slate-900 placeholder:text-slate-300"
                       />
@@ -93,11 +132,14 @@ export default function LoginPage() {
                 )}
 
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
                   <div className="relative group">
                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-blue-600 transition-colors" />
                     <input
                       type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       placeholder="arjun@business.com"
                       className="w-full pl-12 pr-4 py-4 bg-slate-50/50 border border-slate-100 rounded-2xl focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 outline-none transition-all font-medium text-slate-900 placeholder:text-slate-300"
                     />
@@ -106,10 +148,10 @@ export default function LoginPage() {
 
                 <div className="space-y-2">
                   <div className="flex justify-between items-center ml-1">
-                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Password</label>
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Password</label>
                     {isLogin && (
-                      <button className="text-[11px] font-black text-blue-600 uppercase tracking-tighter hover:underline">
-                        Forgot?
+                      <button type="button" className="text-[10px] font-black text-blue-600 uppercase tracking-tight hover:underline">
+                        Forgot Password?
                       </button>
                     )}
                   </div>
@@ -117,15 +159,28 @@ export default function LoginPage() {
                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-blue-600 transition-colors" />
                     <input
                       type="password"
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
                       className="w-full pl-12 pr-4 py-4 bg-slate-50/50 border border-slate-100 rounded-2xl focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 outline-none transition-all font-medium text-slate-900 placeholder:text-slate-300"
                     />
                   </div>
                 </div>
 
-                <button className="w-full py-5 bg-slate-900 text-white font-black rounded-2xl hover:bg-blue-600 shadow-xl shadow-slate-900/10 flex items-center justify-center gap-2 group transition-all active:scale-[0.98] mt-4">
-                  {isLogin ? "Sign In" : "Create Account"}
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                <button 
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full py-5 bg-slate-900 text-white font-black rounded-2xl hover:bg-blue-600 shadow-xl shadow-slate-900/10 flex items-center justify-center gap-2 group transition-all active:scale-[0.98] mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <>
+                      {isLogin ? "Sign In" : "Create Account"}
+                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </>
+                  )}
                 </button>
               </form>
 
@@ -150,27 +205,90 @@ export default function LoginPage() {
               </div>
             </motion.div>
           </AnimatePresence>
-        </motion.div>
+        </div>
 
-        <p className="text-center mt-10 text-slate-500 font-medium">
-          {isLogin ? "New to OneClickSathi?" : "Already have an account?"}{" "}
-          <button 
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-blue-600 font-black hover:underline ml-1"
-          >
-            {isLogin ? "Sign up for free" : "Log in here"}
-          </button>
-        </p>
-
-        <div className="mt-16 flex items-center justify-center gap-6 opacity-40">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4" />
-            <span className="text-[10px] font-black uppercase tracking-widest">Bank-grade Security</span>
+        <div className="mt-auto pt-10">
+          <p className="text-slate-500 font-medium">
+            {isLogin ? "New to OneClickSathi?" : "Already have an account?"}{" "}
+            <button 
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setError("");
+              }}
+              className="text-blue-600 font-black hover:underline ml-1"
+            >
+              {isLogin ? "Sign up for free" : "Log in here"}
+            </button>
+          </p>
+          <div className="mt-8 flex items-center gap-6 opacity-30">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4" />
+              <span className="text-[10px] font-black uppercase tracking-widest">Bank-grade Security</span>
+            </div>
+            <div className="w-1 h-1 bg-slate-400 rounded-full" />
+            <span className="text-[10px] font-black uppercase tracking-widest">ISO 27001 Certified</span>
           </div>
-          <div className="w-1 h-1 bg-slate-400 rounded-full" />
-          <span className="text-[10px] font-black uppercase tracking-widest">ISO 27001 Certified</span>
         </div>
       </div>
+
+      {/* Right Side: Image / Branding */}
+      <div className="hidden lg:block lg:w-1/2 relative bg-slate-900 overflow-hidden">
+        <div className="absolute inset-0 z-10 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent" />
+        <img 
+          src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=2000" 
+          alt="Modern office" 
+          className="absolute inset-0 object-cover w-full h-full opacity-60 scale-105 hover:scale-100 transition-transform duration-[10s]"
+        />
+        
+        <div className="absolute bottom-20 left-20 right-20 z-20">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+          >
+            <div className="flex gap-1.5 mb-6">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="w-12 h-1.5 rounded-full bg-blue-600/30 overflow-hidden">
+                  {i === 0 && <div className="h-full bg-blue-500 w-full animate-[progress_3s_ease-in-out_infinite]" />}
+                </div>
+              ))}
+            </div>
+            <h2 className="text-5xl font-black text-white mb-6 leading-tight">
+              Fueling the next generation of <span className="text-blue-500">Indian Enterprise.</span>
+            </h2>
+            <div className="space-y-4">
+              {[
+                "Instant eligibility checks for 4,000+ schemes",
+                "AI-powered compliance management",
+                "Secure document vault with bank-grade encryption"
+              ].map((text, i) => (
+                <div key={i} className="flex items-center gap-3 text-slate-300">
+                  <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-blue-500" />
+                  </div>
+                  <span className="font-bold text-sm tracking-wide">{text}</span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Floating Decorative Elements */}
+        <div className="absolute top-20 right-20 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-40 right-[-5%] w-64 h-64 bg-indigo-500/10 rounded-full blur-[100px]" />
+      </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }
