@@ -1,0 +1,425 @@
+[
+  {
+    "id": "applicant_name",
+    "dbTrigger": { "type": "always" },
+    "questionText": "What is your business name?",
+    "subtitle": "We'll use this to personalize your recommendations.",
+    "inputType": "text",
+    "dbFilterColumn": "businessName",
+    "dbFilterTable": "BusinessProfile",
+    "required": true,
+    "displayOrder": 1,
+    "category": "universal"
+  },
+  {
+    "id": "state",
+    "dbTrigger": { "type": "always" },
+    "questionText": "Which state is your business located in?",
+    "subtitle": "Many schemes are state-specific.",
+    "inputType": "dropdown",
+    "options": [
+      { "label": "Andhra Pradesh", "value": "Andhra Pradesh" },
+      { "label": "Arunachal Pradesh", "value": "Arunachal Pradesh" },
+      { "label": "Assam", "value": "Assam" },
+      { "label": "Bihar", "value": "Bihar" },
+      { "label": "Chhattisgarh", "value": "Chhattisgarh" },
+      { "label": "Delhi", "value": "Delhi" },
+      { "label": "Goa", "value": "Goa" },
+      { "label": "Gujarat", "value": "Gujarat" },
+      { "label": "Haryana", "value": "Haryana" },
+      { "label": "Himachal Pradesh", "value": "Himachal Pradesh" },
+      { "label": "Jharkhand", "value": "Jharkhand" },
+      { "label": "Karnataka", "value": "Karnataka" },
+      { "label": "Kerala", "value": "Kerala" },
+      { "label": "Madhya Pradesh", "value": "Madhya Pradesh" },
+      { "label": "Maharashtra", "value": "Maharashtra" },
+      { "label": "Manipur", "value": "Manipur" },
+      { "label": "Meghalaya", "value": "Meghalaya" },
+      { "label": "Mizoram", "value": "Mizoram" },
+      { "label": "Nagaland", "value": "Nagaland" },
+      { "label": "Odisha", "value": "Odisha" },
+      { "label": "Punjab", "value": "Punjab" },
+      { "label": "Rajasthan", "value": "Rajasthan" },
+      { "label": "Sikkim", "value": "Sikkim" },
+      { "label": "Tamil Nadu", "value": "Tamil Nadu" },
+      { "label": "Telangana", "value": "Telangana" },
+      { "label": "Tripura", "value": "Tripura" },
+      { "label": "Uttar Pradesh", "value": "Uttar Pradesh" },
+      { "label": "Uttarakhand", "value": "Uttarakhand" },
+      { "label": "West Bengal", "value": "West Bengal" }
+    ],
+    "dbFilterColumn": "state",
+    "dbFilterTable": "BusinessProfile",
+    "dbFilterJsonPath": "raw_data->'fields'->>'beneficiaryState'",
+    "required": true,
+    "displayOrder": 2,
+    "category": "universal"
+  },
+  {
+    "id": "sector",
+    "dbTrigger": { "type": "always" },
+    "questionText": "Which sector does your business operate in?",
+    "subtitle": "This helps us find industry-specific subsidies and grants.",
+    "inputType": "single_select",
+    "options": [
+      { "label": "IT / Software", "value": "IT/Software", "description": "Software, SaaS, digital services", "icon": "💻" },
+      { "label": "Manufacturing", "value": "Manufacturing", "description": "Factories, production, assembly", "icon": "🏭" },
+      { "label": "Food & Beverage", "value": "Food & Beverage", "description": "Restaurants, food processing, catering", "icon": "🍽️" },
+      { "label": "Agriculture", "value": "Agriculture", "description": "Farming, dairy, horticulture", "icon": "🌾" },
+      { "label": "Healthcare", "value": "Healthcare", "description": "Clinics, pharma, medical devices", "icon": "🏥" },
+      { "label": "Retail / Trading", "value": "Retail/Trading", "description": "Shops, e-commerce, trading", "icon": "🛒" },
+      { "label": "Education", "value": "Education", "description": "Schools, coaching, edtech", "icon": "📚" },
+      { "label": "Textile & Handicraft", "value": "Textile", "description": "Garments, handloom, crafts", "icon": "🧵" },
+      { "label": "Construction", "value": "Construction", "description": "Real estate, infrastructure", "icon": "🏗️" },
+      { "label": "Transport & Logistics", "value": "Transport", "description": "Fleet, warehousing, delivery", "icon": "🚚" },
+      { "label": "Services", "value": "Service", "description": "Consulting, BPO, professional services", "icon": "💼" },
+      { "label": "Other", "value": "Other", "description": "Any other sector", "icon": "📦" }
+    ],
+    "dbFilterColumn": "industry",
+    "dbFilterTable": "BusinessProfile",
+    "required": true,
+    "displayOrder": 3,
+    "category": "universal"
+  },
+  {
+    "id": "business_stage",
+    "dbTrigger": { "type": "always" },
+    "questionText": "What stage is your business in?",
+    "subtitle": "Different schemes target different business maturity levels.",
+    "inputType": "single_select",
+    "options": [
+      { "label": "Ideation", "value": "Ideation", "description": "Just an idea or planning phase", "icon": "💡" },
+      { "label": "Startup (< 2 years)", "value": "Startup", "description": "Recently launched", "icon": "🚀" },
+      { "label": "Growth (2-5 years)", "value": "Growth", "description": "Scaling operations", "icon": "📈" },
+      { "label": "Established (5+ years)", "value": "Established", "description": "Mature business", "icon": "🏢" }
+    ],
+    "dbFilterColumn": "entityType",
+    "dbFilterTable": "BusinessProfile",
+    "required": true,
+    "displayOrder": 4,
+    "category": "universal"
+  },
+  {
+    "id": "annual_turnover",
+    "dbTrigger": { "type": "always" },
+    "questionText": "What is your approximate annual turnover?",
+    "subtitle": "This determines your MSME classification.",
+    "inputType": "single_select",
+    "options": [
+      { "label": "Not started yet", "value": "0" },
+      { "label": "Under ₹5 Lakhs", "value": "0-5L" },
+      { "label": "₹5 - 25 Lakhs", "value": "5-25L" },
+      { "label": "₹25 Lakhs - 1 Crore", "value": "25L-1Cr" },
+      { "label": "₹1 - 5 Crore", "value": "1-5Cr" },
+      { "label": "₹5 - 25 Crore", "value": "5-25Cr" },
+      { "label": "Above ₹25 Crore", "value": "25Cr+" }
+    ],
+    "dbFilterColumn": "annualTurnover",
+    "dbFilterTable": "BusinessProfile",
+    "required": true,
+    "displayOrder": 5,
+    "category": "universal"
+  },
+  {
+    "id": "employee_count",
+    "dbTrigger": { "type": "always" },
+    "questionText": "How many employees do you have?",
+    "subtitle": "Including yourself and any part-time workers.",
+    "inputType": "single_select",
+    "options": [
+      { "label": "Just me", "value": "1" },
+      { "label": "2 - 5", "value": "2-5" },
+      { "label": "6 - 20", "value": "6-20" },
+      { "label": "21 - 50", "value": "21-50" },
+      { "label": "51 - 200", "value": "51-200" },
+      { "label": "200+", "value": "200+" }
+    ],
+    "dbFilterColumn": "employeeCount",
+    "dbFilterTable": "BusinessProfile",
+    "required": true,
+    "displayOrder": 6,
+    "category": "universal"
+  },
+  {
+    "id": "gender",
+    "dbTrigger": { "type": "column_exists", "column": "isWomenOwned" },
+    "questionText": "Is the business owned by a woman?",
+    "subtitle": "Several government schemes exclusively support women entrepreneurs.",
+    "inputType": "single_select",
+    "options": [
+      { "label": "Yes, women-owned", "value": "true", "icon": "👩‍💼" },
+      { "label": "No", "value": "false", "icon": "👤" }
+    ],
+    "dbFilterColumn": "isWomenOwned",
+    "dbFilterTable": "BusinessProfile",
+    "required": false,
+    "displayOrder": 7,
+    "category": "adaptive"
+  },
+  {
+    "id": "caste",
+    "dbTrigger": { "type": "column_exists", "column": "isScStOwned" },
+    "questionText": "Does the owner belong to SC/ST category?",
+    "subtitle": "Special schemes exist for SC/ST entrepreneurs under Stand-Up India.",
+    "inputType": "single_select",
+    "options": [
+      { "label": "Yes, SC/ST", "value": "true", "icon": "✅" },
+      { "label": "No", "value": "false" },
+      { "label": "Prefer not to say", "value": "skip" }
+    ],
+    "dbFilterColumn": "isScStOwned",
+    "dbFilterTable": "BusinessProfile",
+    "required": false,
+    "displayOrder": 8,
+    "category": "adaptive"
+  },
+  {
+    "id": "is_startup",
+    "dbTrigger": { "type": "column_exists", "column": "isStartup" },
+    "questionText": "Is your venture DPIIT-recognized as a Startup?",
+    "subtitle": "DPIIT-recognized startups get access to exclusive schemes.",
+    "inputType": "single_select",
+    "options": [
+      { "label": "Yes, DPIIT recognized", "value": "true", "icon": "🏅" },
+      { "label": "No / Not yet", "value": "false" },
+      { "label": "I don't know", "value": "unknown" }
+    ],
+    "dbFilterColumn": "isStartup",
+    "dbFilterTable": "BusinessProfile",
+    "required": false,
+    "displayOrder": 9,
+    "category": "adaptive"
+  },
+  {
+    "id": "entity_type",
+    "dbTrigger": { "type": "column_exists", "column": "entityType" },
+    "questionText": "What is your business entity type?",
+    "subtitle": "Your legal structure affects scheme eligibility.",
+    "inputType": "single_select",
+    "options": [
+      { "label": "Sole Proprietorship", "value": "Sole Proprietorship" },
+      { "label": "Partnership Firm", "value": "Partnership" },
+      { "label": "LLP", "value": "LLP" },
+      { "label": "Private Limited", "value": "Private Limited" },
+      { "label": "One Person Company", "value": "OPC" },
+      { "label": "Others", "value": "Other" }
+    ],
+    "dbFilterColumn": "entityType",
+    "dbFilterTable": "BusinessProfile",
+    "required": false,
+    "displayOrder": 10,
+    "category": "adaptive"
+  },
+  {
+    "id": "goals",
+    "dbTrigger": { "type": "column_exists", "column": "goals" },
+    "questionText": "What are your primary business goals right now?",
+    "subtitle": "Select all that apply — we'll match schemes accordingly.",
+    "inputType": "multi_select",
+    "options": [
+      { "label": "Get Funding / Loan", "value": "funding" },
+      { "label": "Get Subsidy / Grant", "value": "subsidy" },
+      { "label": "Tax Benefits", "value": "tax" },
+      { "label": "Skill Development", "value": "skill" },
+      { "label": "Technology Upgrade", "value": "technology" },
+      { "label": "Export Support", "value": "export" },
+      { "label": "Land / Infrastructure", "value": "infrastructure" },
+      { "label": "Marketing Support", "value": "marketing" }
+    ],
+    "dbFilterColumn": "goals",
+    "dbFilterTable": "BusinessProfile",
+    "required": false,
+    "displayOrder": 11,
+    "category": "adaptive"
+  },
+  {
+    "id": "it_startup_type",
+    "dbTrigger": { "type": "sector_branch", "sector": "IT/Software" },
+    "questionText": "What type of tech product/service do you offer?",
+    "subtitle": "Different tech categories qualify for different incentives.",
+    "inputType": "single_select",
+    "options": [
+      { "label": "SaaS / Cloud", "value": "SaaS", "icon": "☁️" },
+      { "label": "Mobile App", "value": "MobileApp", "icon": "📱" },
+      { "label": "AI / ML", "value": "AI/ML", "icon": "🤖" },
+      { "label": "Fintech", "value": "Fintech", "icon": "💳" },
+      { "label": "Cybersecurity", "value": "Cybersecurity", "icon": "🔒" },
+      { "label": "IT Services / Consulting", "value": "ITServices", "icon": "🖥️" },
+      { "label": "Other Tech", "value": "OtherTech", "icon": "⚙️" }
+    ],
+    "required": false,
+    "displayOrder": 100,
+    "category": "sector_branch"
+  },
+  {
+    "id": "it_funding_stage",
+    "dbTrigger": { "type": "sector_branch", "sector": "IT/Software" },
+    "questionText": "What is your current funding stage?",
+    "inputType": "single_select",
+    "options": [
+      { "label": "Bootstrapped", "value": "Bootstrapped" },
+      { "label": "Pre-seed / Angel", "value": "PreSeed" },
+      { "label": "Seed Round", "value": "Seed" },
+      { "label": "Series A+", "value": "SeriesA" },
+      { "label": "Not seeking funding", "value": "None" }
+    ],
+    "required": false,
+    "displayOrder": 101,
+    "category": "sector_branch"
+  },
+  {
+    "id": "mfg_product_type",
+    "dbTrigger": { "type": "sector_branch", "sector": "Manufacturing" },
+    "questionText": "What type of products do you manufacture?",
+    "inputType": "single_select",
+    "options": [
+      { "label": "Consumer Goods", "value": "ConsumerGoods", "icon": "🛍️" },
+      { "label": "Industrial / Machinery", "value": "Industrial", "icon": "⚙️" },
+      { "label": "Electronics", "value": "Electronics", "icon": "🔌" },
+      { "label": "Chemicals", "value": "Chemicals", "icon": "🧪" },
+      { "label": "Textiles", "value": "Textiles", "icon": "🧶" },
+      { "label": "Auto Components", "value": "AutoParts", "icon": "🔧" },
+      { "label": "Other", "value": "Other", "icon": "📦" }
+    ],
+    "required": false,
+    "displayOrder": 100,
+    "category": "sector_branch"
+  },
+  {
+    "id": "mfg_export_status",
+    "dbTrigger": { "type": "sector_branch", "sector": "Manufacturing" },
+    "questionText": "Do you export your products?",
+    "inputType": "single_select",
+    "options": [
+      { "label": "Yes, currently exporting", "value": "yes" },
+      { "label": "Planning to export", "value": "planning" },
+      { "label": "No exports", "value": "no" }
+    ],
+    "required": false,
+    "displayOrder": 101,
+    "category": "sector_branch"
+  },
+  {
+    "id": "food_fssai",
+    "dbTrigger": { "type": "sector_branch", "sector": "Food & Beverage" },
+    "questionText": "Do you have an FSSAI license?",
+    "inputType": "single_select",
+    "options": [
+      { "label": "Yes", "value": "yes", "icon": "✅" },
+      { "label": "Applied / In process", "value": "in_process" },
+      { "label": "No", "value": "no" }
+    ],
+    "required": false,
+    "displayOrder": 100,
+    "category": "sector_branch"
+  },
+  {
+    "id": "food_type",
+    "dbTrigger": { "type": "sector_branch", "sector": "Food & Beverage" },
+    "questionText": "What type of food business is it?",
+    "inputType": "single_select",
+    "options": [
+      { "label": "Restaurant / Cafe", "value": "Restaurant", "icon": "🍽️" },
+      { "label": "Food Processing", "value": "Processing", "icon": "🏭" },
+      { "label": "Bakery / Confectionery", "value": "Bakery", "icon": "🍰" },
+      { "label": "Packaged Foods", "value": "Packaged", "icon": "📦" },
+      { "label": "Dairy Products", "value": "Dairy", "icon": "🥛" },
+      { "label": "Organic / Health Food", "value": "Organic", "icon": "🥬" }
+    ],
+    "required": false,
+    "displayOrder": 101,
+    "category": "sector_branch"
+  },
+  {
+    "id": "agri_land",
+    "dbTrigger": { "type": "sector_branch", "sector": "Agriculture" },
+    "questionText": "Do you own agricultural land?",
+    "inputType": "single_select",
+    "options": [
+      { "label": "Yes, own land", "value": "own" },
+      { "label": "Leased land", "value": "leased" },
+      { "label": "No land", "value": "none" }
+    ],
+    "required": false,
+    "displayOrder": 100,
+    "category": "sector_branch"
+  },
+  {
+    "id": "agri_crop_type",
+    "dbTrigger": { "type": "sector_branch", "sector": "Agriculture" },
+    "questionText": "What type of agricultural activity?",
+    "inputType": "single_select",
+    "options": [
+      { "label": "Crop Farming", "value": "crop", "icon": "🌾" },
+      { "label": "Horticulture", "value": "horticulture", "icon": "🍎" },
+      { "label": "Dairy / Animal Husbandry", "value": "dairy", "icon": "🐄" },
+      { "label": "Fisheries / Aquaculture", "value": "fisheries", "icon": "🐟" },
+      { "label": "Agri-processing", "value": "processing", "icon": "🏭" },
+      { "label": "Organic Farming", "value": "organic", "icon": "🌿" }
+    ],
+    "required": false,
+    "displayOrder": 101,
+    "category": "sector_branch"
+  },
+  {
+    "id": "health_type",
+    "dbTrigger": { "type": "sector_branch", "sector": "Healthcare" },
+    "questionText": "What type of healthcare business?",
+    "inputType": "single_select",
+    "options": [
+      { "label": "Clinic / Hospital", "value": "clinic", "icon": "🏥" },
+      { "label": "Pharmacy", "value": "pharmacy", "icon": "💊" },
+      { "label": "Medical Devices", "value": "devices", "icon": "🩺" },
+      { "label": "Health Tech / Telemedicine", "value": "healthtech", "icon": "📱" },
+      { "label": "Ayurveda / Wellness", "value": "wellness", "icon": "🧘" }
+    ],
+    "required": false,
+    "displayOrder": 100,
+    "category": "sector_branch"
+  },
+  {
+    "id": "retail_gst",
+    "dbTrigger": { "type": "sector_branch", "sector": "Retail/Trading" },
+    "questionText": "Are you GST registered?",
+    "inputType": "single_select",
+    "options": [
+      { "label": "Yes", "value": "yes", "icon": "✅" },
+      { "label": "Applied / In process", "value": "in_process" },
+      { "label": "Not yet / Exempt", "value": "no" }
+    ],
+    "required": false,
+    "displayOrder": 100,
+    "category": "sector_branch"
+  },
+  {
+    "id": "retail_online",
+    "dbTrigger": { "type": "sector_branch", "sector": "Retail/Trading" },
+    "questionText": "Do you have an online presence?",
+    "inputType": "single_select",
+    "options": [
+      { "label": "Website + E-commerce", "value": "ecommerce" },
+      { "label": "Social media only", "value": "social" },
+      { "label": "Listed on marketplaces", "value": "marketplace" },
+      { "label": "No online presence", "value": "none" }
+    ],
+    "required": false,
+    "displayOrder": 101,
+    "category": "sector_branch"
+  },
+  {
+    "id": "edu_type",
+    "dbTrigger": { "type": "sector_branch", "sector": "Education" },
+    "questionText": "What type of educational institution?",
+    "inputType": "single_select",
+    "options": [
+      { "label": "School (K-12)", "value": "school", "icon": "🏫" },
+      { "label": "Coaching / Tutoring", "value": "coaching", "icon": "📝" },
+      { "label": "EdTech Platform", "value": "edtech", "icon": "💻" },
+      { "label": "Vocational Training", "value": "vocational", "icon": "🔧" },
+      { "label": "Higher Education", "value": "higher", "icon": "🎓" }
+    ],
+    "required": false,
+    "displayOrder": 100,
+    "category": "sector_branch"
+  }
+]
