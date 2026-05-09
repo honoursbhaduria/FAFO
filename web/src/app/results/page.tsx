@@ -26,7 +26,7 @@ export default function ResultsPage() {
           <p className="text-sm text-slate-400">Complete the questionnaire first.</p>
           <button
             onClick={() => router.push("/questionnaire")}
-            className="px-6 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all"
+            className="px-6 py-3 bg-brand-600 text-white font-bold rounded-xl hover:bg-brand-700 transition-all"
           >
             Start Questionnaire
           </button>
@@ -41,7 +41,7 @@ export default function ResultsPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-black text-slate-900 flex items-center gap-3">
+            <h1 className="text-3xl font-black text-brand-600 flex items-center gap-3">
               <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
                 <Sparkles size={20} className="text-white" />
               </div>
@@ -61,7 +61,7 @@ export default function ResultsPage() {
             </button>
             <button
               onClick={() => router.push("/dashboard")}
-              className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 transition-all shadow-md shadow-blue-200"
+              className="flex items-center gap-2 px-4 py-2.5 bg-brand-600 text-white rounded-xl font-bold text-sm hover:bg-brand-700 transition-all shadow-md shadow-brand-100"
             >
               <ArrowLeft size={14} />
               Dashboard

@@ -14,7 +14,7 @@ import Link from "next/link";
 export default function DashboardPage() {
   const kpis = [
     { label: "Upcoming Deadlines", value: "3", icon: Clock, color: "text-amber-600", bg: "bg-amber-50" },
-    { label: "Eligible Schemes", value: "12", icon: FileText, color: "text-blue-600", bg: "bg-blue-50" },
+    { label: "Eligible Schemes", value: "12", icon: FileText, color: "text-brand-600", bg: "bg-brand-50" },
     { label: "Saved Docs", value: "8", icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50" },
     { label: "Active Apps", value: "2", icon: TrendingUp, color: "text-indigo-600", bg: "bg-indigo-50" },
   ];
@@ -46,7 +46,7 @@ export default function DashboardPage() {
         {/* Welcome Section */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">Welcome back, John! 👋</h1>
+            <h1 className="text-3xl font-bold text-brand-600">Welcome back, John! 👋</h1>
             <p className="text-slate-500 mt-1">Here&apos;s what&apos;s happening with your business compliance today.</p>
           </div>
           <button className="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 rounded-xl font-semibold text-slate-700 hover:bg-slate-50 transition-all shadow-sm">
@@ -64,7 +64,7 @@ export default function DashboardPage() {
                 <kpi.icon size={24} />
               </div>
               <p className="text-sm font-medium text-slate-500">{kpi.label}</p>
-              <h3 className="text-2xl font-bold text-slate-900 mt-1">{kpi.value}</h3>
+              <h3 className="text-2xl font-bold text-brand-600 mt-1">{kpi.value}</h3>
             </div>
           ))}
         </div>
@@ -73,11 +73,11 @@ export default function DashboardPage() {
           {/* Compliance Calendar */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                <Calendar className="text-blue-600" size={22} />
+              <h2 className="text-xl font-bold text-brand-600 flex items-center gap-2">
+                <Calendar className="text-brand-600" size={22} />
                 Compliance Calendar
               </h2>
-              <Link href="/compliance" className="text-sm font-semibold text-blue-600 hover:underline">View All</Link>
+              <Link href="/compliance" className="text-sm font-semibold text-brand-600 hover:underline">View All</Link>
             </div>
             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
               <div className="divide-y divide-slate-100">
@@ -86,11 +86,11 @@ export default function DashboardPage() {
                     <div className="flex items-center gap-4">
                       <div className={`w-2 h-10 rounded-full ${task.priority === 'High' ? 'bg-red-500' : 'bg-amber-500'}`} />
                       <div>
-                        <h4 className="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{task.title}</h4>
+                        <h4 className="font-bold text-brand-600 group-hover:text-brand-600 transition-colors">{task.title}</h4>
                         <p className="text-sm text-slate-500">{task.type} • Due on {task.date}</p>
                       </div>
                     </div>
-                    <button className="p-2 text-slate-300 group-hover:text-blue-600 group-hover:bg-blue-50 rounded-lg transition-all">
+                    <button className="p-2 text-slate-300 group-hover:text-brand-600 group-hover:bg-brand-50 rounded-lg transition-all">
                       <ChevronRight size={20} />
                     </button>
                   </div>
@@ -102,19 +102,19 @@ export default function DashboardPage() {
           {/* Recommended Schemes */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-slate-900">Recommended</h2>
-              <Link href="/schemes" className="text-sm font-semibold text-blue-600 hover:underline">Explore</Link>
+              <h2 className="text-xl font-bold text-brand-600">Recommended</h2>
+              <Link href="/schemes" className="text-sm font-semibold text-brand-600 hover:underline">Explore</Link>
             </div>
             <div className="space-y-4">
               {recommendedSchemes.map((scheme) => (
                 <div key={scheme.name} className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:border-blue-200 transition-all group">
                   <div className="flex items-start justify-between mb-3">
-                    <span className="px-2.5 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wider rounded-md">
+                    <span className="px-2.5 py-1 bg-brand-50 text-brand-600 text-[10px] font-bold uppercase tracking-wider rounded-md">
                       {scheme.authority}
                     </span>
-                    <ArrowUpRight size={18} className="text-slate-300 group-hover:text-blue-600 transition-colors" />
+                    <ArrowUpRight size={18} className="text-slate-300 group-hover:text-brand-600 transition-colors" />
                   </div>
-                  <h4 className="font-bold text-slate-900 mb-1 group-hover:text-blue-600 transition-colors">{scheme.name}</h4>
+                  <h4 className="font-bold text-brand-600 mb-1 group-hover:text-brand-600 transition-colors">{scheme.name}</h4>
                   <p className="text-sm text-emerald-600 font-medium mb-3">{scheme.benefit}</p>
                   <div className="flex items-center gap-2 text-xs text-slate-400">
                     <Clock size={12} />
@@ -124,7 +124,7 @@ export default function DashboardPage() {
               ))}
               <Link 
                 href="/schemes" 
-                className="block w-full py-4 text-center border-2 border-dashed border-slate-200 rounded-2xl text-slate-400 font-medium hover:border-blue-400 hover:text-blue-600 transition-all"
+                className="block w-full py-4 text-center border-2 border-dashed border-slate-200 rounded-2xl text-slate-400 font-medium hover:border-blue-400 hover:text-brand-600 transition-all"
               >
                 + See more matches
               </Link>

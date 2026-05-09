@@ -15,7 +15,7 @@ export default function RecommendationList({ schemes, filtersApplied, queryTime 
       {/* Meta info */}
       <div className="flex flex-wrap items-center gap-2">
         {filtersApplied.map((f, i) => (
-          <span key={i} className="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-full">
+          <span key={i} className="px-3 py-1 bg-brand-50 text-brand-700 text-xs font-bold rounded-full">
             {f}
           </span>
         ))}

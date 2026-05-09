@@ -106,12 +106,12 @@ export default function DocumentVaultPage() {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-black text-slate-900">Document Vault</h1>
+            <h1 className="text-3xl font-black text-brand-600">Document Vault</h1>
             <p className="text-slate-500 mt-1">Securely store and manage your business compliance documents.</p>
           </div>
           <button 
             onClick={() => setIsMenuOpen(true)}
-            className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-black rounded-2xl shadow-xl shadow-blue-200/50 hover:bg-blue-700 transition-all active:scale-95"
+            className="flex items-center gap-2 px-6 py-3 bg-brand-600 text-white font-black rounded-2xl shadow-xl shadow-brand-100/50 hover:bg-brand-700 transition-all active:scale-95"
           >
             <Upload size={20} />
             Upload Document
@@ -127,7 +127,7 @@ export default function DocumentVaultPage() {
               placeholder="Search documents..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
+              className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-brand-500 outline-none transition-all font-medium"
             />
           </div>
           <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -136,7 +136,7 @@ export default function DocumentVaultPage() {
               <select 
                 value={selectedType}
                 onChange={(e) => setSelectedType(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-600 font-bold text-sm appearance-none outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-600 font-bold text-sm appearance-none outline-none focus:ring-2 focus:ring-brand-500"
               >
                 <option>All Types</option>
                 <option>Identity</option>
@@ -173,10 +173,10 @@ export default function DocumentVaultPage() {
                   <tr key={doc.id} className="hover:bg-slate-50/50 transition-colors group">
                     <td className="px-8 py-5">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center shrink-0">
+                        <div className="w-12 h-12 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center shrink-0">
                           <FileText size={24} />
                         </div>
-                        <span className="font-bold text-slate-900 group-hover:text-blue-600 transition-colors truncate max-w-[200px]">
+                        <span className="font-bold text-brand-600 group-hover:text-brand-600 transition-colors truncate max-w-[200px]">
                           {doc.name}
                         </span>
                       </div>
@@ -194,7 +194,7 @@ export default function DocumentVaultPage() {
                     </td>
                     <td className="px-8 py-5 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button className="p-3 text-slate-300 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">
+                        <button className="p-3 text-slate-300 hover:text-brand-600 hover:bg-brand-50 rounded-xl transition-all">
                           <Eye size={20} />
                         </button>
                         <button 
@@ -215,7 +215,7 @@ export default function DocumentVaultPage() {
               <div className="w-24 h-24 bg-slate-50 text-slate-200 rounded-[32px] flex items-center justify-center mx-auto mb-6">
                 <FileText size={48} />
               </div>
-              <h3 className="text-xl font-black text-slate-900 mb-2">No documents found</h3>
+              <h3 className="text-xl font-black text-brand-600 mb-2">No documents found</h3>
               <p className="text-slate-500 max-w-xs mx-auto">
                 {searchQuery || selectedType !== "All Types" 
                   ? "Try adjusting your filters to find what you're looking for." 
@@ -229,14 +229,14 @@ export default function DocumentVaultPage() {
       {/* Upload Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
-          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)} />
+          <div className="absolute inset-0 bg-brand-600/60 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)} />
           <div className="relative bg-white w-full max-w-lg rounded-[40px] shadow-2xl overflow-hidden border border-slate-100">
             <div className="p-8 border-b border-slate-100 flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-black text-slate-900">Upload Document</h2>
+                <h2 className="text-2xl font-black text-brand-600">Upload Document</h2>
                 <p className="text-sm text-slate-500 font-medium">Add a new document to your vault.</p>
               </div>
-              <button onClick={() => setIsMenuOpen(false)} className="p-3 bg-slate-50 text-slate-400 hover:text-slate-900 rounded-2xl transition-all">
+              <button onClick={() => setIsMenuOpen(false)} className="p-3 bg-slate-50 text-slate-400 hover:text-brand-600 rounded-2xl transition-all">
                 <X size={20} />
               </button>
             </div>
@@ -244,7 +244,7 @@ export default function DocumentVaultPage() {
             <form onSubmit={handleUpload} className="p-8 space-y-6">
               <div 
                 className={`relative border-4 border-dashed rounded-[32px] p-12 text-center transition-all ${
-                  uploadFile ? 'border-emerald-100 bg-emerald-50/30' : 'border-slate-100 hover:border-blue-100 hover:bg-blue-50/30'
+                  uploadFile ? 'border-emerald-100 bg-emerald-50/30' : 'border-slate-100 hover:border-brand-100 hover:bg-brand-50/30'
                 }`}
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={(e) => {
@@ -265,15 +265,15 @@ export default function DocumentVaultPage() {
                       <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mb-4">
                         <CheckCircle2 size={32} />
                       </div>
-                      <p className="font-bold text-slate-900 mb-1">{uploadFile.name}</p>
+                      <p className="font-bold text-brand-600 mb-1">{uploadFile.name}</p>
                       <p className="text-xs text-emerald-600 font-black uppercase">File Ready to Upload</p>
                     </>
                   ) : (
                     <>
-                      <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-4">
+                      <div className="w-16 h-16 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mb-4">
                         <FileUp size={32} />
                       </div>
-                      <p className="font-bold text-slate-900 mb-1">Click or drag file to upload</p>
+                      <p className="font-bold text-brand-600 mb-1">Click or drag file to upload</p>
                       <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">PDF, PNG, JPG up to 10MB</p>
                     </>
                   )}
@@ -290,7 +290,7 @@ export default function DocumentVaultPage() {
                       onClick={() => setUploadType(type)}
                       className={`px-4 py-3 rounded-2xl text-xs font-black transition-all border ${
                         uploadType === type 
-                          ? "bg-slate-900 border-slate-900 text-white shadow-xl shadow-slate-200" 
+                          ? "bg-brand-600 border-brand-600 text-white shadow-xl shadow-brand-100" 
                           : "bg-white border-slate-100 text-slate-400 hover:border-slate-300"
                       }`}
                     >
@@ -303,7 +303,7 @@ export default function DocumentVaultPage() {
               <button
                 type="submit"
                 disabled={!uploadFile || uploading}
-                className="w-full py-5 bg-blue-600 text-white rounded-[24px] font-black text-lg hover:bg-blue-700 disabled:opacity-50 transition-all flex items-center justify-center gap-3 shadow-2xl shadow-blue-200"
+                className="w-full py-5 bg-brand-600 text-white rounded-[24px] font-black text-lg hover:bg-brand-700 disabled:opacity-50 transition-all flex items-center justify-center gap-3 shadow-2xl shadow-brand-100"
               >
                 {uploading ? (
                   <>

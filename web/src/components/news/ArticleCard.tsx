@@ -13,7 +13,7 @@ interface ArticleCardProps {
 const relevanceColors: Record<RelevanceLevel, string> = {
   Low: "bg-slate-100 text-slate-600",
   Medium: "bg-amber-100 text-amber-700",
-  High: "bg-blue-100 text-blue-700",
+  High: "bg-brand-100 text-brand-700",
   "Very High": "bg-emerald-100 text-emerald-700",
 };
 
@@ -69,7 +69,7 @@ export default function ArticleCard({
         </div>
 
         {/* Title */}
-        <h3 className="font-bold text-slate-900 leading-snug mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+        <h3 className="font-bold text-brand-600 leading-snug mb-2 line-clamp-2 group-hover:text-brand-600 transition-colors">
           {article.title}
         </h3>
 
@@ -107,8 +107,8 @@ export default function ArticleCard({
               }}
               className={`p-2 rounded-lg transition-all ${
                 article.isBookmarked
-                  ? "bg-blue-50 text-blue-600"
-                  : "text-slate-400 hover:bg-slate-50 hover:text-blue-600"
+                  ? "bg-brand-50 text-brand-600"
+                  : "text-slate-400 hover:bg-slate-50 hover:text-brand-600"
               }`}
               title={article.isBookmarked ? "Remove bookmark" : "Bookmark"}
             >
@@ -133,7 +133,7 @@ export default function ArticleCard({
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => onRead(article.id)}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-600 hover:bg-brand-50 rounded-lg transition-all"
           >
             Read More
             <ExternalLink size={12} />

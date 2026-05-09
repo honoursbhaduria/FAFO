@@ -43,7 +43,7 @@ export default function OpportunityCard({
                 {publishedDate}
               </span>
             </div>
-            <h3 className="font-bold text-slate-900 leading-snug group-hover:text-emerald-700 transition-colors">
+            <h3 className="font-bold text-brand-600 leading-snug group-hover:text-emerald-700 transition-colors">
               {article.title}
             </h3>
           </div>
@@ -78,8 +78,8 @@ export default function OpportunityCard({
               onClick={() => onBookmark(article.id)}
               className={`p-1.5 rounded-lg transition-all ${
                 article.isBookmarked
-                  ? "bg-blue-50 text-blue-600"
-                  : "text-slate-400 hover:text-blue-600"
+                  ? "bg-brand-50 text-brand-600"
+                  : "text-slate-400 hover:text-brand-600"
               }`}
             >
               <Bookmark size={14} fill={article.isBookmarked ? "currentColor" : "none"} />

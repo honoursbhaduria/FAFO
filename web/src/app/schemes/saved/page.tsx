@@ -29,9 +29,9 @@ export default function SavedSchemesPage() {
     <DashboardLayout>
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-              <Bookmark className="text-blue-600" size={24} />
+          <h1 className="text-3xl font-black text-brand-600 flex items-center gap-3">
+            <div className="w-10 h-10 bg-brand-100 rounded-xl flex items-center justify-center">
+              <Bookmark className="text-brand-600" size={24} />
             </div>
             Saved Schemes
           </h1>
@@ -45,13 +45,13 @@ export default function SavedSchemesPage() {
             <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto mb-6 text-slate-300">
               <Bookmark size={40} />
             </div>
-            <h3 className="text-xl font-bold text-slate-900 mb-2">No saved schemes yet</h3>
+            <h3 className="text-xl font-bold text-brand-600 mb-2">No saved schemes yet</h3>
             <p className="text-slate-500 max-w-sm mx-auto mb-8">
               Explore the discovery section to find and save schemes that match your business profile.
             </p>
             <Link 
               href="/schemes"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-blue-600 transition-all shadow-xl shadow-slate-900/10"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-brand-600 text-white rounded-2xl font-bold hover:bg-brand-600 transition-all shadow-xl shadow-brand-600/10"
             >
               Start Discovering
               <ArrowRight size={18} />
@@ -65,7 +65,7 @@ export default function SavedSchemesPage() {
                 className="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group"
               >
                 <div className="flex justify-between items-start mb-4">
-                  <div className="p-3 bg-blue-50 text-blue-600 rounded-xl group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                  <div className="p-3 bg-brand-50 text-brand-600 rounded-xl group-hover:bg-brand-600 group-hover:text-white transition-colors">
                     <Bookmark size={20} />
                   </div>
                   <button 
@@ -76,7 +76,7 @@ export default function SavedSchemesPage() {
                   </button>
                 </div>
                 
-                <h3 className="text-lg font-bold text-slate-900 mb-2 line-clamp-2 min-h-[3.5rem]">
+                <h3 className="text-lg font-bold text-brand-600 mb-2 line-clamp-2 min-h-[3.5rem]">
                   {scheme.schemeName}
                 </h3>
                 
@@ -91,7 +91,7 @@ export default function SavedSchemesPage() {
                 <div className="flex gap-3">
                   <Link 
                     href={`/schemes/${scheme.apiId}`}
-                    className="flex-1 text-center py-3 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm hover:bg-slate-900 hover:text-white transition-all"
+                    className="flex-1 text-center py-3 bg-slate-50 text-slate-600 rounded-xl font-bold text-sm hover:bg-brand-600 hover:text-white transition-all"
                   >
                     View Details
                   </Link>

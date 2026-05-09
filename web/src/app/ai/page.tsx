@@ -91,18 +91,18 @@ function ChatContent() {
       {/* Chat Header */}
       <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white">
+          <div className="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center text-white">
             <Bot size={24} />
           </div>
           <div>
-            <h2 className="font-bold text-slate-900">Sathi AI Assistant</h2>
+            <h2 className="font-bold text-brand-600">Sathi AI Assistant</h2>
             <p className="text-xs text-emerald-600 font-medium flex items-center gap-1">
               <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
               Always online to help
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-xs font-bold">
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-brand-50 text-brand-600 rounded-lg text-xs font-bold">
           <Sparkles size={14} />
           AI POWERED
         </div>
@@ -112,10 +112,10 @@ function ChatContent() {
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
-            <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-2">
+            <div className="w-16 h-16 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mb-2">
               <Bot size={32} />
             </div>
-            <h3 className="text-xl font-bold text-slate-900">How can I help you today?</h3>
+            <h3 className="text-xl font-bold text-brand-600">How can I help you today?</h3>
             <p className="text-slate-500 max-w-sm">
               Ask me about government schemes, compliance deadlines, or how to register your business.
             </p>
@@ -129,7 +129,7 @@ function ChatContent() {
                 <button
                   key={suggestion}
                   onClick={() => setInput(suggestion)}
-                  className="px-4 py-2 text-sm text-slate-600 border border-slate-200 rounded-xl hover:border-blue-500 hover:text-blue-600 transition-all text-left"
+                  className="px-4 py-2 text-sm text-slate-600 border border-slate-200 rounded-xl hover:border-brand-500 hover:text-brand-600 transition-all text-left"
                 >
                   {suggestion}
                 </button>
@@ -150,7 +150,7 @@ function ChatContent() {
             >
               <div
                 className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                  msg.role === "user" ? "bg-slate-200 text-slate-600" : "bg-blue-600 text-white"
+                  msg.role === "user" ? "bg-slate-200 text-slate-600" : "bg-brand-600 text-white"
                 }`}
               >
                 {msg.role === "user" ? <User size={16} /> : <Bot size={16} />}
@@ -159,8 +159,8 @@ function ChatContent() {
                 <div
                   className={`p-4 rounded-2xl text-sm leading-relaxed ${
                     msg.role === "user"
-                      ? "bg-slate-900 text-white rounded-tr-none"
-                      : "bg-slate-100 text-slate-800 rounded-tl-none"
+                      ? "bg-brand-600 text-white rounded-tr-none"
+                      : "bg-slate-100 text-brand-500 rounded-tl-none"
                   }`}
                 >
                   {msg.parts[0].text}
@@ -176,7 +176,7 @@ function ChatContent() {
         {isLoading && (
           <div className="flex justify-start">
             <div className="flex gap-3 max-w-[80%]">
-              <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center flex-shrink-0">
+              <div className="w-8 h-8 rounded-lg bg-brand-600 text-white flex items-center justify-center flex-shrink-0">
                 <Bot size={16} />
               </div>
               <div className="p-4 rounded-2xl bg-slate-100 text-slate-500 rounded-tl-none flex items-center gap-2">
@@ -198,12 +198,12 @@ function ChatContent() {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
             placeholder="Type your question here..."
-            className="w-full pl-6 pr-14 py-4 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+            className="w-full pl-6 pr-14 py-4 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
           />
           <button
             onClick={() => handleSend()}
             disabled={!input.trim() || isLoading}
-            className="absolute right-2 top-2 bottom-2 px-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center"
+            className="absolute right-2 top-2 bottom-2 px-4 bg-brand-600 text-white rounded-xl hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center"
           >
             <Send size={18} />
           </button>
@@ -221,7 +221,7 @@ export default function AIChatPage() {
     <DashboardLayout>
       <Suspense fallback={
         <div className="flex flex-col h-[calc(100vh-12rem)] bg-white rounded-3xl border border-slate-100 shadow-xl overflow-hidden items-center justify-center">
-          <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
+          <Loader2 className="w-10 h-10 text-brand-600 animate-spin" />
         </div>
       }>
         <ChatContent />

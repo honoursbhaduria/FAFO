@@ -189,12 +189,12 @@ export default function NewsFeedShell() {
     return (
       <div className="flex flex-col items-center justify-center py-32 gap-4">
         <div className="relative">
-          <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center">
-            <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+          <div className="w-16 h-16 rounded-2xl bg-brand-100 flex items-center justify-center">
+            <Loader2 className="w-8 h-8 text-brand-600 animate-spin" />
           </div>
         </div>
         <div className="text-center">
-          <p className="font-bold text-slate-900">Building your feed...</p>
+          <p className="font-bold text-brand-600">Building your feed...</p>
           <p className="text-sm text-slate-500 mt-1">
             Analyzing your profile and fetching relevant news
           </p>
@@ -211,11 +211,11 @@ export default function NewsFeedShell() {
           <AlertTriangle className="w-8 h-8 text-red-600" />
         </div>
         <div className="text-center">
-          <p className="font-bold text-slate-900">Unable to load feed</p>
+          <p className="font-bold text-brand-600">Unable to load feed</p>
           <p className="text-sm text-slate-500 mt-1">{error}</p>
           <button
             onClick={fetchFeed}
-            className="mt-4 px-6 py-2 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all"
+            className="mt-4 px-6 py-2 bg-brand-600 text-white font-bold rounded-xl hover:bg-brand-700 transition-all"
           >
             Try Again
           </button>
@@ -238,8 +238,8 @@ export default function NewsFeedShell() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center">
+          <h1 className="text-3xl font-black text-brand-600 flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-brand-600 to-indigo-600 rounded-xl flex items-center justify-center">
               <Newspaper size={20} className="text-white" />
             </div>
             Smart Feed
@@ -279,7 +279,7 @@ export default function NewsFeedShell() {
         feed.urgentAlerts.length > 0 &&
         !searchQuery && (
           <section>
-            <h2 className="text-lg font-black text-slate-900 flex items-center gap-2 mb-4">
+            <h2 className="text-lg font-black text-brand-600 flex items-center gap-2 mb-4">
               <AlertTriangle size={18} className="text-red-500" />
               Important Alerts
               <span className="ml-1 px-2 py-0.5 bg-red-100 text-red-600 text-[10px] font-black rounded-md">
@@ -305,7 +305,7 @@ export default function NewsFeedShell() {
         feed.opportunities.length > 0 &&
         !searchQuery && (
           <section>
-            <h2 className="text-lg font-black text-slate-900 flex items-center gap-2 mb-4">
+            <h2 className="text-lg font-black text-brand-600 flex items-center gap-2 mb-4">
               <Sparkles size={18} className="text-emerald-500" />
               Latest Opportunities
               <span className="ml-1 px-2 py-0.5 bg-emerald-100 text-emerald-600 text-[10px] font-black rounded-md">
@@ -328,7 +328,7 @@ export default function NewsFeedShell() {
       {/* Main feed / filtered view */}
       <section>
         {(activeFilter !== "all" || searchQuery) && (
-          <h2 className="text-lg font-black text-slate-900 mb-4">
+          <h2 className="text-lg font-black text-brand-600 mb-4">
             {searchQuery
               ? `Results for "${searchQuery}"`
               : activeFilter === "alerts"
@@ -347,7 +347,7 @@ export default function NewsFeedShell() {
         )}
 
         {activeFilter === "all" && !searchQuery && (
-          <h2 className="text-lg font-black text-slate-900 mb-4">
+          <h2 className="text-lg font-black text-brand-600 mb-4">
             Your Personalized Feed
             <span className="ml-2 text-sm font-bold text-slate-400">
               ({feed?.regularFeed.length ?? 0})

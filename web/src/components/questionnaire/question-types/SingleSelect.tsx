@@ -22,13 +22,13 @@ export default function SingleSelect({ options, value, onChange }: SingleSelectP
           onClick={() => onChange(opt.value)}
           className={`group relative flex items-center gap-4 p-5 rounded-2xl border-2 text-left transition-all duration-200 ${
             value === opt.value
-              ? "border-blue-600 bg-blue-50 shadow-lg shadow-blue-100"
+              ? "border-brand-600 bg-brand-50 shadow-lg shadow-blue-100"
               : "border-slate-100 bg-white hover:border-slate-300 hover:shadow-md"
           }`}
         >
           {opt.icon && <span className="text-2xl shrink-0">{opt.icon}</span>}
           <div className="flex-1 min-w-0">
-            <p className={`font-bold text-sm ${value === opt.value ? "text-blue-700" : "text-slate-900"}`}>
+            <p className={`font-bold text-sm ${value === opt.value ? "text-brand-700" : "text-brand-600"}`}>
               {opt.label}
             </p>
             {opt.description && (
@@ -36,7 +36,7 @@ export default function SingleSelect({ options, value, onChange }: SingleSelectP
             )}
           </div>
           <div className={`w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center transition-all ${
-            value === opt.value ? "border-blue-600 bg-blue-600" : "border-slate-300"
+            value === opt.value ? "border-brand-600 bg-brand-600" : "border-slate-300"
           }`}>
             {value === opt.value && (
               <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>

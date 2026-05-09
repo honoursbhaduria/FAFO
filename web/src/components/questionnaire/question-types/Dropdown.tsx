@@ -30,7 +30,7 @@ export default function Dropdown({ options, value, onChange, placeholder }: Drop
           onChange={(e) => setSearch(e.target.value)}
           placeholder={placeholder || "Search..."}
           autoFocus
-          className="w-full pl-12 pr-4 py-4 bg-white border-2 border-slate-200 rounded-2xl text-base font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all"
+          className="w-full pl-12 pr-4 py-4 bg-white border-2 border-slate-200 rounded-2xl text-base font-medium text-brand-600 placeholder:text-slate-400 focus:outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-600/10 transition-all"
         />
       </div>
       <div className="max-h-72 overflow-y-auto rounded-2xl border border-slate-100 divide-y divide-slate-50">
@@ -41,7 +41,7 @@ export default function Dropdown({ options, value, onChange, placeholder }: Drop
             onClick={() => onChange(opt.value)}
             className={`w-full px-5 py-3.5 text-left font-medium text-sm transition-all ${
               value === opt.value
-                ? "bg-blue-50 text-blue-700 font-bold"
+                ? "bg-brand-50 text-brand-700 font-bold"
                 : "bg-white text-slate-700 hover:bg-slate-50"
             }`}
           >

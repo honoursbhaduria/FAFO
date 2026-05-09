@@ -52,7 +52,7 @@ export default async function SchemeDetailsPage({ params }: { params: Promise<{ 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
           <Link 
             href="/schemes" 
-            className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-blue-600 mb-8 transition-colors"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-brand-600 mb-8 transition-colors"
           >
             <ArrowLeft size={16} />
             Back to Discovery
@@ -66,7 +66,7 @@ export default async function SchemeDetailsPage({ params }: { params: Promise<{ 
               <div className="md:col-span-2 bg-white p-8 rounded-[32px] shadow-sm border border-slate-100">
                 <div className="flex flex-wrap gap-2 mb-6">
                   {(scheme.categories as string[])?.map((cat) => (
-                    <span key={cat} className="px-4 py-1.5 bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-widest rounded-full">
+                    <span key={cat} className="px-4 py-1.5 bg-brand-50 text-brand-600 text-[10px] font-black uppercase tracking-widest rounded-full">
                       {cat}
                     </span>
                   ))}
@@ -75,7 +75,7 @@ export default async function SchemeDetailsPage({ params }: { params: Promise<{ 
                   </span>
                 </div>
                 
-                <h1 className="text-3xl sm:text-5xl font-black text-slate-900 mb-8 leading-[1.1] tracking-tight">
+                <h1 className="text-3xl sm:text-5xl font-black text-brand-600 mb-8 leading-[1.1] tracking-tight">
                   {scheme.scheme_name}
                 </h1>
 
@@ -86,7 +86,7 @@ export default async function SchemeDetailsPage({ params }: { params: Promise<{ 
                     </div>
                     <div>
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Ministry / Department</p>
-                      <p className="text-slate-900 font-bold leading-tight">{data.nodalMinistryName || "N/A"}</p>
+                      <p className="text-brand-600 font-bold leading-tight">{data.nodalMinistryName || "N/A"}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
@@ -95,18 +95,18 @@ export default async function SchemeDetailsPage({ params }: { params: Promise<{ 
                     </div>
                     <div>
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">State / Region</p>
-                      <p className="text-slate-900 font-bold leading-tight">{data.beneficiaryState?.join(", ") || "All India"}</p>
+                      <p className="text-brand-600 font-bold leading-tight">{data.beneficiaryState?.join(", ") || "All India"}</p>
                     </div>
                   </div>
                 </div>
 
                 <div className="prose prose-slate max-w-none">
-                  <h3 className="text-xl font-black text-slate-900 mb-4">Description</h3>
+                  <h3 className="text-xl font-black text-brand-600 mb-4">Description</h3>
                   <p className="text-slate-500 leading-relaxed font-medium">
                     {data.briefDescription || "No detailed description provided."}
                   </p>
                   {wikiExtract && (
-                    <p className="text-slate-500 mt-4 leading-relaxed font-medium border-l-4 border-blue-100 pl-6 py-2 bg-blue-50/30 rounded-r-2xl">
+                    <p className="text-slate-500 mt-4 leading-relaxed font-medium border-l-4 border-brand-100 pl-6 py-2 bg-brand-50/30 rounded-r-2xl">
                       {wikiExtract}
                     </p>
                   )}
@@ -115,7 +115,7 @@ export default async function SchemeDetailsPage({ params }: { params: Promise<{ 
 
               {/* Bento Card: Eligibility */}
               <div className="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100">
-                <h3 className="text-lg font-black text-slate-900 mb-6 flex items-center gap-3">
+                <h3 className="text-lg font-black text-brand-600 mb-6 flex items-center gap-3">
                   <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center">
                     <CheckCircle2 className="text-emerald-500" size={20} />
                   </div>
@@ -143,7 +143,7 @@ export default async function SchemeDetailsPage({ params }: { params: Promise<{ 
 
               {/* Bento Card: Benefits */}
               <div className="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100">
-                <h3 className="text-lg font-black text-slate-900 mb-6 flex items-center gap-3">
+                <h3 className="text-lg font-black text-brand-600 mb-6 flex items-center gap-3">
                   <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center">
                     <Zap className="text-amber-500" size={20} />
                   </div>
@@ -157,9 +157,9 @@ export default async function SchemeDetailsPage({ params }: { params: Promise<{ 
               {/* Bento Card: Process (Wide) */}
               {data.application && (
                 <div className="md:col-span-2 bg-white p-8 rounded-[32px] shadow-sm border border-slate-100">
-                  <h3 className="text-lg font-black text-slate-900 mb-6 flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
-                      <FileText className="text-blue-500" size={20} />
+                  <h3 className="text-lg font-black text-brand-600 mb-6 flex items-center gap-3">
+                    <div className="w-10 h-10 bg-brand-50 rounded-xl flex items-center justify-center">
+                      <FileText className="text-brand-500" size={20} />
                     </div>
                     Application Process
                   </h3>
@@ -168,7 +168,7 @@ export default async function SchemeDetailsPage({ params }: { params: Promise<{ 
                       {data.application}
                     </p>
                     <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                      <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-4">Required Documents</h4>
+                      <h4 className="text-xs font-black text-brand-600 uppercase tracking-widest mb-4">Required Documents</h4>
                       <div className="text-slate-500 text-sm font-medium leading-relaxed">
                         {data.documents || "Please keep your Aadhaar, PAN, and Business Registration certificates ready."}
                       </div>

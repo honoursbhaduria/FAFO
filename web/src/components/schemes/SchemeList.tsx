@@ -74,8 +74,8 @@ export default function SchemeList() {
       <aside className="w-full lg:w-80 shrink-0">
         <div className="bg-white p-6 rounded-3xl border border-slate-200/60 shadow-sm lg:sticky lg:top-32">
           <div className="flex items-center justify-between mb-8">
-            <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
-              <Filter className="w-5 h-5 text-blue-600" />
+            <h3 className="text-lg font-black text-brand-600 flex items-center gap-2">
+              <Filter className="w-5 h-5 text-brand-600" />
               Refine Discovery
             </h3>
             {category && (
@@ -89,7 +89,7 @@ export default function SchemeList() {
                   setPage(1);
                   fetchSchemes(1);
                 }}
-                className="text-[10px] font-black text-blue-600 uppercase hover:underline"
+                className="text-[10px] font-black text-brand-600 uppercase hover:underline"
               >
                 Clear
               </button>
@@ -118,8 +118,8 @@ export default function SchemeList() {
                 }}
                 className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-between group ${
                   category === cat 
-                    ? "bg-slate-900 text-white shadow-xl shadow-slate-200" 
-                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                    ? "bg-brand-600 text-white shadow-xl shadow-brand-100" 
+                    : "text-slate-500 hover:bg-slate-50 hover:text-brand-600"
                 }`}
               >
                 <span className="truncate mr-2">{cat}</span>
@@ -132,7 +132,7 @@ export default function SchemeList() {
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Target Region</p>
             <div className="relative">
               <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <select className="w-full bg-slate-50 border-none rounded-xl pl-11 pr-4 py-3.5 text-sm font-bold text-slate-900 outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-600 appearance-none">
+              <select className="w-full bg-slate-50 border-none rounded-xl pl-11 pr-4 py-3.5 text-sm font-bold text-brand-600 outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-600 appearance-none">
                 <option>All of India</option>
                 <option>Uttar Pradesh</option>
                 <option>Maharashtra</option>
@@ -147,14 +147,14 @@ export default function SchemeList() {
       {/* Main Content */}
       <div className="flex-1 space-y-8">
         <div className="relative group">
-          <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-slate-300 group-focus-within:text-blue-600 transition-colors" />
+          <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-slate-300 group-focus-within:text-brand-600 transition-colors" />
           <form onSubmit={handleSearch}>
             <input
               type="text"
               placeholder="Search by scheme name, ministry, or benefits..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full pl-16 pr-6 py-6 bg-white border border-slate-200/60 rounded-3xl shadow-sm text-lg font-medium placeholder:text-slate-300 focus:ring-4 focus:ring-blue-600/5 focus:border-blue-600 outline-none transition-all"
+              className="w-full pl-16 pr-6 py-6 bg-white border border-slate-200/60 rounded-3xl shadow-sm text-lg font-medium placeholder:text-slate-300 focus:ring-4 focus:ring-brand-600/5 focus:border-brand-600 outline-none transition-all"
             />
           </form>
         </div>
@@ -187,7 +187,7 @@ export default function SchemeList() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.05 }}
-                    className="group bg-white rounded-[32px] border border-slate-200/60 shadow-sm hover:shadow-2xl hover:shadow-slate-200/60 hover:-translate-y-1.5 transition-all duration-500 overflow-hidden flex flex-col"
+                    className="group bg-white rounded-[32px] border border-slate-200/60 shadow-sm hover:shadow-2xl hover:shadow-brand-100/60 hover:-translate-y-1.5 transition-all duration-500 overflow-hidden flex flex-col"
                   >
                     {/* Card Header with Image */}
                     <div className="relative h-48 overflow-hidden">
@@ -198,7 +198,7 @@ export default function SchemeList() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
                       <div className="absolute top-4 left-4 flex gap-2">
-                        <span className="px-3 py-1 rounded-full bg-white/90 backdrop-blur-md text-[10px] font-black uppercase tracking-wider text-slate-900 shadow-sm">
+                        <span className="px-3 py-1 rounded-full bg-white/90 backdrop-blur-md text-[10px] font-black uppercase tracking-wider text-brand-600 shadow-sm">
                           {scheme.raw_data?.fields?.level || "Central"}
                         </span>
                       </div>
@@ -232,7 +232,7 @@ export default function SchemeList() {
                         <div className="flex gap-2">
                           <Link 
                             href={`/schemes/${scheme.api_id}`}
-                            className="flex-1 bg-slate-900 text-white text-center py-3.5 rounded-2xl font-bold text-sm hover:bg-blue-600 transition-all active:scale-[0.98]"
+                            className="flex-1 bg-brand-600 text-white text-center py-3.5 rounded-2xl font-bold text-sm hover:bg-brand-600 transition-all active:scale-[0.98]"
                           >
                             Check Eligibility
                           </Link>
@@ -255,7 +255,7 @@ export default function SchemeList() {
               <div className="w-24 h-24 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto mb-6 text-slate-300">
                 <Search size={48} />
               </div>
-              <h3 className="text-2xl font-black text-slate-900 mb-2">No matching schemes found</h3>
+              <h3 className="text-2xl font-black text-brand-600 mb-2">No matching schemes found</h3>
               <p className="text-slate-500 max-w-xs mx-auto">Try adjusting your filters or search query to find relevant results.</p>
             </motion.div>
           )}
@@ -267,7 +267,7 @@ export default function SchemeList() {
             <button 
               onClick={() => handlePageChange(page - 1)}
               disabled={page === 1}
-              className="p-3 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-slate-900 hover:border-slate-900 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+              className="p-3 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-brand-600 hover:border-brand-600 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <ChevronLeft size={20} />
             </button>
@@ -281,8 +281,8 @@ export default function SchemeList() {
                     onClick={() => handlePageChange(p)}
                     className={`w-12 h-12 rounded-2xl font-bold text-sm transition-all ${
                       p === page 
-                        ? 'bg-slate-900 text-white shadow-xl shadow-slate-200' 
-                        : 'bg-white text-slate-500 border border-slate-200 hover:border-slate-900 hover:text-slate-900'
+                        ? 'bg-brand-600 text-white shadow-xl shadow-brand-100' 
+                        : 'bg-white text-slate-500 border border-slate-200 hover:border-brand-600 hover:text-brand-600'
                     }`}
                   >
                     {p}
@@ -293,7 +293,7 @@ export default function SchemeList() {
             <button 
               onClick={() => handlePageChange(page + 1)}
               disabled={page === pagination.totalPages}
-              className="p-3 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-slate-900 hover:border-slate-900 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+              className="p-3 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-brand-600 hover:border-brand-600 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <ChevronRight size={20} />
             </button>

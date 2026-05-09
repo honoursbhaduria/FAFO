@@ -61,8 +61,8 @@ export default function BookmarksPage() {
       <div className="space-y-8">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-black text-slate-900 flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center">
+          <h1 className="text-3xl font-black text-brand-600 flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-brand-600 to-indigo-600 rounded-xl flex items-center justify-center">
               <Bookmark size={20} className="text-white" />
             </div>
             Bookmarks
@@ -74,7 +74,7 @@ export default function BookmarksPage() {
 
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-32 gap-4">
-            <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+            <Loader2 className="w-8 h-8 text-brand-600 animate-spin" />
             <p className="font-bold text-slate-600">Loading bookmarks...</p>
           </div>
         ) : bookmarks.length === 0 ? (

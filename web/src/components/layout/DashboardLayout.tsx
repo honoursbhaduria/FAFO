@@ -33,11 +33,11 @@ const SidebarItem = ({ href, icon: Icon, label, active, onClick }: SidebarItemPr
     onClick={onClick}
     className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
       active
-        ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
-        : "text-slate-600 hover:bg-slate-100 hover:text-blue-600"
+        ? "bg-brand-600 text-white shadow-lg shadow-brand-100"
+        : "text-slate-600 hover:bg-slate-100 hover:text-brand-600"
     }`}
   >
-    <Icon size={20} className={active ? "text-white" : "text-slate-500 group-hover:text-blue-600"} />
+    <Icon size={20} className={active ? "text-white" : "text-slate-500 group-hover:text-brand-600"} />
     <span className="font-medium">{label}</span>
     {active && <ChevronRight size={16} className="ml-auto" />}
   </Link>
@@ -98,10 +98,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       >
         <div className="h-full flex flex-col p-6">
           <div className="flex items-center gap-3 mb-10 px-2">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center">
               <span className="text-white font-bold text-xl">O</span>
             </div>
-            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
+            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-brand-600 to-indigo-600">
               OneClickSathi
             </span>
           </div>
@@ -120,11 +120,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="mt-auto space-y-4">
             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold uppercase">
+                <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 font-bold uppercase">
                   {user?.name ? user.name.substring(0, 2) : "JD"}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-900 truncate">
+                  <p className="text-sm font-semibold text-brand-600 truncate">
                     {user?.name || "John Doe"}
                   </p>
                   <p className="text-xs text-slate-500 truncate">
@@ -157,13 +157,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </button>
 
           <div className="flex-1 lg:ml-0 ml-4">
-            <h1 className="text-lg font-semibold text-slate-900">
+            <h1 className="text-lg font-semibold text-brand-600">
               {menuItems.find((item) => item.href === pathname)?.label || "Dashboard"}
             </h1>
           </div>
 
           <div className="flex items-center gap-4">
-            <button className="p-2 text-slate-500 hover:text-blue-600 hover:bg-slate-100 rounded-lg transition-colors">
+            <button className="p-2 text-slate-500 hover:text-brand-600 hover:bg-slate-100 rounded-lg transition-colors">
               <User size={20} />
             </button>
           </div>

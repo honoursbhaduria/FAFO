@@ -9,7 +9,7 @@ export default function Hero() {
     <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden bg-slate-50/50">
       {/* Dynamic Background Elements */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10 pointer-events-none">
-        <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-blue-400/10 rounded-full blur-[120px]" />
+        <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-brand-500/10 rounded-full blur-[120px]" />
         <div className="absolute bottom-[10%] left-[-5%] w-[500px] h-[500px] bg-indigo-400/10 rounded-full blur-[100px]" />
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
       </div>
@@ -22,10 +22,10 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-100 mb-8"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-50 border border-brand-100 mb-8"
             >
-              <span className="flex h-2 w-2 rounded-full bg-blue-600 animate-pulse" />
-              <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">
+              <span className="flex h-2 w-2 rounded-full bg-brand-600 animate-pulse" />
+              <span className="text-[10px] font-black text-brand-600 uppercase tracking-widest">
                 Trusted by 28,000+ MSMEs across India
               </span>
             </motion.div>
@@ -34,10 +34,10 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-5xl lg:text-7xl font-black tracking-tight text-slate-900 mb-8 leading-[1.05]"
+              className="text-5xl lg:text-7xl font-black tracking-tight text-brand-600 mb-8 leading-[1.05]"
             >
               Fuel Your <br />
-              <span className="text-blue-600">Business Dream</span> <br />
+              <span className="text-brand-600">Business Dream</span> <br />
               with OneClick.
             </motion.h1>
             
@@ -58,14 +58,14 @@ export default function Hero() {
             >
               <Link 
                 href="/dashboard" 
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-5 bg-slate-900 text-white rounded-2xl font-bold text-lg hover:bg-blue-600 transition-all shadow-2xl shadow-slate-900/10 active:scale-95 group"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-5 bg-brand-600 text-white rounded-2xl font-bold text-lg hover:bg-brand-600 transition-all shadow-2xl shadow-brand-600/10 active:scale-95 group"
               >
                 Access Your Dashboard
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link 
                 href="/schemes"
-                className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-5 text-slate-600 font-bold text-lg hover:text-slate-900 transition-colors group"
+                className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-5 text-slate-600 font-bold text-lg hover:text-brand-600 transition-colors group"
               >
                 <div className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center group-hover:bg-white group-hover:shadow-md transition-all">
                   <Play className="w-4 h-4 fill-current ml-1" />
@@ -102,13 +102,13 @@ export default function Hero() {
             transition={{ duration: 0.8 }}
             className="flex-1 relative"
           >
-            <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl shadow-slate-200 border-8 border-white">
+            <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl shadow-brand-100 border-8 border-white">
               <img 
                 src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1200&q=80" 
                 alt="Business workspace"
                 className="w-full h-auto object-cover aspect-[4/3]"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-600/20 to-transparent" />
             </div>
 
             {/* Floating Card */}
@@ -119,12 +119,12 @@ export default function Hero() {
               className="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-2xl border border-slate-100 z-20 max-w-[240px]"
             >
               <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white">
+                <div className="w-12 h-12 rounded-full bg-brand-600 flex items-center justify-center text-white">
                   <Zap className="w-6 h-6 fill-current" />
                 </div>
                 <div>
                   <p className="text-xs text-slate-400 font-bold uppercase">AI Expert</p>
-                  <p className="text-sm font-black text-slate-900">Analysis Ready</p>
+                  <p className="text-sm font-black text-brand-600">Analysis Ready</p>
                 </div>
               </div>
               <p className="text-xs text-slate-500 leading-relaxed">
@@ -133,7 +133,7 @@ export default function Hero() {
             </motion.div>
 
             {/* Decorative Background for Image */}
-            <div className="absolute -top-12 -right-12 w-64 h-64 bg-blue-100 rounded-full -z-10 blur-3xl opacity-50" />
+            <div className="absolute -top-12 -right-12 w-64 h-64 bg-brand-100 rounded-full -z-10 blur-3xl opacity-50" />
           </motion.div>
         </div>
 
@@ -143,11 +143,11 @@ export default function Hero() {
             Government Partners & Initiatives
           </p>
           <div className="flex flex-wrap justify-center items-center gap-12 lg:gap-20 opacity-40 grayscale hover:grayscale-0 transition-all duration-500">
-            <span className="text-xl font-black text-slate-900">Ministry of MSME</span>
-            <span className="text-xl font-black text-slate-900">Startup India</span>
-            <span className="text-xl font-black text-slate-900">Digital India</span>
-            <span className="text-xl font-black text-slate-900">Udyam</span>
-            <span className="text-xl font-black text-slate-900">SIDBI</span>
+            <span className="text-xl font-black text-brand-600">Ministry of MSME</span>
+            <span className="text-xl font-black text-brand-600">Startup India</span>
+            <span className="text-xl font-black text-brand-600">Digital India</span>
+            <span className="text-xl font-black text-brand-600">Udyam</span>
+            <span className="text-xl font-black text-brand-600">SIDBI</span>
           </div>
         </div>
       </div>

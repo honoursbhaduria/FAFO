@@ -71,7 +71,7 @@ export default function SchemeSidebar({ schemeName, externalUrl, apiId }: Scheme
         <div className="space-y-4">
           <button 
             onClick={handleApplyClick}
-            className="w-full py-5 bg-slate-900 text-white font-bold rounded-2xl hover:bg-blue-600 shadow-2xl shadow-slate-900/10 flex items-center justify-center gap-3 group transition-all active:scale-95"
+            className="w-full py-5 bg-brand-600 text-white font-bold rounded-2xl hover:bg-brand-600 shadow-2xl shadow-brand-600/10 flex items-center justify-center gap-3 group transition-all active:scale-95"
           >
             {externalUrl ? "Apply Now" : "Apply via MyScheme"}
             <ExternalLink size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
@@ -82,7 +82,7 @@ export default function SchemeSidebar({ schemeName, externalUrl, apiId }: Scheme
               onClick={handleSave}
               className={`flex items-center justify-center gap-2 py-4 border rounded-2xl font-bold text-sm transition-all ${
                 isSaved 
-                  ? "bg-blue-50 border-blue-200 text-blue-600" 
+                  ? "bg-brand-50 border-blue-200 text-brand-600" 
                   : "border-slate-200 text-slate-600 hover:bg-slate-50"
               }`}
             >
@@ -98,7 +98,7 @@ export default function SchemeSidebar({ schemeName, externalUrl, apiId }: Scheme
                 Share
               </button>
               {showCopyTooltip && (
-                <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1 bg-slate-900 text-white text-[10px] font-bold rounded-full whitespace-nowrap">
+                <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1 bg-brand-600 text-white text-[10px] font-bold rounded-full whitespace-nowrap">
                   Link Copied!
                 </div>
               )}
@@ -117,18 +117,18 @@ export default function SchemeSidebar({ schemeName, externalUrl, apiId }: Scheme
         </div>
       </div>
 
-      <div className="bg-gradient-to-br from-indigo-600 via-blue-700 to-blue-600 p-8 rounded-[32px] shadow-2xl shadow-blue-500/20 text-white relative overflow-hidden group">
+      <div className="bg-gradient-to-br from-indigo-600 via-brand-700 to-brand-600 p-8 rounded-[32px] shadow-2xl shadow-brand-500/20 text-white relative overflow-hidden group">
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-4">
             <Sparkles className="text-white/80" size={24} />
             <h4 className="font-black uppercase tracking-widest text-sm">AI Quick Insight</h4>
           </div>
-          <p className="text-blue-100 leading-relaxed mb-8 font-medium italic">
+          <p className="text-brand-100 leading-relaxed mb-8 font-medium italic">
             "This scheme is highly recommended for startups in their first 2 years. Ensure your GST registration is active before applying."
           </p>
           <Link 
             href={`/ai?q=${encodeURIComponent(schemeName)}`} 
-            className="inline-flex items-center gap-3 px-6 py-3 bg-white text-blue-700 font-bold rounded-xl hover:bg-blue-50 transition-all shadow-lg text-sm"
+            className="inline-flex items-center gap-3 px-6 py-3 bg-white text-brand-700 font-bold rounded-xl hover:bg-brand-50 transition-all shadow-lg text-sm"
           >
             ASK AI MORE
           </Link>

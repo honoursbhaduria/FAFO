@@ -13,16 +13,16 @@ export default function SchemeCard({ scheme, rank }: SchemeCardProps) {
   return (
     <div className="group bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-blue-200 transition-all duration-300 overflow-hidden">
       {/* Top accent */}
-      <div className="h-1 bg-gradient-to-r from-blue-600 to-indigo-600" />
+      <div className="h-1 bg-gradient-to-r from-brand-600 to-indigo-600" />
 
       <div className="p-6">
         {/* Header */}
         <div className="flex items-start gap-4 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 font-black text-sm shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center text-brand-600 font-black text-sm shrink-0">
             #{rank}
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-slate-900 leading-snug group-hover:text-blue-600 transition-colors">
+            <h3 className="font-bold text-brand-600 leading-snug group-hover:text-brand-600 transition-colors">
               {scheme.scheme_name}
             </h3>
             {scheme.ministry && (
@@ -62,13 +62,13 @@ export default function SchemeCard({ scheme, rank }: SchemeCardProps) {
 
         {/* CTA */}
         <div className="flex items-center justify-between pt-3 border-t border-slate-50">
-          <div className="flex items-center gap-1 text-xs font-bold text-blue-600">
-            <div className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+          <div className="flex items-center gap-1 text-xs font-bold text-brand-600">
+            <div className="w-1.5 h-1.5 rounded-full bg-brand-600" />
             Score: {scheme.relevanceScore}
           </div>
           <Link
             href={`/schemes/${scheme.api_id}`}
-            className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 transition-all"
+            className="flex items-center gap-1.5 px-4 py-2 bg-brand-600 text-white text-xs font-bold rounded-lg hover:bg-brand-700 transition-all"
           >
             View Details
             <ChevronRight size={14} />

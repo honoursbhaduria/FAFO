@@ -9,8 +9,8 @@ import { motion, AnimatePresence } from "framer-motion";
 const Logo = () => (
   <div className="flex items-center gap-3 group">
     <div className="relative">
-      <div className="absolute inset-0 bg-blue-600 blur-xl opacity-20 group-hover:opacity-40 transition-opacity" />
-      <div className="relative bg-slate-900 p-2.5 rounded-2xl group-hover:rotate-6 transition-transform duration-500 shadow-xl shadow-slate-900/20">
+      <div className="absolute inset-0 bg-brand-600 blur-xl opacity-20 group-hover:opacity-40 transition-opacity" />
+      <div className="relative bg-brand-600 p-2.5 rounded-2xl group-hover:rotate-6 transition-transform duration-500 shadow-xl shadow-brand-600/20">
         <svg
           width="24"
           height="24"
@@ -29,8 +29,8 @@ const Logo = () => (
         </svg>
       </div>
     </div>
-    <span className="text-2xl font-black tracking-tight text-slate-900">
-      OneClick<span className="text-blue-600">Sathi</span>
+    <span className="text-2xl font-black tracking-tight text-brand-600">
+      OneClick<span className="text-brand-600">Sathi</span>
     </span>
   </div>
 );
@@ -97,7 +97,7 @@ function LoginForm() {
               exit={{ opacity: 0, x: 20 }}
               transition={{ duration: 0.3 }}
             >
-              <h1 className="text-4xl font-black text-slate-900 mb-3 tracking-tight">
+              <h1 className="text-4xl font-black text-brand-600 mb-3 tracking-tight">
                 {isLogin ? "Welcome Back" : "Create Account"}
               </h1>
               <p className="text-slate-500 font-medium mb-10 leading-relaxed">
@@ -118,14 +118,14 @@ function LoginForm() {
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
                     <div className="relative group">
-                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-blue-600 transition-colors" />
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-brand-600 transition-colors" />
                       <input
                         type="text"
                         required
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Arjun Sharma"
-                        className="w-full pl-12 pr-4 py-4 bg-slate-50/50 border border-slate-100 rounded-2xl focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 outline-none transition-all font-medium text-slate-900 placeholder:text-slate-300"
+                        className="w-full pl-12 pr-4 py-4 bg-slate-50/50 border border-slate-100 rounded-2xl focus:bg-white focus:border-brand-600 focus:ring-4 focus:ring-brand-600/5 outline-none transition-all font-medium text-brand-600 placeholder:text-slate-300"
                       />
                     </div>
                   </div>
@@ -134,14 +134,14 @@ function LoginForm() {
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
                   <div className="relative group">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-blue-600 transition-colors" />
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-brand-600 transition-colors" />
                     <input
                       type="email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="arjun@business.com"
-                      className="w-full pl-12 pr-4 py-4 bg-slate-50/50 border border-slate-100 rounded-2xl focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 outline-none transition-all font-medium text-slate-900 placeholder:text-slate-300"
+                      className="w-full pl-12 pr-4 py-4 bg-slate-50/50 border border-slate-100 rounded-2xl focus:bg-white focus:border-brand-600 focus:ring-4 focus:ring-brand-600/5 outline-none transition-all font-medium text-brand-600 placeholder:text-slate-300"
                     />
                   </div>
                 </div>
@@ -150,20 +150,20 @@ function LoginForm() {
                   <div className="flex justify-between items-center ml-1">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Password</label>
                     {isLogin && (
-                      <button type="button" className="text-[10px] font-black text-blue-600 uppercase tracking-tight hover:underline">
+                      <button type="button" className="text-[10px] font-black text-brand-600 uppercase tracking-tight hover:underline">
                         Forgot Password?
                       </button>
                     )}
                   </div>
                   <div className="relative group">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-blue-600 transition-colors" />
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 group-focus-within:text-brand-600 transition-colors" />
                     <input
                       type="password"
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full pl-12 pr-4 py-4 bg-slate-50/50 border border-slate-100 rounded-2xl focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 outline-none transition-all font-medium text-slate-900 placeholder:text-slate-300"
+                      className="w-full pl-12 pr-4 py-4 bg-slate-50/50 border border-slate-100 rounded-2xl focus:bg-white focus:border-brand-600 focus:ring-4 focus:ring-brand-600/5 outline-none transition-all font-medium text-brand-600 placeholder:text-slate-300"
                     />
                   </div>
                 </div>
@@ -171,7 +171,7 @@ function LoginForm() {
                 <button 
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-5 bg-slate-900 text-white font-black rounded-2xl hover:bg-blue-600 shadow-xl shadow-slate-900/10 flex items-center justify-center gap-2 group transition-all active:scale-[0.98] mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-5 bg-brand-600 text-white font-black rounded-2xl hover:bg-brand-600 shadow-xl shadow-brand-600/10 flex items-center justify-center gap-2 group transition-all active:scale-[0.98] mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isLoading ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
@@ -215,7 +215,7 @@ function LoginForm() {
                 setIsLogin(!isLogin);
                 setError("");
               }}
-              className="text-blue-600 font-black hover:underline ml-1"
+              className="text-brand-600 font-black hover:underline ml-1"
             >
               {isLogin ? "Sign up for free" : "Log in here"}
             </button>
@@ -232,8 +232,8 @@ function LoginForm() {
       </div>
 
       {/* Right Side: Image / Branding */}
-      <div className="hidden lg:block lg:w-1/2 relative bg-slate-900 overflow-hidden">
-        <div className="absolute inset-0 z-10 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent" />
+      <div className="hidden lg:block lg:w-1/2 relative bg-brand-600 overflow-hidden">
+        <div className="absolute inset-0 z-10 bg-gradient-to-t from-brand-600 via-brand-600/20 to-transparent" />
         <img 
           src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=2000" 
           alt="Modern office" 
@@ -248,13 +248,13 @@ function LoginForm() {
           >
             <div className="flex gap-1.5 mb-6">
               {[...Array(5)].map((_, i) => (
-                <div key={i} className="w-12 h-1.5 rounded-full bg-blue-600/30 overflow-hidden">
-                  {i === 0 && <div className="h-full bg-blue-500 w-full animate-[progress_3s_ease-in-out_infinite]" />}
+                <div key={i} className="w-12 h-1.5 rounded-full bg-brand-600/30 overflow-hidden">
+                  {i === 0 && <div className="h-full bg-brand-500 w-full animate-[progress_3s_ease-in-out_infinite]" />}
                 </div>
               ))}
             </div>
             <h2 className="text-5xl font-black text-white mb-6 leading-tight">
-              Fueling the next generation of <span className="text-blue-500">Indian Enterprise.</span>
+              Fueling the next generation of <span className="text-brand-500">Indian Enterprise.</span>
             </h2>
             <div className="space-y-4">
               {[
@@ -263,8 +263,8 @@ function LoginForm() {
                 "Secure document vault with bank-grade encryption"
               ].map((text, i) => (
                 <div key={i} className="flex items-center gap-3 text-slate-300">
-                  <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-blue-500" />
+                  <div className="w-5 h-5 rounded-full bg-brand-500/20 flex items-center justify-center">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-brand-500" />
                   </div>
                   <span className="font-bold text-sm tracking-wide">{text}</span>
                 </div>
@@ -274,7 +274,7 @@ function LoginForm() {
         </div>
 
         {/* Floating Decorative Elements */}
-        <div className="absolute top-20 right-20 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-20 right-20 w-32 h-32 bg-brand-500/10 rounded-full blur-3xl" />
         <div className="absolute bottom-40 right-[-5%] w-64 h-64 bg-indigo-500/10 rounded-full blur-[100px]" />
       </div>
     </div>
@@ -285,7 +285,7 @@ export default function LoginPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
+        <Loader2 className="w-10 h-10 text-brand-600 animate-spin" />
       </div>
     }>
       <LoginForm />

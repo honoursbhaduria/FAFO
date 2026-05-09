@@ -19,7 +19,7 @@ const categoryColors: Record<string, { bg: string; text: string; border: string 
   "Women & Child": { bg: "bg-pink-50", text: "text-pink-700", border: "border-pink-200" },
   "Housing": { bg: "bg-cyan-50", text: "text-cyan-700", border: "border-cyan-200" },
   "Employment": { bg: "bg-indigo-50", text: "text-indigo-700", border: "border-indigo-200" },
-  "Digital India": { bg: "bg-blue-50", text: "text-blue-700", border: "border-blue-200" },
+  "Digital India": { bg: "bg-brand-50", text: "text-brand-700", border: "border-blue-200" },
   "Infrastructure": { bg: "bg-slate-100", text: "text-slate-700", border: "border-slate-200" },
   "MSME": { bg: "bg-orange-50", text: "text-orange-700", border: "border-orange-200" },
   "Energy": { bg: "bg-yellow-50", text: "text-yellow-700", border: "border-yellow-200" },
@@ -59,7 +59,7 @@ export function SchemeCard({ scheme }: { scheme: Scheme }) {
               <Landmark className={`w-4 h-4 ${style.text}`} />
             </div>
             <div className="min-w-0 flex-1">
-              <h4 className="text-sm font-bold text-slate-900 leading-tight truncate">
+              <h4 className="text-sm font-bold text-brand-600 leading-tight truncate">
                 {scheme.title}
               </h4>
               <div className="flex items-center gap-2 mt-1.5">
@@ -104,7 +104,7 @@ export function SchemeCard({ scheme }: { scheme: Scheme }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-xs font-semibold hover:bg-blue-100 transition-colors"
+                className="inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 bg-brand-50 text-brand-600 rounded-lg text-xs font-semibold hover:bg-brand-100 transition-colors"
               >
                 <ExternalLink className="w-3 h-3" />
                 Read more on Wikipedia

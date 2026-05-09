@@ -31,14 +31,14 @@ function MiniSchemeCard({ scheme }: { scheme: Scheme }) {
       <div className="p-2.5">
         <div className="flex items-center justify-between gap-1.5">
           <div className="flex items-center gap-2 min-w-0 flex-1">
-            <Landmark className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />
-            <span className="text-[11px] font-bold text-slate-800 truncate">{scheme.title}</span>
+            <Landmark className="w-3.5 h-3.5 text-brand-600 flex-shrink-0" />
+            <span className="text-[11px] font-bold text-brand-500 truncate">{scheme.title}</span>
           </div>
           <motion.div animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
             <ChevronDown className="w-3 h-3 text-slate-400" />
           </motion.div>
         </div>
-        <span className="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider bg-blue-50 text-blue-600">
+        <span className="inline-flex items-center gap-1 mt-1 px-1.5 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider bg-brand-50 text-brand-600">
           <Tag className="w-2 h-2" />
           {scheme.category}
         </span>
@@ -59,7 +59,7 @@ function MiniSchemeCard({ scheme }: { scheme: Scheme }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="inline-flex items-center gap-1 mt-1.5 text-[10px] font-semibold text-blue-600 hover:text-blue-700"
+                className="inline-flex items-center gap-1 mt-1.5 text-[10px] font-semibold text-brand-600 hover:text-brand-700"
               >
                 <ExternalLink className="w-2.5 h-2.5" />
                 Wikipedia
@@ -133,9 +133,9 @@ export default function SathiBot() {
             className="absolute bottom-20 right-0 w-[380px] h-[560px] bg-white rounded-[32px] shadow-2xl border border-slate-200 overflow-hidden flex flex-col"
           >
             {/* Header */}
-            <div className="bg-slate-900 p-6 text-white flex items-center justify-between">
+            <div className="bg-brand-600 p-6 text-white flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center">
                   <Bot className="w-6 h-6" />
                 </div>
                 <div>
@@ -164,7 +164,7 @@ export default function SathiBot() {
                   <div className={`max-w-[85%] flex flex-col`}>
                     <div className={`p-3.5 rounded-2xl text-sm font-medium leading-relaxed ${
                       msg.role === "user" 
-                        ? "bg-blue-600 text-white rounded-tr-none shadow-lg shadow-blue-200" 
+                        ? "bg-brand-600 text-white rounded-tr-none shadow-lg shadow-brand-100" 
                         : "bg-white text-slate-700 border border-slate-200 rounded-tl-none"
                     }`}>
                       {msg.content}
@@ -204,18 +204,18 @@ export default function SathiBot() {
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSend()}
                   placeholder="Ask about schemes, GST, or CA..."
-                  className="w-full pl-4 pr-12 py-3.5 bg-slate-100 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-blue-600 outline-none transition-all"
+                  className="w-full pl-4 pr-12 py-3.5 bg-slate-100 border-none rounded-2xl text-sm font-medium focus:ring-2 focus:ring-brand-600 outline-none transition-all"
                 />
                 <button 
                   onClick={handleSend}
                   disabled={!input.trim() || isLoading}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-slate-900 text-white rounded-xl hover:bg-blue-600 disabled:opacity-50 transition-colors"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-brand-600 text-white rounded-xl hover:bg-brand-600 disabled:opacity-50 transition-colors"
                 >
                   <Send className="w-4 h-4" />
                 </button>
               </div>
               <p className="text-[10px] text-center text-slate-400 mt-3 font-bold uppercase tracking-widest flex items-center justify-center gap-1.5">
-                <Sparkles className="w-3 h-3 text-blue-600" />
+                <Sparkles className="w-3 h-3 text-brand-600" />
                 Powered by OneClick AI
               </p>
             </div>
@@ -227,9 +227,9 @@ export default function SathiBot() {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-16 h-16 bg-slate-900 text-white rounded-2xl shadow-2xl flex items-center justify-center hover:bg-blue-600 transition-colors relative group"
+        className="w-16 h-16 bg-brand-600 text-white rounded-2xl shadow-2xl flex items-center justify-center hover:bg-brand-600 transition-colors relative group"
       >
-        <div className="absolute inset-0 bg-blue-600 rounded-2xl blur-xl opacity-0 group-hover:opacity-40 transition-opacity" />
+        <div className="absolute inset-0 bg-brand-600 rounded-2xl blur-xl opacity-0 group-hover:opacity-40 transition-opacity" />
         <div className="relative">
           {isOpen ? <X className="w-8 h-8" /> : <MessageCircle className="w-8 h-8 fill-current" />}
         </div>

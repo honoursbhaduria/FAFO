@@ -50,7 +50,7 @@ export default function FilterBar({
               onClick={() => onFilterChange(f.key)}
               className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
                 activeFilter === f.key
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-200"
+                  ? "bg-brand-600 text-white shadow-md shadow-brand-100"
                   : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:border-slate-300"
               }`}
             >
@@ -78,7 +78,7 @@ export default function FilterBar({
           id="sort-select"
           value={activeSort}
           onChange={(e) => onSortChange(e.target.value as FeedSort)}
-          className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:border-blue-500 cursor-pointer"
+          className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:border-brand-500 cursor-pointer"
         >
           {sorts.map((s) => (
             <option key={s.key} value={s.key}>

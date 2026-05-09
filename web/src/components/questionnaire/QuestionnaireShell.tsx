@@ -94,8 +94,8 @@ export default function QuestionnaireShell() {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center space-y-4">
-          <Loader2 className="w-10 h-10 text-blue-600 animate-spin mx-auto" />
-          <p className="font-bold text-slate-900">Analyzing your database...</p>
+          <Loader2 className="w-10 h-10 text-brand-600 animate-spin mx-auto" />
+          <p className="font-bold text-brand-600">Analyzing your database...</p>
           <p className="text-sm text-slate-500">Building a personalized questionnaire</p>
         </div>
       </div>
@@ -115,7 +115,7 @@ export default function QuestionnaireShell() {
       {/* Progress bar */}
       <div className="fixed top-0 left-0 right-0 z-50 h-1.5 bg-slate-200">
         <motion.div
-          className="h-full bg-gradient-to-r from-blue-600 to-indigo-600"
+          className="h-full bg-gradient-to-r from-brand-600 to-indigo-600"
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.4, ease: "easeOut" }}
         />
@@ -125,10 +125,10 @@ export default function QuestionnaireShell() {
       <header className="pt-8 px-6">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">O</span>
             </div>
-            <span className="font-bold text-slate-900">OneClickSathi</span>
+            <span className="font-bold text-brand-600">OneClickSathi</span>
           </div>
           <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
             <ShieldCheck size={14} className="text-emerald-500" />
@@ -151,7 +151,7 @@ export default function QuestionnaireShell() {
             >
               {/* Question number */}
               <div className="flex items-center gap-3">
-                <span className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-black rounded-full">
+                <span className="px-3 py-1 bg-brand-100 text-brand-700 text-xs font-black rounded-full">
                   {currentIdx + 1} / {totalSteps}
                 </span>
                 {current.category === "sector_branch" && (
@@ -164,7 +164,7 @@ export default function QuestionnaireShell() {
 
               {/* Question text */}
               <div>
-                <h2 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight">
+                <h2 className="text-2xl sm:text-3xl font-black text-brand-600 leading-tight">
                   {current.questionText}
                 </h2>
                 {current.subtitle && (
@@ -204,7 +204,7 @@ export default function QuestionnaireShell() {
                       ? "bg-slate-200 text-slate-400 cursor-not-allowed"
                       : isLast
                       ? "bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-200"
-                      : "bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-200"
+                      : "bg-brand-600 text-white hover:bg-brand-700 shadow-lg shadow-brand-100"
                   }`}
                 >
                   {submitting ? (
