@@ -69,8 +69,8 @@ function LoginForm() {
         throw new Error(data.details || data.error || "Something went wrong");
       }
 
-      // Success
-      if (data.hasProfile) {
+      // Success logic: registration goes to questionnaire, login goes to dashboard
+      if (isLogin) {
         router.push("/dashboard");
       } else {
         router.push("/questionnaire");
