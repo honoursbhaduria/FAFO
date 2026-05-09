@@ -11,19 +11,29 @@ export default function SathiBot() {
   ]);
   const [input, setInput] = useState("");
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim()) return;
     const newMessages = [...messages, { role: "user", content: input }];
     setMessages(newMessages);
     setInput("");
     
-    // Simulate AI response
-    setTimeout(() => {
+    try {
+      const res = await fetch("/api/ai/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: input, history: messages })
+      });
+      const data = await res.json();
       setMessages([...newMessages, { 
         role: "assistant", 
-        content: "I'm analyzing your request... As an AI consultant, I can help you with registration, schemes, or compliance queries." 
+        content: data.text || "Sorry, I am having trouble connecting right now." 
       }]);
-    }, 1000);
+    } catch (err) {
+      setMessages([...newMessages, { 
+        role: "assistant", 
+        content: "Network error occurred." 
+      }]);
+    }
   };
 
   return (
