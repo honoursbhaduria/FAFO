@@ -43,8 +43,15 @@ export async function POST(request: Request) {
     console.log("Generating JWT...");
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "7d" });
 
+    // Check if profile exists
+    const userWithProfile = await prisma.user.findUnique({
+      where: { id: user.id },
+      include: { profile: true },
+    });
+
     const response = NextResponse.json({ 
       user: { id: user.id, name: user.name, email: user.email },
+      hasProfile: !!userWithProfile?.profile,
       message: "Logged in successfully" 
     });
 

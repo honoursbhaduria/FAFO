@@ -70,7 +70,11 @@ function LoginForm() {
       }
 
       // Success
-      router.push("/dashboard");
+      if (data.hasProfile) {
+        router.push("/dashboard");
+      } else {
+        router.push("/questionnaire");
+      }
     } catch (err: any) {
       setError(err.message);
     } finally {

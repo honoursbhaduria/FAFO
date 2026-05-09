@@ -50,6 +50,7 @@ export async function POST(request: Request) {
 
     const response = NextResponse.json({ 
       user: { id: user.id, name: user.name, email: user.email },
+      hasProfile: false,
       message: "User created successfully" 
     });
 
