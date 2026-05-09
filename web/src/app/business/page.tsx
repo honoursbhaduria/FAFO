@@ -35,11 +35,30 @@ export default function BusinessPage() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const router = useRouter();
 
-  const handleSelect = (option: string) => {
-    setAnswers({ ...answers, [steps[currentStep].id]: option });
+  const handleSelect = async (option: string) => {
+    const newAnswers = { ...answers, [steps[currentStep].id]: option };
+    setAnswers(newAnswers);
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
+      try {
+        await fetch("/api/profile", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            businessName: "My Business",
+            industry: newAnswers.sector || "General",
+            entityType: newAnswers.stage === "Ideation" ? "Ideation" : "Startup",
+            state: "Maharashtra",
+            district: "Mumbai",
+            isStartup: newAnswers.stage !== "Established",
+            stage: newAnswers.stage,
+            sector: newAnswers.sector,
+          }),
+        });
+      } catch (err) {
+        console.error(err);
+      }
       router.push(`/dashboard?onboarding=complete`);
     }
   };

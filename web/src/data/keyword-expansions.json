@@ -1,0 +1,270 @@
+{
+  "IT/Software": {
+    "keywords": ["software", "technology", "startup", "SaaS", "IT", "tech", "digital", "cyber", "fintech", "DPIIT", "coding", "app development", "cloud computing", "artificial intelligence", "machine learning"],
+    "weight_multiplier": 1.0
+  },
+  "Technology": {
+    "keywords": ["software", "technology", "startup", "SaaS", "IT", "tech", "digital", "cyber", "fintech", "DPIIT", "innovation", "hardware", "electronics"],
+    "weight_multiplier": 1.0
+  },
+  "Food & Beverage": {
+    "keywords": ["FSSAI", "food", "beverage", "packaging", "food safety", "restaurant", "food license", "food processing", "catering", "hospitality", "dairy"],
+    "weight_multiplier": 1.0
+  },
+  "Agriculture": {
+    "keywords": ["agriculture", "farming", "dairy", "food processing", "horticulture", "agri-business", "organic farming", "fertilizer", "crop", "seed", "harvest", "irrigation", "PM-KISAN", "agri-tech"],
+    "weight_multiplier": 1.0
+  },
+  "Manufacturing": {
+    "keywords": ["manufacturing", "factory", "production", "Make in India", "PLI scheme", "industrial", "machinery", "assembly", "quality control", "lean manufacturing", "export", "MSME manufacturing"],
+    "weight_multiplier": 1.0
+  },
+  "Service": {
+    "keywords": ["service sector", "consulting", "retail", "logistics", "service industry", "hospitality", "BPO", "outsourcing", "customer service", "professional services"],
+    "weight_multiplier": 1.0
+  },
+  "Healthcare": {
+    "keywords": ["healthcare", "hospital", "pharma", "pharmaceutical", "medical", "clinic", "health tech", "telemedicine", "Ayushman Bharat", "health insurance", "wellness"],
+    "weight_multiplier": 1.0
+  },
+  "Education": {
+    "keywords": ["education", "edtech", "school", "training", "skill development", "coaching", "e-learning", "NEP", "higher education", "vocational training"],
+    "weight_multiplier": 1.0
+  },
+  "Textile": {
+    "keywords": ["textile", "garment", "fashion", "handloom", "weaving", "fabric", "apparel", "clothing", "silk", "cotton", "wool", "khadi"],
+    "weight_multiplier": 1.0
+  },
+  "Construction": {
+    "keywords": ["construction", "real estate", "infrastructure", "building", "cement", "housing", "PMAY", "smart cities", "contractor", "civil engineering"],
+    "weight_multiplier": 1.0
+  },
+  "Retail": {
+    "keywords": ["retail", "e-commerce", "shopping", "store", "marketplace", "D2C", "consumer", "FMCG", "supply chain"],
+    "weight_multiplier": 1.0
+  },
+  "Handicraft": {
+    "keywords": ["handicraft", "artisan", "handmade", "craft", "GI tag", "traditional art", "pottery", "woodwork", "embroidery"],
+    "weight_multiplier": 1.0
+  },
+  "Renewable Energy": {
+    "keywords": ["solar", "renewable energy", "wind energy", "green energy", "clean energy", "EV", "electric vehicle", "sustainability", "carbon credit"],
+    "weight_multiplier": 1.0
+  },
+  "Transport & Logistics": {
+    "keywords": ["transport", "logistics", "shipping", "fleet", "warehousing", "cold chain", "trucking", "delivery", "supply chain", "freight"],
+    "weight_multiplier": 1.0
+  },
+  "Tourism & Hospitality": {
+    "keywords": ["tourism", "travel", "hotel", "hospitality", "eco-tourism", "heritage", "resort", "tour operator", "travel agent"],
+    "weight_multiplier": 1.0
+  },
+
+  "Maharashtra": {
+    "keywords": ["Maharashtra", "Mumbai", "Pune", "state budget", "Maharashtra government", "MahaDBT", "MIDC", "Nagpur", "Aurangabad", "Thane"],
+    "weight_multiplier": 1.0
+  },
+  "Delhi": {
+    "keywords": ["Delhi", "New Delhi", "Delhi government", "NCR", "Delhi budget", "Delhi MSME", "Noida", "Gurgaon", "Haryana"],
+    "weight_multiplier": 1.0
+  },
+  "Karnataka": {
+    "keywords": ["Karnataka", "Bengaluru", "Bangalore", "Karnataka government", "Mysore", "Hubli", "Karnataka startup", "KITS"],
+    "weight_multiplier": 1.0
+  },
+  "Tamil Nadu": {
+    "keywords": ["Tamil Nadu", "Chennai", "TN government", "Coimbatore", "Madurai", "TIDCO", "Tamil Nadu MSME", "SIPCOT"],
+    "weight_multiplier": 1.0
+  },
+  "Uttar Pradesh": {
+    "keywords": ["Uttar Pradesh", "UP", "Lucknow", "Noida", "UP government", "MSME UP", "Kanpur", "Varanasi", "Agra", "ODOP"],
+    "weight_multiplier": 1.0
+  },
+  "Gujarat": {
+    "keywords": ["Gujarat", "Ahmedabad", "Surat", "Gujarat government", "Vadodara", "Rajkot", "GIDC", "Vibrant Gujarat"],
+    "weight_multiplier": 1.0
+  },
+  "Rajasthan": {
+    "keywords": ["Rajasthan", "Jaipur", "Udaipur", "Jodhpur", "Rajasthan government", "RIICO", "Rajasthan MSME"],
+    "weight_multiplier": 1.0
+  },
+  "West Bengal": {
+    "keywords": ["West Bengal", "Kolkata", "Bengal government", "Bengal MSME", "Siliguri", "Durgapur", "Bengal industry"],
+    "weight_multiplier": 1.0
+  },
+  "Telangana": {
+    "keywords": ["Telangana", "Hyderabad", "Telangana government", "T-Hub", "Telangana MSME", "Warangal", "Secunderabad"],
+    "weight_multiplier": 1.0
+  },
+  "Kerala": {
+    "keywords": ["Kerala", "Kochi", "Thiruvananthapuram", "Kerala government", "Kerala startup", "KSIDC", "Kozhikode"],
+    "weight_multiplier": 1.0
+  },
+  "Madhya Pradesh": {
+    "keywords": ["Madhya Pradesh", "MP", "Bhopal", "Indore", "MP government", "MP MSME", "Gwalior"],
+    "weight_multiplier": 1.0
+  },
+  "Bihar": {
+    "keywords": ["Bihar", "Patna", "Bihar government", "Bihar MSME", "Muzaffarpur", "Gaya"],
+    "weight_multiplier": 1.0
+  },
+  "Punjab": {
+    "keywords": ["Punjab", "Chandigarh", "Ludhiana", "Punjab government", "Amritsar", "Punjab MSME", "PSIEC"],
+    "weight_multiplier": 1.0
+  },
+  "Odisha": {
+    "keywords": ["Odisha", "Bhubaneswar", "Odisha government", "IPICOL", "Cuttack", "Odisha MSME"],
+    "weight_multiplier": 1.0
+  },
+  "Assam": {
+    "keywords": ["Assam", "Guwahati", "Assam government", "Northeast India", "Assam MSME"],
+    "weight_multiplier": 1.0
+  },
+  "Jharkhand": {
+    "keywords": ["Jharkhand", "Ranchi", "Jamshedpur", "Jharkhand government", "Jharkhand MSME"],
+    "weight_multiplier": 1.0
+  },
+  "Chhattisgarh": {
+    "keywords": ["Chhattisgarh", "Raipur", "Chhattisgarh government", "Chhattisgarh MSME"],
+    "weight_multiplier": 1.0
+  },
+  "Haryana": {
+    "keywords": ["Haryana", "Gurugram", "Gurgaon", "Faridabad", "Haryana government", "HSIIDC"],
+    "weight_multiplier": 1.0
+  },
+  "Uttarakhand": {
+    "keywords": ["Uttarakhand", "Dehradun", "Uttarakhand government", "Haridwar", "Uttarakhand MSME"],
+    "weight_multiplier": 1.0
+  },
+  "Himachal Pradesh": {
+    "keywords": ["Himachal Pradesh", "Shimla", "HP government", "Himachal MSME", "Dharamsala"],
+    "weight_multiplier": 1.0
+  },
+  "Andhra Pradesh": {
+    "keywords": ["Andhra Pradesh", "Visakhapatnam", "Vijayawada", "Amaravati", "AP government", "AP MSME"],
+    "weight_multiplier": 1.0
+  },
+  "Goa": {
+    "keywords": ["Goa", "Panaji", "Goa government", "Goa MSME", "Goa tourism"],
+    "weight_multiplier": 1.0
+  },
+
+  "Ideation": {
+    "keywords": ["startup idea", "business plan", "incubator", "accelerator", "seed funding", "angel investor", "pitch"],
+    "weight_multiplier": 0.8
+  },
+  "Startup": {
+    "keywords": ["startup", "Startup India", "DPIIT recognition", "seed fund", "venture capital", "incubation", "startup scheme", "funding", "early stage"],
+    "weight_multiplier": 1.0
+  },
+  "Established": {
+    "keywords": ["expansion", "scale up", "growth", "established business", "enterprise", "working capital", "export", "franchise"],
+    "weight_multiplier": 1.0
+  },
+
+  "Women": {
+    "keywords": ["women entrepreneur", "women owned", "Mahila", "women empowerment", "female founder", "women startup", "Stree Shakti", "Udyogini"],
+    "weight_multiplier": 1.2
+  },
+  "Female": {
+    "keywords": ["women entrepreneur", "women owned", "Mahila", "women empowerment", "female founder"],
+    "weight_multiplier": 1.2
+  },
+  "Male": {
+    "keywords": ["entrepreneur", "business owner", "founder"],
+    "weight_multiplier": 0.5
+  },
+
+  "SC": {
+    "keywords": ["SC entrepreneur", "scheduled caste", "Dalit", "SC/ST scheme", "Stand Up India", "SC welfare", "SC subsidy"],
+    "weight_multiplier": 1.2
+  },
+  "ST": {
+    "keywords": ["ST entrepreneur", "scheduled tribe", "tribal", "SC/ST scheme", "Stand Up India", "ST welfare", "tribal welfare"],
+    "weight_multiplier": 1.2
+  },
+  "OBC": {
+    "keywords": ["OBC", "other backward class", "OBC scheme", "OBC welfare", "backward class", "OBC entrepreneur"],
+    "weight_multiplier": 1.0
+  },
+  "General": {
+    "keywords": ["general category", "open category", "unreserved"],
+    "weight_multiplier": 0.5
+  },
+  "Minority": {
+    "keywords": ["minority", "minority scheme", "National Minorities Commission", "minority welfare", "minority entrepreneur"],
+    "weight_multiplier": 1.1
+  },
+
+  "Sole Proprietorship": {
+    "keywords": ["sole proprietorship", "proprietor", "individual business", "single owner"],
+    "weight_multiplier": 0.7
+  },
+  "Partnership": {
+    "keywords": ["partnership", "partnership firm", "LLP", "limited liability partnership"],
+    "weight_multiplier": 0.7
+  },
+  "Private Limited": {
+    "keywords": ["private limited", "Pvt Ltd", "company registration", "corporate", "incorporation"],
+    "weight_multiplier": 0.8
+  },
+  "LLP": {
+    "keywords": ["LLP", "limited liability partnership", "MCA", "company affairs"],
+    "weight_multiplier": 0.7
+  },
+
+  "Micro": {
+    "keywords": ["micro enterprise", "MSME", "micro MSME", "micro business", "small business"],
+    "weight_multiplier": 1.0
+  },
+  "Small": {
+    "keywords": ["small enterprise", "SME", "small MSME", "small business"],
+    "weight_multiplier": 1.0
+  },
+  "Medium": {
+    "keywords": ["medium enterprise", "MSME", "medium business", "mid-size company"],
+    "weight_multiplier": 1.0
+  },
+
+  "0-5 Lakhs": {
+    "keywords": ["micro enterprise", "small turnover", "nano business", "low turnover"],
+    "weight_multiplier": 0.8
+  },
+  "5-25 Lakhs": {
+    "keywords": ["small business", "growing business", "startup revenue"],
+    "weight_multiplier": 0.9
+  },
+  "25 Lakhs - 1 Crore": {
+    "keywords": ["SME", "small enterprise", "growing revenue", "scale up"],
+    "weight_multiplier": 1.0
+  },
+  "1-5 Crores": {
+    "keywords": ["medium enterprise", "established business", "expansion", "working capital"],
+    "weight_multiplier": 1.0
+  },
+  "5-10 Crores": {
+    "keywords": ["mid-size company", "large SME", "enterprise growth"],
+    "weight_multiplier": 1.0
+  },
+  "10+ Crores": {
+    "keywords": ["large enterprise", "corporate", "big business", "IPO", "large scale"],
+    "weight_multiplier": 1.0
+  },
+
+  "Self-employed": {
+    "keywords": ["self-employed", "freelancer", "independent", "gig economy", "solo entrepreneur"],
+    "weight_multiplier": 0.8
+  },
+  "Employed": {
+    "keywords": ["employed", "side business", "part-time entrepreneur", "moonlighting"],
+    "weight_multiplier": 0.6
+  },
+  "Unemployed": {
+    "keywords": ["unemployed", "job seeker", "PMEGP", "employment generation", "Mudra loan", "self-employment scheme"],
+    "weight_multiplier": 1.2
+  },
+  "Student": {
+    "keywords": ["student entrepreneur", "campus startup", "college business", "student scheme"],
+    "weight_multiplier": 0.9
+  }
+}

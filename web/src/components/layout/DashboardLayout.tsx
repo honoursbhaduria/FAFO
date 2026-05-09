@@ -11,6 +11,8 @@ import {
   MessageSquare,
   User,
   UserRound,
+  Newspaper,
+  BookmarkCheck,
   Menu,
   X,
   ChevronRight,
@@ -46,11 +48,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const menuItems = [
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { href: "/news", icon: Newspaper, label: "Smart Feed" },
     { href: "/schemes", icon: FileText, label: "Schemes" },
     { href: "/compliance", icon: ShieldCheck, label: "Compliance" },
     { href: "/consultant", icon: UserRound, label: "Consultant Hub" },
     { href: "/documents", icon: FolderOpen, label: "Documents" },
     { href: "/ai", icon: MessageSquare, label: "AI Assistant" },
+    { href: "/news/bookmarks", icon: BookmarkCheck, label: "Bookmarks" },
     { href: "/profile", icon: User, label: "Profile" },
   ];
 

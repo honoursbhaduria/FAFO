@@ -68,7 +68,7 @@ export default function Header() {
                 { label: "Schemes", href: "/schemes" },
                 { label: "Consultants", href: "/consultant" },
                 { label: "Compliance", href: "/compliance" },
-                { label: "Pricing", href: "#" }
+                { label: "Smart Feed", href: "/news" }
               ].map((item) => (
                 <Link 
                   key={item.label}
