@@ -14,16 +14,19 @@ function hashUrl(url: string): string {
   return crypto.createHash("sha256").update(url).digest("hex").slice(0, 16);
 }
 
-/** Compute word-overlap ratio between two strings */
-function titleSimilarity(a: string, b: string): number {
-  const wordsA = new Set(a.toLowerCase().split(/\s+/).filter(Boolean));
-  const wordsB = new Set(b.toLowerCase().split(/\s+/).filter(Boolean));
+/** Compute word-overlap ratio between two pre-calculated word sets */
+function calculateSimilarity(wordsA: Set<string>, wordsB: Set<string>): number {
   if (wordsA.size === 0 || wordsB.size === 0) return 0;
   let overlap = 0;
   for (const w of wordsA) {
     if (wordsB.has(w)) overlap++;
   }
   return overlap / Math.max(wordsA.size, wordsB.size);
+}
+
+/** Internal helper for tokenization */
+function tokenize(text: string): Set<string> {
+  return new Set(text.toLowerCase().split(/\s+/).filter(Boolean));
 }
 
 // ────────────────────────────────────────────────────────────
@@ -127,19 +130,29 @@ export class FetcherOrchestrator {
   private deduplicate(articles: RawArticle[]): RawArticle[] {
     const unique: RawArticle[] = [];
     const seenUrls = new Set<string>();
+    const uniqueTokenSets: Set<string>[] = [];
 
     for (const article of articles) {
       // Skip exact URL duplicates
       if (seenUrls.has(article.url)) continue;
 
-      // Skip near-duplicate titles
-      const isDuplicate = unique.some(
-        (existing) => titleSimilarity(existing.title, article.title) >= 0.7
-      );
+      // Tokenize current article title once
+      const currentTokens = tokenize(article.title);
+
+      // Skip near-duplicate titles using pre-tokenized sets
+      let isDuplicate = false;
+      for (const existingTokens of uniqueTokenSets) {
+        if (calculateSimilarity(existingTokens, currentTokens) >= 0.7) {
+          isDuplicate = true;
+          break;
+        }
+      }
+
       if (isDuplicate) continue;
 
       seenUrls.add(article.url);
       unique.push(article);
+      uniqueTokenSets.push(currentTokens);
     }
 
     return unique;

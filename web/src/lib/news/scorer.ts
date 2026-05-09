@@ -21,6 +21,18 @@ const OPPORTUNITY_KEYWORDS = [
   "concession",
 ];
 
+// Pre-compiled urgency regex
+const URGENCY_REGEX = new RegExp(
+  (urgencyKeywords as string[]).map(kw => escapeRegex(kw)).join("|"),
+  "gi"
+);
+
+// Pre-compiled opportunity regex
+const OPPORTUNITY_REGEX = new RegExp(
+  OPPORTUNITY_KEYWORDS.map(kw => escapeRegex(kw)).join("|"),
+  "gi"
+);
+
 // ────────────────────────────────────────────────────────────
 // Recency scoring
 // ────────────────────────────────────────────────────────────
@@ -41,8 +53,20 @@ function recencyScore(publishedAt: string): number {
 // Keyword matching helpers
 // ────────────────────────────────────────────────────────────
 
+// Cache for keyword regexes to avoid re-compiling in loops
+const keywordRegexCache = new Map<string, RegExp>();
+
+function getKeywordRegex(term: string): RegExp {
+  let regex = keywordRegexCache.get(term);
+  if (!regex) {
+    regex = new RegExp(`\\b${escapeRegex(term)}\\b`, "gi");
+    keywordRegexCache.set(term, regex);
+  }
+  return regex;
+}
+
 function countExactMatches(text: string, term: string): number {
-  const regex = new RegExp(`\\b${escapeRegex(term)}\\b`, "gi");
+  const regex = getKeywordRegex(term);
   return (text.match(regex) || []).length;
 }
 
@@ -74,11 +98,10 @@ function detectUrgency(
   title: string,
   description: string
 ): { isUrgent: boolean; reason?: string } {
-  const combined = `${title} ${description}`.toLowerCase();
-  for (const keyword of urgencyKeywords as string[]) {
-    if (combined.includes(keyword.toLowerCase())) {
-      return { isUrgent: true, reason: `Contains "${keyword}"` };
-    }
+  const combined = `${title} ${description}`;
+  const match = combined.match(URGENCY_REGEX);
+  if (match) {
+    return { isUrgent: true, reason: `Contains "${match[0]}"` };
   }
   return { isUrgent: false };
 }
@@ -89,8 +112,8 @@ function detectUrgency(
 
 export function isOpportunityArticle(article: RawArticle | ScoredArticle): boolean {
   const combined =
-    `${article.title} ${article.description} ${article.content}`.toLowerCase();
-  return OPPORTUNITY_KEYWORDS.some((kw) => combined.includes(kw));
+    `${article.title} ${article.description} ${article.content}`;
+  return OPPORTUNITY_REGEX.test(combined);
 }
 
 // ────────────────────────────────────────────────────────────
