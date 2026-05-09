@@ -3,10 +3,13 @@
 import { useState, useRef, useEffect } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Send, Bot, User, Sparkles, Loader2 } from "lucide-react";
+import { SchemeCardGrid, Scheme } from "@/components/ui/SchemeCard";
 
 interface Message {
   role: "user" | "model";
   parts: [{ text: string }];
+  type?: "text" | "schemes";
+  schemes?: Scheme[];
 }
 
 export default function AIChatPage() {
@@ -42,17 +45,25 @@ export default function AIChatPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: userMessage,
-          history: messages,
+          history: messages.map(m => ({
+            role: m.role === "model" ? "assistant" : m.role,
+            content: m.parts[0].text,
+          })),
         }),
       });
 
       if (!response.ok) throw new Error("Failed to fetch");
 
       const data = await response.json();
-      setMessages([
-        ...newMessages,
-        { role: "model", parts: [{ text: data.text }] }
-      ]);
+
+      const assistantMessage: Message = {
+        role: "model",
+        parts: [{ text: data.text }],
+        type: data.type || "text",
+        schemes: data.schemes,
+      };
+
+      setMessages([...newMessages, assistantMessage]);
     } catch (error) {
       console.error("Chat Error:", error);
       setMessages([
@@ -102,8 +113,8 @@ export default function AIChatPage() {
                 {[
                   "What schemes am I eligible for?",
                   "Explain GST filing process",
-                  "How to get Udyam certificate?",
-                  "Upcoming tax deadlines"
+                  "Agriculture related schemes",
+                  "MSME government schemes"
                 ].map((suggestion) => (
                   <button
                     key={suggestion}
@@ -123,7 +134,7 @@ export default function AIChatPage() {
               className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`flex gap-3 max-w-[80%] ${
+                className={`flex gap-3 max-w-[85%] ${
                   msg.role === "user" ? "flex-row-reverse" : "flex-row"
                 }`}
               >
@@ -134,14 +145,20 @@ export default function AIChatPage() {
                 >
                   {msg.role === "user" ? <User size={16} /> : <Bot size={16} />}
                 </div>
-                <div
-                  className={`p-4 rounded-2xl text-sm leading-relaxed ${
-                    msg.role === "user"
-                      ? "bg-slate-900 text-white rounded-tr-none"
-                      : "bg-slate-100 text-slate-800 rounded-tl-none"
-                  }`}
-                >
-                  {msg.parts[0].text}
+                <div className="flex flex-col">
+                  <div
+                    className={`p-4 rounded-2xl text-sm leading-relaxed ${
+                      msg.role === "user"
+                        ? "bg-slate-900 text-white rounded-tr-none"
+                        : "bg-slate-100 text-slate-800 rounded-tl-none"
+                    }`}
+                  >
+                    {msg.parts[0].text}
+                  </div>
+                  {/* Render scheme cards if present */}
+                  {msg.type === "schemes" && msg.schemes && msg.schemes.length > 0 && (
+                    <SchemeCardGrid schemes={msg.schemes} />
+                  )}
                 </div>
               </div>
             </div>
@@ -154,7 +171,7 @@ export default function AIChatPage() {
                 </div>
                 <div className="p-4 rounded-2xl bg-slate-100 text-slate-500 rounded-tl-none flex items-center gap-2">
                   <Loader2 size={16} className="animate-spin" />
-                  Sathi is thinking...
+                  Searching schemes & thinking...
                 </div>
               </div>
             </div>
