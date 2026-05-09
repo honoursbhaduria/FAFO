@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import Groq from "groq-sdk";
+import { getAuthUserId } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -86,17 +88,28 @@ const tools: Groq.Chat.Completions.ChatCompletionTool[] = [
 
 export async function POST(request: Request) {
   try {
+    const userId = await getAuthUserId();
     const { message, history } = await request.json();
-    console.log("AI Chat Request:", { message, historyLength: history?.length });
+
+    let userContext = "";
+    if (userId) {
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        include: { profile: true },
+      });
+      if (user?.profile) {
+        const p = user.profile;
+        userContext = `\n\nUSER CONTEXT:\nBusiness: ${p.businessName}\nIndustry: ${p.industry}\nType: ${p.entityType}\nState: ${p.state}\nStartup: ${p.isStartup ? 'Yes' : 'No'}\nGoals: ${p.goals.join(', ')}`;
+      }
+    }
 
     if (!process.env.GROQ_API_KEY) {
-      console.error("GROQ_API_KEY is missing");
       return NextResponse.json({ error: "API Key missing" }, { status: 500 });
     }
 
     const formattedHistory = history
       ? history.map((msg: any) => ({
-          role: msg.role === "model" ? "assistant" : msg.role,
+          role: msg.role === "model" || msg.role === "assistant" ? "assistant" : msg.role,
           content: msg.content || (msg.parts && msg.parts[0]?.text) || "",
         }))
       : [];
@@ -112,7 +125,7 @@ STRICT TOOL USAGE RULES:
 3. NEVER attempt to call tools named 'brave_search', 'google_search', 'web_search', or any tool other than 'search_government_schemes'.
 4. If you need to find information, you MUST use 'search_government_schemes' with a 'topic' parameter.
 
-Be professional, concise, and prioritize using your provided search tool for real-time information.`
+Be professional, concise, and prioritize using your provided search tool for real-time information.${userContext}`
       },
       ...formattedHistory,
       { role: "user", content: message }
@@ -126,23 +139,19 @@ Be professional, concise, and prioritize using your provided search tool for rea
       tool_choice: "auto",
     });
 
-    console.log("Groq First Response received");
     const firstChoice = firstResponse.choices[0]?.message;
 
     // Check if Groq wants to call a tool
     if (firstChoice?.tool_calls && firstChoice.tool_calls.length > 0) {
       const toolCall = firstChoice.tool_calls[0];
       const toolName = toolCall.function.name;
-      console.log("Tool Call detected:", toolName);
 
       if (toolName === "search_government_schemes") {
         const args = JSON.parse(toolCall.function.arguments);
         const topic = args.topic || message;
-        console.log("Searching schemes for topic:", topic);
 
         // Fetch schemes from Wikipedia
         const schemes = await fetchSchemes(topic);
-        console.log(`Found ${schemes.length} schemes`);
 
         // Send tool result back to Groq for a nice summary
         const followUpMessages: Groq.Chat.Completions.ChatCompletionMessageParam[] = [
@@ -160,7 +169,6 @@ Be professional, concise, and prioritize using your provided search tool for rea
           model: "llama-3.1-8b-instant",
         });
 
-        console.log("Groq Second Response received");
         const responseText = secondResponse.choices[0]?.message?.content || "Here are the government schemes I found:";
 
         return NextResponse.json({
@@ -169,8 +177,6 @@ Be professional, concise, and prioritize using your provided search tool for rea
           schemes,
         });
       } else {
-        console.warn(`AI hallucinated tool name: ${toolName}. Falling back to text response.`);
-        // If it hallucinated a tool name, we can't fulfill the tool call, so we just return the AI's natural response
         return NextResponse.json({
           text: firstChoice.content || "I'm looking into that for you. Could you please specify which sector or scheme you're interested in?",
           type: "text"

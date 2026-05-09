@@ -1,20 +1,16 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-
-// Mock User ID for demonstration (since auth isn't fully implemented in this flow yet)
-const MOCK_USER_ID = "cm0v3x..."; // This would normally come from session
+import { getAuthUserId } from "@/lib/auth";
 
 export async function GET() {
   try {
-    // In a real app, we'd get the current user's ID from the session
-    // For now, let's find the first user in the DB to associate documents with
-    const firstUser = await prisma.user.findFirst();
-    if (!firstUser) {
-      return NextResponse.json({ documents: [] });
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const documents = await prisma.document.findMany({
-      where: { userId: firstUser.id },
+      where: { userId },
       orderBy: { createdAt: "desc" },
     });
     return NextResponse.json({ documents });
@@ -26,6 +22,11 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const formData = await request.formData();
     const file = formData.get("file") as File;
     const type = formData.get("type") as string || "Other";
@@ -34,23 +35,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    // Get the first user to associate the document with
-    const firstUser = await prisma.user.findFirst();
-    if (!firstUser) {
-      return NextResponse.json({ error: "No user found to associate document with" }, { status: 404 });
-    }
-
-    // In a production app, you'd upload the file to S3, Cloudinary, or Vercel Blob
-    // Here we'll simulate the URL and save metadata to the DB
+    // Simulate URL for metadata
     const mockUrl = `/uploads/${file.name}`; 
 
     const document = await prisma.document.create({
       data: {
-        userId: firstUser.id,
+        userId,
         name: file.name,
         type: type,
         url: mockUrl,
-        // Mocking some extracted data for the AI features
         extractedData: {
           size: `${(file.size / (1024 * 1024)).toFixed(2)} MB`,
           mimeType: file.type,
@@ -67,11 +60,25 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
     if (!id) {
       return NextResponse.json({ error: "Document ID required" }, { status: 400 });
+    }
+
+    // Ensure document belongs to user
+    const doc = await prisma.document.findUnique({
+      where: { id },
+    });
+
+    if (!doc || doc.userId !== userId) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     await prisma.document.delete({

@@ -31,7 +31,35 @@ model User {
   documents     Document[]
   applications  Application[]
   tasks         ComplianceTask[]
+  savedSchemes  SavedScheme[]
+  newsBookmarks NewsBookmark[]
   createdAt     DateTime  @default(now())
+}
+
+model SavedScheme {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  schemeId  String   // api_id from schemes table
+  schemeName String
+  savedAt   DateTime @default(now())
+  
+  @@unique([userId, schemeId])
+}
+
+model NewsBookmark {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  articleId String
+  title     String
+  url       String
+  imageUrl  String?
+  source    String?
+  publishedAt DateTime?
+  savedAt   DateTime @default(now())
+  
+  @@unique([userId, articleId])
 }
 
 model BusinessProfile {

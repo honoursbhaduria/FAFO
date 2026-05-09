@@ -15,8 +15,14 @@ export default function SchemeSidebar({ schemeName, externalUrl, apiId }: Scheme
   const [showCopyTooltip, setShowCopyTooltip] = useState(false);
 
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("saved_schemes") || "[]");
-    setIsSaved(saved.some((s: any) => s.apiId === apiId));
+    fetch("/api/schemes/save")
+      .then(res => res.json())
+      .then(data => {
+        if (data.saved) {
+          setIsSaved(data.saved.some((s: any) => s.schemeId === apiId));
+        }
+      })
+      .catch(err => console.error(err));
   }, [apiId]);
 
   const handleApplyClick = () => {
@@ -27,16 +33,21 @@ export default function SchemeSidebar({ schemeName, externalUrl, apiId }: Scheme
     }
   };
 
-  const handleSave = () => {
-    const saved = JSON.parse(localStorage.getItem("saved_schemes") || "[]");
-    if (isSaved) {
-      const filtered = saved.filter((s: any) => s.apiId !== apiId);
-      localStorage.setItem("saved_schemes", JSON.stringify(filtered));
-      setIsSaved(false);
-    } else {
-      saved.push({ apiId, schemeName, savedAt: new Date().toISOString() });
-      localStorage.setItem("saved_schemes", JSON.stringify(saved));
-      setIsSaved(true);
+  const handleSave = async () => {
+    try {
+      if (isSaved) {
+        await fetch(`/api/schemes/save?schemeId=${apiId}`, { method: "DELETE" });
+        setIsSaved(false);
+      } else {
+        await fetch("/api/schemes/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ schemeId: apiId, schemeName }),
+        });
+        setIsSaved(true);
+      }
+    } catch (err) {
+      console.error("Save error:", err);
     }
   };
 

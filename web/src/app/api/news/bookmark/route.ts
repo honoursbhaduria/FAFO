@@ -1,39 +1,24 @@
-// ============================================================
-// POST /api/news/bookmark — Toggle bookmark for an article
-// ============================================================
-
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getAuthUserId } from "@/lib/auth";
 import { toggleBookmark } from "@/lib/news/cache";
 
 export async function POST(request: Request) {
   try {
+    const userId = await getAuthUserId();
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const body = await request.json();
-    let userId = body.userId;
     const articleId = body.articleId;
 
     if (!articleId) {
-      return NextResponse.json(
-        { error: "articleId is required" },
-        { status: 400 }
-      );
-    }
-
-    if (!userId) {
-      const user = await prisma.user.findFirst();
-      if (!user) {
-        return NextResponse.json({ error: "No user found." }, { status: 401 });
-      }
-      userId = user.id;
+      return NextResponse.json({ error: "articleId is required" }, { status: 400 });
     }
 
     const isBookmarked = await toggleBookmark(userId, articleId);
     return NextResponse.json({ articleId, isBookmarked });
   } catch (error) {
     console.error("[API /news/bookmark] Error:", error);
-    return NextResponse.json(
-      { error: "Failed to toggle bookmark" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to toggle bookmark" }, { status: 500 });
   }
 }

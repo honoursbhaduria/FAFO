@@ -1,21 +1,13 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
-import { cookies } from "next/headers";
-
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+import { getAuthUserId } from "@/lib/auth";
 
 export async function GET() {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
-
-    if (!token) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
-    const decoded: any = jwt.verify(token, JWT_SECRET);
-    const userId = decoded.userId;
 
     const [user, docCount, taskCount, applicationCount] = await Promise.all([
       prisma.user.findUnique({
@@ -59,7 +51,7 @@ export async function GET() {
         docCount,
         taskCount,
         applicationCount,
-        eligibleSchemes: 12, // Placeholder for recommendation engine count
+        eligibleSchemes: 12, // Placeholder
       },
       upcomingTasks,
       recommendedSchemes,

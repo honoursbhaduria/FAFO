@@ -1,44 +1,16 @@
-// ============================================================
-// POST /api/news/refresh — Force refresh the feed (30-min cooldown)
-// ============================================================
-
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { forceRefreshFeed, buildFeedResponse } from "@/lib/news/cache";
+import { getAuthUserId } from "@/lib/auth";
+import { fetchAndCacheUserFeed } from "@/lib/news/fetcher";
 
-export async function POST(request: Request) {
+export async function POST() {
   try {
-    const body = await request.json().catch(() => ({}));
-    let userId = body.userId;
+    const userId = await getAuthUserId();
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    if (!userId) {
-      const user = await prisma.user.findFirst();
-      if (!user) {
-        return NextResponse.json(
-          { error: "No user found." },
-          { status: 401 }
-        );
-      }
-      userId = user.id;
-    }
-
-    const result = await forceRefreshFeed(userId);
-
-    if ("error" in result) {
-      return NextResponse.json(
-        { error: result.error, cooldownEndsAt: result.cooldownEndsAt },
-        { status: 429 }
-      );
-    }
-
-    // Rebuild full feed response with interactions
-    const feed = await buildFeedResponse(userId);
-    return NextResponse.json({ ...feed, refreshedAt: result.fetchedAt });
+    const articles = await fetchAndCacheUserFeed(userId);
+    return NextResponse.json({ articles });
   } catch (error) {
     console.error("[API /news/refresh] Error:", error);
-    return NextResponse.json(
-      { error: "Failed to refresh feed" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to refresh feed" }, { status: 500 });
   }
 }
