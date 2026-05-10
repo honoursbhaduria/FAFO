@@ -93,10 +93,21 @@ export default function ModernLanding() {
   return (
     <div ref={mainRef} className="bg-white text-brand-600 font-sans selection:bg-brand-600 selection:text-white">
       {/* --- HERO SECTION --- */}
-      <section className="min-h-screen flex items-center px-[8%] relative overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10 pointer-events-none opacity-50">
-            <div className="absolute top-[-10%] right-[-5%] w-[800px] h-[800px] bg-brand-100 rounded-full blur-[150px]" />
-            <div className="absolute bottom-[10%] left-[-5%] w-[600px] h-[600px] bg-indigo-50 rounded-full blur-[120px]" />
+      <section className="min-h-screen flex items-center px-[8%] relative overflow-hidden isolate">
+        {/* Video Background */}
+        <div className="absolute inset-0 -z-10 overflow-hidden bg-slate-50">
+          <video 
+            autoPlay 
+            muted 
+            loop 
+            playsInline 
+            className="w-full h-full object-cover opacity-70 scale-105"
+          >
+            <source src="/herosectionvideo.mp4?v=20260510" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-gradient-to-br from-white/85 via-white/40 to-brand-600/20" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.6),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(28,37,54,0.35),transparent_45%)]" />
+          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
         </div>
 
         <motion.div 

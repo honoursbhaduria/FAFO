@@ -6,32 +6,9 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const Logo = () => (
-  <div className="flex items-center gap-2 group cursor-pointer">
-    <div className="relative">
-      <div className="absolute inset-0 bg-brand-600 blur-lg opacity-20 group-hover:opacity-40 transition-opacity" />
-      <div className="relative bg-brand-600 p-2 rounded-xl group-hover:rotate-6 transition-transform duration-300">
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="text-white"
-        >
-          <path
-            d="M13 2L3 14H12L11 22L21 10H12L13 2Z"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </div>
-    </div>
-    <span className="text-xl font-black tracking-tight text-brand-600">
-      OneClick<span className="text-brand-600">Sathi</span>
-    </span>
-  </div>
+  <span className="text-2xl font-black tracking-tighter text-brand-600">
+    OneClickSathi
+  </span>
 );
 
 export default function Header() {
