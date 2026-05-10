@@ -1,8 +1,19 @@
 "use client";
 
-import { ExternalLink, Bookmark, Share2, Calendar, Sparkles, Check } from "lucide-react";
+import { ExternalLink, Bookmark, Share2, Calendar, Sparkles, Check, Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+
+interface SchemeInsight {
+  summary: string;
+  keyBenefits: string[];
+  hiddenEligibility: string[];
+  importantDeadlines: string[];
+  commonMistakes: string[];
+  whoShouldApply: string[];
+  warnings: string[];
+  recommendations: string[];
+}
 
 interface SchemeSidebarProps {
   schemeName: string;
@@ -13,6 +24,10 @@ interface SchemeSidebarProps {
 export default function SchemeSidebar({ schemeName, externalUrl, apiId }: SchemeSidebarProps) {
   const [isSaved, setIsSaved] = useState(false);
   const [showCopyTooltip, setShowCopyTooltip] = useState(false);
+  const [insights, setInsights] = useState<SchemeInsight | null>(null);
+  const [insightLoading, setInsightLoading] = useState(true);
+  const [insightError, setInsightError] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     fetch("/api/schemes/save")
@@ -23,6 +38,32 @@ export default function SchemeSidebar({ schemeName, externalUrl, apiId }: Scheme
         }
       })
       .catch(err => console.error(err));
+  }, [apiId]);
+
+  // Fetch dynamic insights for this specific scheme
+  useEffect(() => {
+    setInsightLoading(true);
+    setInsightError(false);
+    setInsights(null);
+    setExpanded(false);
+
+    fetch(`/api/schemes/insights?schemeId=${encodeURIComponent(apiId)}`)
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to fetch insights");
+        return res.json();
+      })
+      .then(data => {
+        if (data.insights) {
+          setInsights(data.insights);
+        } else {
+          setInsightError(true);
+        }
+      })
+      .catch(err => {
+        console.error("Insight fetch error:", err);
+        setInsightError(true);
+      })
+      .finally(() => setInsightLoading(false));
   }, [apiId]);
 
   const handleApplyClick = () => {
@@ -74,6 +115,26 @@ export default function SchemeSidebar({ schemeName, externalUrl, apiId }: Scheme
         console.error("Failed to copy:", err);
       }
     }
+  };
+
+  // Helper to render insight sections
+  const renderInsightSection = (title: string, items: string[], emoji: string) => {
+    if (!items || items.length === 0) return null;
+    return (
+      <div className="mb-4">
+        <h5 className="text-[10px] font-black uppercase tracking-widest text-white/60 mb-2 flex items-center gap-1.5">
+          <span>{emoji}</span> {title}
+        </h5>
+        <ul className="space-y-1.5">
+          {items.map((item, i) => (
+            <li key={i} className="text-brand-100 text-xs font-medium leading-relaxed flex items-start gap-2">
+              <span className="text-white/40 mt-0.5 shrink-0">•</span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
   };
 
   return (
@@ -128,15 +189,69 @@ export default function SchemeSidebar({ schemeName, externalUrl, apiId }: Scheme
         </div>
       </div>
 
+      {/* AI Quick Insight — Dynamic */}
       <div className="bg-gradient-to-br from-indigo-600 via-brand-700 to-brand-600 p-8 rounded-[32px] shadow-2xl shadow-brand-500/20 text-white relative overflow-hidden group">
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-4">
             <Sparkles className="text-white/80" size={24} />
             <h4 className="font-black uppercase tracking-widest text-sm">AI Quick Insight</h4>
           </div>
-          <p className="text-brand-100 leading-relaxed mb-8 font-medium italic">
-            "This scheme is highly recommended for startups in their first 2 years. Ensure your GST registration is active before applying."
-          </p>
+
+          {/* Loading State */}
+          {insightLoading && (
+            <div className="flex items-center gap-3 py-6">
+              <Loader2 className="w-5 h-5 animate-spin text-white/60" />
+              <p className="text-brand-100 font-medium text-sm">
+                Analyzing scheme details...
+              </p>
+            </div>
+          )}
+
+          {/* Error State */}
+          {insightError && !insightLoading && (
+            <p className="text-brand-100 leading-relaxed mb-8 font-medium italic">
+              &quot;Unable to generate insights at this time. Click below to ask our AI assistant about this scheme.&quot;
+            </p>
+          )}
+
+          {/* Dynamic Insight Content */}
+          {insights && !insightLoading && (
+            <>
+              {/* Summary — always shown */}
+              <p className="text-brand-100 leading-relaxed mb-6 font-medium italic">
+                &quot;{insights.summary}&quot;
+              </p>
+
+              {/* Expandable detailed insights */}
+              {expanded && (
+                <div className="border-t border-white/10 pt-5 mt-2 space-y-1">
+                  {renderInsightSection("Key Benefits", insights.keyBenefits, "✅")}
+                  {renderInsightSection("Hidden Requirements", insights.hiddenEligibility, "🔍")}
+                  {renderInsightSection("Important Deadlines", insights.importantDeadlines, "📅")}
+                  {renderInsightSection("Common Mistakes", insights.commonMistakes, "⚠️")}
+                  {renderInsightSection("Who Should Apply", insights.whoShouldApply, "🎯")}
+                  {renderInsightSection("Warnings", insights.warnings, "🚨")}
+                  {renderInsightSection("Recommendations", insights.recommendations, "💡")}
+                </div>
+              )}
+
+              <button
+                onClick={() => setExpanded(!expanded)}
+                className="flex items-center gap-2 text-white/70 hover:text-white text-xs font-bold uppercase tracking-widest mt-4 mb-4 transition-colors"
+              >
+                {expanded ? (
+                  <>
+                    Show Less <ChevronUp size={14} />
+                  </>
+                ) : (
+                  <>
+                    View Full Analysis <ChevronDown size={14} />
+                  </>
+                )}
+              </button>
+            </>
+          )}
+
           <Link 
             href={`/ai?q=${encodeURIComponent(schemeName)}`} 
             className="inline-flex items-center gap-3 px-6 py-3 bg-white text-brand-700 font-bold rounded-xl hover:bg-brand-50 transition-all shadow-lg text-sm"
