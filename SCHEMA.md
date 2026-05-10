@@ -1,74 +1,82 @@
-# Database Schema Documentation: myScheme Data
+# OneClickSathi Platform Architecture & Schema
 
-This document provides the technical specification for the `schemes` table, which stores data scraped from the [myScheme API](https://api.myscheme.gov.in/).
+This document outlines the database models, API endpoints, and data flows that power the OneClickSathi platform.
 
-## Table Definition: `schemes`
+## 1. Database Schema (Prisma / PostgreSQL)
 
-| Column | Type | Description |
+The platform uses a relational PostgreSQL database (hosted on Neon) managed via Prisma ORM.
+
+### User & Profile Models
+| Model | Description | Key Fields |
 | :--- | :--- | :--- |
-| `api_id` | `TEXT` (PK) | The unique identifier from the source API (e.g., `VxezF5gB5uF80_MGIY8p`). |
-| `slug` | `TEXT` | A URL-friendly identifier for the scheme (e.g., `sui`). |
-| `scheme_name` | `TEXT` | The full title of the scheme. |
-| `categories` | `JSONB` | An array of categories (e.g., `["Business & Entrepreneurship", "Women and Child"]`). |
-| `raw_data` | `JSONB` | The full original JSON object from the API, containing all fields (description, benefits, eligibility, etc.). |
-| `fetched_at` | `TIMESTAMP` | The date and time when the record was last updated. |
+| `User` | Core user account | `email`, `password` (hashed), `name` |
+| `BusinessProfile` | User's business details | `industry`, `state`, `isStartup`, `gstin`, `goals` |
+
+### Core Feature Models
+| Model | Description | Key Fields |
+| :--- | :--- | :--- |
+| `schemes` | Scraped govt schemes | `api_id` (PK), `scheme_name`, `raw_data` (JSONB) |
+| `SavedScheme` | User-shortlisted schemes | `userId`, `schemeId`, `schemeName`, `savedAt` |
+| `Document` | Document Vault records | `userId`, `name`, `type`, `url` (file path) |
+| `ComplianceTask` | User's regulatory tasks | `userId`, `title`, `type`, `dueDate`, `status` |
+| `NewsBookmark` | User-saved news articles | `userId`, `articleId`, `title`, `url` |
 
 ---
 
-## Integration Guide
+## 2. Backend API Endpoints
 
-### 1. Backend (SQL Queries)
+All endpoints are hosted under `/api/*` and many require authentication via JWT cookies.
 
-#### Fetching Business-Related Schemes
-To retrieve schemes relevant to new businesses and entrepreneurship:
-```sql
-SELECT scheme_name, slug, categories
-FROM schemes
-WHERE categories @> '["Business & Entrepreneurship"]'::jsonb
-ORDER BY fetched_at DESC;
-```
+### Authentication (`/api/auth/*`)
+- `POST /login`: Validates credentials and sets a secure JWT cookie.
+- `POST /register`: Creates a new user and triggers onboarding.
+- `POST /logout`: Clears the authentication session.
+- `GET /me`: Returns the currently authenticated user's basic info.
 
-#### Searching by Name or Description
-Since `raw_data` contains the `briefDescription`, you can perform a text search:
-```sql
-SELECT scheme_name, raw_data->'fields'->>'briefDescription' as description
-FROM schemes
-WHERE raw_data->'fields'->>'briefDescription' ILIKE '%loan%'
-LIMIT 10;
-```
+### Dashboard & Profile
+- `GET /api/dashboard/stats`: Aggregates real-time counts for documents, tasks, and applications.
+- `GET /api/profile`: Fetches the authenticated user's business profile.
+- `POST /api/profile`: Upserts (creates/updates) the business profile.
 
-### 2. UI (Frontend Integration)
+### Schemes & Discovery
+- `GET /api/schemes`: Returns paginated and filtered government schemes.
+- `GET /api/schemes/save`: Fetches all schemes shortlisted by the user.
+- `POST /api/schemes/save`: Saves a scheme to the user's account.
+- `DELETE /api/schemes/save`: Removes a scheme from the user's account.
 
-When fetching data for the UI, you should map the `raw_data` fields to your components. Key fields inside `raw_data['fields']` include:
+### AI Assistant (`/api/ai/*`)
+- `POST /api/ai/chat`: Handles contextual conversation with user-specific business data injection.
+- `GET /api/ai/wikipedia`: Fetches real-time background info for schemes (Internal helper).
 
-- `schemeShortTitle`: Acronym for the scheme.
-- `briefDescription`: A short summary of the scheme.
-- `nodalMinistryName`: The ministry responsible.
-- `beneficiaryState`: Array of states where the scheme is active.
-- `tags`: Array of keywords for searching.
+### Document Vault (`/api/documents`)
+- `GET`: Lists all documents belonging to the user.
+- `POST`: Handles multi-part form data for file uploads (saves to `public/uploads`).
+- `DELETE`: Removes a document and its database record.
 
-#### Example JSON Object Structure
-```json
-{
-  "api_id": "LBezF5gB5uF80_MGGY81",
-  "scheme_name": "Stand-Up India",
-  "slug": "sui",
-  "categories": ["Business & Entrepreneurship", "Banking,Financial Services and Insurance"],
-  "raw_data": {
-    "fields": {
-      "schemeName": "Stand-Up India",
-      "briefDescription": "A scheme by Ministry of Finance for financing SC/ST and Women Entrepreneurs...",
-      "nodalMinistryName": "Ministry Of Finance",
-      "beneficiaryState": ["All"],
-      "tags": ["Loan", "Entrepreneur", "Finance"]
-    }
-  }
-}
-```
+---
 
-### 3. Maintenance
-To refresh the database with the latest schemes from the API, run the following command in the terminal:
+## 3. Data Integration & Enrichment
+
+### Wikipedia Data Flow
+When a user views a specific scheme (`/schemes/[id]`), the backend triggers a search to Wikipedia:
+1. Query: `[Scheme Name] government scheme India`
+2. Wikipedia API provides an extract and a direct URL.
+3. This context is seamlessly blended into the "Description" card in the Bento UI.
+
+### Recommendation Engine
+The questionnaire results are processed via `lib/recommendation-engine.ts`:
+- Map's user's `industry` and `state` against scheme tags.
+- Assigns a `relevanceScore` based on profile matching.
+- Returns a ranked list of "Smart Picks" for the user.
+
+---
+
+## 4. Maintenance
+To sync the database with the latest available government schemes:
 ```bash
 source venv/bin/activate && python3 fetch_and_store.py
 ```
-This script uses an "upsert" (Insert or Update) strategy, so it will update existing schemes and add new ones without creating duplicates.
+To sync the Prisma schema with the live database:
+```bash
+cd web && npx prisma db push
+```
