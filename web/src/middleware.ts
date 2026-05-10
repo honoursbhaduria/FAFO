@@ -10,36 +10,45 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value;
   const { pathname } = request.nextUrl;
 
-  // Define protected routes
-  const isProtectedRoute = 
-    pathname.startsWith('/dashboard') ||
-    pathname.startsWith('/schemes') ||
-    pathname.startsWith('/compliance') ||
-    pathname.startsWith('/consultant') ||
-    pathname.startsWith('/documents') ||
-    pathname.startsWith('/ai') ||
-    pathname.startsWith('/profile') ||
-    pathname.startsWith('/results');
+  // Comprehensive list of protected business routes
+  const protectedPaths = [
+    '/dashboard',
+    '/schemes',
+    '/compliance',
+    '/consultant',
+    '/documents',
+    '/ai',
+    '/profile',
+    '/results',
+    '/questionnaire',
+    '/news/bookmarks'
+  ];
 
-  // 1. If trying to access protected route without token
+  const isProtectedRoute = protectedPaths.some(path => 
+    pathname === path || pathname.startsWith(`${path}/`)
+  );
+
+  // 1. If trying to access protected route without token, redirect to login
   if (isProtectedRoute && !token) {
+    console.log(`Unauthenticated access to ${pathname}, redirecting to /login`);
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  // 2. If token exists, verify it
+  // 2. If token exists, verify its integrity
   if (token) {
     try {
       await jose.jwtVerify(token, JWT_SECRET);
       
-      // If already logged in and trying to access login page, go to dashboard
+      // Prevent logged-in users from accessing the login page
       if (pathname === '/login') {
         return NextResponse.redirect(new URL('/dashboard', request.url));
       }
       
       return NextResponse.next();
     } catch (err) {
-      // Invalid/Expired token
+      // If token is invalid/expired and trying to access a protected route
       if (isProtectedRoute) {
+        console.log(`Invalid token for ${pathname}, clearing session and redirecting`);
         const response = NextResponse.redirect(new URL('/login', request.url));
         response.cookies.delete('token');
         return response;
@@ -50,16 +59,17 @@ export async function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
+// Ensure middleware runs on all relevant routes
 export const config = {
   matcher: [
-    '/dashboard/:path*',
-    '/schemes/:path*',
-    '/compliance/:path*',
-    '/consultant/:path*',
-    '/documents/:path*',
-    '/ai/:path*',
-    '/profile/:path*',
-    '/results/:path*',
-    '/login',
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public files (images, videos, etc.)
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico|hero-bg.mp4|.*\\.png|.*\\.jpg).*)',
   ],
 };
