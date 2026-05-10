@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getAuthUserId } from "@/lib/auth";
 import { buildFeedResponse } from "@/lib/news/cache";
 
+// GET /api/news/feed - Returns user-specific smart feed
 export async function GET() {
   try {
     const userId = await getAuthUserId();
