@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { Newspaper, AlertTriangle, Sparkles, Loader2 } from "lucide-react";
+import { Newspaper, AlertTriangle, Sparkles, Loader2, MapPin, Briefcase, Tag, ArrowRight } from "lucide-react";
 import type { FeedResponse, FeedArticle, FeedFilter, FeedSort } from "@/types/news";
 import SearchBar from "./SearchBar";
 import FilterBar from "./FilterBar";
@@ -9,6 +9,26 @@ import RefreshButton from "./RefreshButton";
 import ArticleCard from "./ArticleCard";
 import AlertCard from "./AlertCard";
 import OpportunityCard from "./OpportunityCard";
+import Link from "next/link";
+
+/** Sector icon mapping */
+const SECTOR_ICONS: Record<string, string> = {
+  "IT / Software": "💻",
+  "Manufacturing": "🏭",
+  "Food & Beverage": "🍽️",
+  "Agriculture": "🌾",
+  "Healthcare": "🏥",
+  "Retail / Trading": "🛒",
+  "Education": "📚",
+  "Textile & Handicraft": "🧵",
+  "Construction": "🏗️",
+  "Transport & Logistics": "🚚",
+  "Services": "💼",
+  "Handicraft": "🎨",
+  "Renewable Energy": "⚡",
+  "Tourism & Hospitality": "🏨",
+  "General": "📊",
+};
 
 export default function NewsFeedShell() {
   const [feed, setFeed] = useState<FeedResponse | null>(null);
@@ -184,6 +204,11 @@ export default function NewsFeedShell() {
     };
   }, [allArticles, feed]);
 
+  // ── Profile context ─────────────────────────────────────
+  const ctx = feed?.profileContext;
+  const hasProfile = ctx && ctx.sector && ctx.sector !== "General";
+  const sectorIcon = ctx ? (SECTOR_ICONS[ctx.sector] || "📊") : "📊";
+
   // ── Loading state ───────────────────────────────────────
   if (isLoading) {
     return (
@@ -254,6 +279,88 @@ export default function NewsFeedShell() {
           isLoading={isRefreshing}
         />
       </div>
+
+      {/* Personalization Banner */}
+      {hasProfile ? (
+        <div
+          id="personalization-banner"
+          className="relative overflow-hidden bg-gradient-to-r from-brand-50 via-indigo-50 to-violet-50 rounded-2xl border border-brand-100 p-5"
+        >
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-brand-200/20 to-transparent rounded-bl-full" />
+          <div className="relative flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="flex items-center gap-3 flex-1">
+              <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-2xl shrink-0">
+                {sectorIcon}
+              </div>
+              <div>
+                <p className="text-sm font-bold text-brand-700">
+                  Personalized for your business
+                </p>
+                <div className="flex items-center gap-3 mt-1 flex-wrap">
+                  <span className="inline-flex items-center gap-1 text-xs font-bold text-brand-600">
+                    <Briefcase size={12} />
+                    {ctx.sector}
+                  </span>
+                  {ctx.state && (
+                    <>
+                      <span className="w-1 h-1 bg-brand-300 rounded-full" />
+                      <span className="inline-flex items-center gap-1 text-xs font-bold text-brand-600">
+                        <MapPin size={12} />
+                        {ctx.state}
+                      </span>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Top matched keywords */}
+            {ctx.topKeywords && ctx.topKeywords.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {ctx.topKeywords
+                  .filter((kw) => !["india", "indian", "msme", "government scheme", "subsidy", "compliance", "regulation india", "business india", "policy", "ministry"].includes(kw.toLowerCase()))
+                  .slice(0, 5)
+                  .map((kw) => (
+                    <span
+                      key={kw}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 bg-white/80 border border-brand-100 rounded-lg text-[10px] font-bold text-brand-600 shadow-sm"
+                    >
+                      <Tag size={8} />
+                      {kw}
+                    </span>
+                  ))}
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        /* No profile CTA */
+        <div
+          id="no-profile-cta"
+          className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border border-amber-200 p-5"
+        >
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-2xl shrink-0">
+              🎯
+            </div>
+            <div className="flex-1">
+              <p className="font-bold text-amber-800">
+                Get personalized news for your business
+              </p>
+              <p className="text-xs text-amber-600 mt-0.5">
+                Complete the questionnaire to see sector-specific news, regulations, and opportunities tailored to your business.
+              </p>
+            </div>
+            <Link
+              href="/questionnaire"
+              className="flex items-center gap-2 px-5 py-2.5 bg-amber-600 text-white font-bold text-sm rounded-xl hover:bg-amber-700 transition-all shadow-md shadow-amber-200 shrink-0"
+            >
+              Complete Profile
+              <ArrowRight size={14} />
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Search */}
       <SearchBar onSearch={setSearchQuery} />
@@ -349,6 +456,11 @@ export default function NewsFeedShell() {
         {activeFilter === "all" && !searchQuery && (
           <h2 className="text-lg font-black text-brand-600 mb-4">
             Your Personalized Feed
+            {hasProfile && (
+              <span className="ml-2 text-sm font-bold text-slate-400">
+                {sectorIcon} {ctx?.sector}
+              </span>
+            )}
             <span className="ml-2 text-sm font-bold text-slate-400">
               ({feed?.regularFeed.length ?? 0})
             </span>

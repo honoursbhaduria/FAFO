@@ -43,7 +43,7 @@ export default async function SchemeDetailsPage({ params }: { params: Promise<{ 
   }
 
   const data = (scheme.raw_data as any)?.fields || {};
-  const wikiExtract = await getWikipediaData(scheme.scheme_name);
+  const wikiExtract = await getWikipediaData(scheme.scheme_name || "");
   
   return (
     <>
@@ -181,7 +181,7 @@ export default async function SchemeDetailsPage({ params }: { params: Promise<{ 
             {/* Sidebar - Client Component */}
             <div className="lg:col-span-4">
               <SchemeSidebar 
-                schemeName={scheme.scheme_name}
+                schemeName={scheme.scheme_name || "Untitled Scheme"}
                 externalUrl={data.url}
                 apiId={scheme.api_id}
               />

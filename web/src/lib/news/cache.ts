@@ -33,6 +33,7 @@ async function ensureTables() {
         fetched_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         expires_at TIMESTAMPTZ NOT NULL,
         last_manual_refresh TIMESTAMPTZ,
+        profile_context JSONB,
         UNIQUE(user_id)
       );
     `);
@@ -48,6 +49,14 @@ async function ensureTables() {
         UNIQUE(user_id, article_id)
       );
     `);
+    // Ensure profile_context column exists (migration-safe)
+    try {
+      await prisma.$executeRawUnsafe(`
+        ALTER TABLE user_news_cache ADD COLUMN IF NOT EXISTS profile_context JSONB;
+      `);
+    } catch {
+      // Column may already exist
+    }
     tablesEnsured = true;
   } catch (err) {
     console.error("[Cache] Error ensuring tables:", err);
@@ -143,6 +152,27 @@ export async function getBookmarkedArticles(
 }
 
 // ────────────────────────────────────────────────────────────
+// Cache invalidation (called when profile/questionnaire changes)
+// ────────────────────────────────────────────────────────────
+
+/**
+ * Invalidate the cached news feed for a user.
+ * Call this whenever the user's BusinessProfile or questionnaire answers change.
+ */
+export async function invalidateUserCache(userId: string): Promise<void> {
+  await ensureTables();
+  try {
+    await prisma.$executeRawUnsafe(
+      `DELETE FROM user_news_cache WHERE user_id = $1`,
+      userId
+    );
+    console.log(`[Cache] Invalidated news cache for user ${userId}`);
+  } catch (err) {
+    console.error("[Cache] Error invalidating cache:", err);
+  }
+}
+
+// ────────────────────────────────────────────────────────────
 // Cache read / write
 // ────────────────────────────────────────────────────────────
 
@@ -151,12 +181,13 @@ interface CacheRow {
   fetched_at: Date | string;
   expires_at: Date | string;
   last_manual_refresh: Date | string | null;
+  profile_context: unknown;
 }
 
 async function getCachedArticles(userId: string): Promise<CacheRow | null> {
   await ensureTables();
   const rows: CacheRow[] = await prisma.$queryRawUnsafe(
-    `SELECT articles, fetched_at, expires_at, last_manual_refresh
+    `SELECT articles, fetched_at, expires_at, last_manual_refresh, profile_context
      FROM user_news_cache WHERE user_id = $1 LIMIT 1`,
     userId
   );
@@ -166,7 +197,8 @@ async function getCachedArticles(userId: string): Promise<CacheRow | null> {
 async function writeCachedArticles(
   userId: string,
   articles: ScoredArticle[],
-  isManualRefresh: boolean
+  isManualRefresh: boolean,
+  profileContext?: { sector: string; state: string; topKeywords: string[] }
 ): Promise<{ fetchedAt: string; expiresAt: string }> {
   await ensureTables();
   const now = new Date();
@@ -177,16 +209,18 @@ async function writeCachedArticles(
     : "";
 
   await prisma.$executeRawUnsafe(
-    `INSERT INTO user_news_cache (user_id, articles, fetched_at, expires_at${isManualRefresh ? ", last_manual_refresh" : ""})
-     VALUES ($1, $2::jsonb, NOW(), $3${isManualRefresh ? ", NOW()" : ""})
+    `INSERT INTO user_news_cache (user_id, articles, fetched_at, expires_at, profile_context${isManualRefresh ? ", last_manual_refresh" : ""})
+     VALUES ($1, $2::jsonb, NOW(), $3, $4::jsonb${isManualRefresh ? ", NOW()" : ""})
      ON CONFLICT (user_id) DO UPDATE SET
        articles = $2::jsonb,
        fetched_at = NOW(),
-       expires_at = $3
+       expires_at = $3,
+       profile_context = $4::jsonb
        ${manualRefreshClause}`,
     userId,
     JSON.stringify(articles),
-    expiresAt
+    expiresAt,
+    JSON.stringify(profileContext || null)
   );
 
   return {
@@ -199,7 +233,10 @@ async function writeCachedArticles(
 // Core pipeline
 // ────────────────────────────────────────────────────────────
 
-async function runFullPipeline(userId: string): Promise<ScoredArticle[]> {
+async function runFullPipeline(userId: string): Promise<{
+  articles: ScoredArticle[];
+  profileContext: { sector: string; state: string; topKeywords: string[] };
+}> {
   // 1. Build keyword profile
   const profile = await buildUserKeywordProfile(userId);
 
@@ -213,20 +250,27 @@ async function runFullPipeline(userId: string): Promise<ScoredArticle[]> {
     topKeywords.push("MSME", "India", "business", "government scheme");
   }
 
-  // 3. Fetch news articles
+  // 3. Build profile context for UI display
+  const profileContext = {
+    sector: profile.sectorLabel || "General",
+    state: profile.rawAnswers.state || "",
+    topKeywords: profile.keywords.slice(0, 8).map((k) => k.term),
+  };
+
+  // 4. Fetch news articles
   const orchestrator = createDefaultOrchestrator();
   const rawArticles = await orchestrator.fetchAll(topKeywords);
 
-  // 4. Get read articles for scoring penalty
+  // 5. Get read articles for scoring penalty
   const interactions = await getUserInteractions(userId);
   const readIds = new Set(
     interactions.filter((i) => i.isRead).map((i) => i.articleId)
   );
 
-  // 5. Score articles
+  // 6. Score articles
   const scored = scoreArticles(rawArticles, profile.keywords, readIds);
 
-  return scored;
+  return { articles: scored, profileContext };
 }
 
 // ────────────────────────────────────────────────────────────
@@ -242,6 +286,7 @@ export async function getOrFetchFeed(userId: string): Promise<{
   fetchedAt: string;
   expiresAt: string;
   cooldownEndsAt?: string;
+  profileContext?: { sector: string; state: string; topKeywords: string[] };
 }> {
   const cached = await getCachedArticles(userId);
 
@@ -275,19 +320,21 @@ export async function getOrFetchFeed(userId: string): Promise<{
         fetchedAt,
         expiresAt: expiresAt.toISOString(),
         cooldownEndsAt,
+        profileContext: cached.profile_context as any || undefined,
       };
     }
   }
 
   // Cache miss or expired → run pipeline
-  const articles = await runFullPipeline(userId);
+  const { articles, profileContext } = await runFullPipeline(userId);
   const { fetchedAt, expiresAt } = await writeCachedArticles(
     userId,
     articles,
-    false
+    false,
+    profileContext
   );
 
-  return { articles, fetchedAt, expiresAt };
+  return { articles, fetchedAt, expiresAt, profileContext };
 }
 
 /**
@@ -296,7 +343,7 @@ export async function getOrFetchFeed(userId: string): Promise<{
 export async function forceRefreshFeed(
   userId: string
 ): Promise<
-  | { articles: ScoredArticle[]; fetchedAt: string; expiresAt: string }
+  | { articles: ScoredArticle[]; fetchedAt: string; expiresAt: string; profileContext?: { sector: string; state: string; topKeywords: string[] } }
   | { error: string; cooldownEndsAt: string }
 > {
   const cached = await getCachedArticles(userId);
@@ -316,21 +363,22 @@ export async function forceRefreshFeed(
     }
   }
 
-  const articles = await runFullPipeline(userId);
+  const { articles, profileContext } = await runFullPipeline(userId);
   const { fetchedAt, expiresAt } = await writeCachedArticles(
     userId,
     articles,
-    true
+    true,
+    profileContext
   );
 
-  return { articles, fetchedAt, expiresAt };
+  return { articles, fetchedAt, expiresAt, profileContext };
 }
 
 /**
  * Build the full FeedResponse (with interactions merged) for the API.
  */
 export async function buildFeedResponse(userId: string): Promise<FeedResponse> {
-  const { articles, fetchedAt, expiresAt, cooldownEndsAt } =
+  const { articles, fetchedAt, expiresAt, cooldownEndsAt, profileContext } =
     await getOrFetchFeed(userId);
   const interactions = await getUserInteractions(userId);
   const interactionMap = new Map(
@@ -361,5 +409,7 @@ export async function buildFeedResponse(userId: string): Promise<FeedResponse> {
     lastUpdated: fetchedAt,
     cacheExpiresAt: expiresAt,
     cooldownEndsAt,
+    profileContext,
   };
 }
+

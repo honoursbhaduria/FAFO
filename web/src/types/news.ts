@@ -13,7 +13,8 @@ export interface UserKeywordProfile {
   userId: string;
   keywords: WeightedKeyword[];
   rawAnswers: Record<string, string>;
-  builtAt: string; // ISO timestamp
+  sectorLabel: string;   // Human-readable sector name for UI display
+  builtAt: string;       // ISO timestamp
 }
 
 /** Shape of a single entry in keyword-expansions.json */
@@ -72,6 +73,16 @@ export interface ArticleInteraction {
 }
 
 // ────────────────────────────────────────────────────────────
+// Profile context — tells the UI what the feed is personalized for
+// ────────────────────────────────────────────────────────────
+
+export interface ProfileContext {
+  sector: string;
+  state: string;
+  topKeywords: string[];
+}
+
+// ────────────────────────────────────────────────────────────
 // API response shapes
 // ────────────────────────────────────────────────────────────
 
@@ -89,6 +100,7 @@ export interface FeedResponse {
   lastUpdated: string;       // ISO timestamp
   cacheExpiresAt: string;    // ISO timestamp
   cooldownEndsAt?: string;   // ISO timestamp — present when user in cooldown
+  profileContext?: ProfileContext; // Sector/state/keywords the feed is tuned for
 }
 
 /** Response from POST /api/news/refresh */

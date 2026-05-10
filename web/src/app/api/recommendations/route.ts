@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getRecommendations } from "@/lib/recommendation-engine";
 import { prisma } from "@/lib/prisma";
 import { getAuthUserId } from "@/lib/auth";
+import { invalidateUserCache } from "@/lib/news/cache";
 
 export async function POST(request: Request) {
   try {
@@ -29,6 +30,7 @@ export async function POST(request: Request) {
             annualTurnover: (answers.annual_turnover as string) || undefined,
             employeeCount: parseInt(answers.employee_count as string) || undefined,
             goals: Array.isArray(answers.goals) ? answers.goals : [],
+            questionnaireAnswers: answers, // Store full questionnaire for news personalization
           },
           create: {
             userId,
@@ -43,8 +45,12 @@ export async function POST(request: Request) {
             annualTurnover: (answers.annual_turnover as string) || undefined,
             employeeCount: parseInt(answers.employee_count as string) || undefined,
             goals: Array.isArray(answers.goals) ? answers.goals : [],
+            questionnaireAnswers: answers, // Store full questionnaire for news personalization
           },
         });
+
+        // Invalidate news cache so the feed updates with new profile data
+        await invalidateUserCache(userId);
       } catch (e) {
         console.error("[recommendations] Profile save error:", e);
       }

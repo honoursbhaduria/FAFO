@@ -266,5 +266,173 @@
   "Student": {
     "keywords": ["student entrepreneur", "campus startup", "college business", "student scheme"],
     "weight_multiplier": 0.9
+  },
+
+  "SaaS": {
+    "keywords": ["SaaS", "cloud computing", "software as a service", "cloud platform", "subscription software", "AWS", "Azure", "GCP"],
+    "weight_multiplier": 1.2
+  },
+  "MobileApp": {
+    "keywords": ["mobile app", "app development", "Android", "iOS", "play store", "app store", "mobile startup"],
+    "weight_multiplier": 1.0
+  },
+  "AI/ML": {
+    "keywords": ["artificial intelligence", "machine learning", "AI", "ML", "deep learning", "neural network", "AI startup India", "data science", "NLP"],
+    "weight_multiplier": 1.3
+  },
+  "Fintech": {
+    "keywords": ["fintech", "digital payments", "UPI", "RBI fintech", "neobank", "lending tech", "insurtech", "payment gateway", "NPCI"],
+    "weight_multiplier": 1.2
+  },
+  "Cybersecurity": {
+    "keywords": ["cybersecurity", "data protection", "CERT-In", "cyber attack", "information security", "privacy", "DPDP Act", "data breach"],
+    "weight_multiplier": 1.2
+  },
+  "ITServices": {
+    "keywords": ["IT services", "IT consulting", "managed services", "system integration", "IT outsourcing", "digital transformation"],
+    "weight_multiplier": 1.0
+  },
+  "OtherTech": {
+    "keywords": ["technology", "tech startup", "innovation", "R&D", "product development", "tech India"],
+    "weight_multiplier": 0.8
+  },
+
+  "Bootstrapped": {
+    "keywords": ["bootstrapped", "self-funded", "bootstrap startup", "no external funding"],
+    "weight_multiplier": 0.7
+  },
+  "PreSeed": {
+    "keywords": ["pre-seed", "angel investment", "angel investor", "angel funding India", "seed stage", "early stage funding"],
+    "weight_multiplier": 1.0
+  },
+  "Seed": {
+    "keywords": ["seed round", "seed funding", "seed investment", "early stage VC", "startup funding India"],
+    "weight_multiplier": 1.0
+  },
+  "SeriesA": {
+    "keywords": ["Series A", "venture capital", "VC funding", "growth funding", "startup investment", "PE funding"],
+    "weight_multiplier": 1.0
+  },
+
+  "ConsumerGoods": {
+    "keywords": ["consumer goods", "FMCG", "consumer products", "packaged goods", "household products", "consumer market India"],
+    "weight_multiplier": 1.0
+  },
+  "Industrial": {
+    "keywords": ["industrial machinery", "heavy engineering", "capital goods", "industrial equipment", "machine tools", "industrial production"],
+    "weight_multiplier": 1.0
+  },
+  "Electronics": {
+    "keywords": ["electronics manufacturing", "semiconductor", "PCB", "electronic components", "IT hardware", "PLI electronics", "chip manufacturing India"],
+    "weight_multiplier": 1.2
+  },
+  "Chemicals": {
+    "keywords": ["chemical industry", "petrochemical", "specialty chemicals", "chemical manufacturing", "pharma chemicals", "agrochemicals"],
+    "weight_multiplier": 1.0
+  },
+  "AutoParts": {
+    "keywords": ["auto components", "automotive parts", "automobile", "EV components", "vehicle manufacturing", "auto industry India"],
+    "weight_multiplier": 1.0
+  },
+
+  "Restaurant": {
+    "keywords": ["restaurant", "cafe", "food service", "QSR", "quick service restaurant", "dine in", "cloud kitchen", "Swiggy", "Zomato"],
+    "weight_multiplier": 1.0
+  },
+  "Processing": {
+    "keywords": ["food processing", "food manufacturing", "PMKSY", "Mega Food Park", "food preservation", "cold storage", "food industry India"],
+    "weight_multiplier": 1.2
+  },
+  "Bakery": {
+    "keywords": ["bakery", "confectionery", "baked goods", "pastry", "bread manufacturing", "bakery business India"],
+    "weight_multiplier": 0.9
+  },
+  "Packaged": {
+    "keywords": ["packaged food", "ready to eat", "FSSAI labeling", "food packaging", "shelf life", "food branding"],
+    "weight_multiplier": 1.0
+  },
+  "Dairy": {
+    "keywords": ["dairy", "milk processing", "dairy farming", "dairy products", "Amul", "dairy cooperative", "milk production India"],
+    "weight_multiplier": 1.0
+  },
+  "Organic": {
+    "keywords": ["organic food", "organic farming", "organic certification", "NPOP", "natural food", "organic India", "health food"],
+    "weight_multiplier": 1.1
+  },
+
+  "crop": {
+    "keywords": ["crop farming", "crop production", "kharif", "rabi", "MSP", "minimum support price", "crop insurance", "PM Fasal Bima"],
+    "weight_multiplier": 1.0
+  },
+  "horticulture": {
+    "keywords": ["horticulture", "fruit cultivation", "vegetable farming", "floriculture", "MIDH", "horticulture mission"],
+    "weight_multiplier": 1.0
+  },
+  "dairy_farming": {
+    "keywords": ["dairy farming", "animal husbandry", "cattle", "livestock", "veterinary", "dairy scheme", "Rashtriya Gokul Mission"],
+    "weight_multiplier": 1.0
+  },
+  "fisheries": {
+    "keywords": ["fisheries", "aquaculture", "fish farming", "shrimp", "PMMSY", "Blue Revolution", "marine fisheries", "inland fisheries"],
+    "weight_multiplier": 1.0
+  },
+  "organic_farming": {
+    "keywords": ["organic farming", "organic certification", "zero budget farming", "natural farming", "Paramparagat Krishi", "organic India"],
+    "weight_multiplier": 1.1
+  },
+
+  "clinic": {
+    "keywords": ["clinic", "hospital", "healthcare facility", "medical practice", "OPD", "primary health", "nursing home", "NABH"],
+    "weight_multiplier": 1.0
+  },
+  "pharmacy": {
+    "keywords": ["pharmacy", "pharmaceutical", "drug license", "Jan Aushadhi", "generic medicine", "pharma retail", "drug regulation"],
+    "weight_multiplier": 1.0
+  },
+  "devices": {
+    "keywords": ["medical devices", "health equipment", "diagnostic equipment", "PLI medical devices", "medical technology", "CDSCO"],
+    "weight_multiplier": 1.2
+  },
+  "healthtech": {
+    "keywords": ["health tech", "telemedicine", "digital health", "e-pharmacy", "health app", "remote diagnostics", "eSanjeevani"],
+    "weight_multiplier": 1.2
+  },
+  "wellness": {
+    "keywords": ["Ayurveda", "wellness", "yoga", "Ayush", "traditional medicine", "naturopathy", "Ayush Ministry", "herbal products"],
+    "weight_multiplier": 1.0
+  },
+
+  "ecommerce": {
+    "keywords": ["e-commerce", "online store", "D2C", "direct to consumer", "online marketplace", "Shopify", "e-commerce India"],
+    "weight_multiplier": 1.0
+  },
+  "social": {
+    "keywords": ["social media marketing", "Instagram business", "social commerce", "influencer marketing", "digital marketing India"],
+    "weight_multiplier": 0.8
+  },
+  "marketplace": {
+    "keywords": ["marketplace", "Amazon seller", "Flipkart seller", "online marketplace", "ONDC", "GeM portal"],
+    "weight_multiplier": 1.0
+  },
+
+  "school": {
+    "keywords": ["school", "K-12", "CBSE", "ICSE", "state board", "school education", "NEP 2020", "school management"],
+    "weight_multiplier": 1.0
+  },
+  "coaching": {
+    "keywords": ["coaching center", "tutoring", "test preparation", "JEE coaching", "NEET coaching", "competitive exam", "tuition"],
+    "weight_multiplier": 0.9
+  },
+  "edtech": {
+    "keywords": ["edtech", "e-learning", "online education", "EdTech India", "digital learning", "LMS", "online courses"],
+    "weight_multiplier": 1.2
+  },
+  "vocational": {
+    "keywords": ["vocational training", "skill development", "NSDC", "ITI", "PMKVY", "skill India", "apprenticeship"],
+    "weight_multiplier": 1.0
+  },
+  "higher": {
+    "keywords": ["higher education", "university", "college", "UGC", "AICTE", "research", "PhD", "postgraduate"],
+    "weight_multiplier": 1.0
   }
 }

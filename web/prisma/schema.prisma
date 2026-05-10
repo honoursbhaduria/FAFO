@@ -80,6 +80,7 @@ model BusinessProfile {
   annualTurnover  String?
   employeeCount   Int?
   goals           String[]
+  questionnaireAnswers Json?   // Full questionnaire answers for news personalization
   createdAt       DateTime @default(now())
 }
 

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getAuthUserId } from "@/lib/auth";
+import { invalidateUserCache } from "@/lib/news/cache";
 
 export async function POST(request: Request) {
   try {
@@ -61,6 +62,9 @@ export async function POST(request: Request) {
         goals: goals || [],
       },
     });
+
+    // Invalidate news cache so the feed updates with new profile data
+    await invalidateUserCache(userId);
 
     return NextResponse.json(profile);
   } catch (error: any) {
