@@ -257,7 +257,10 @@ export default function DocumentVaultPage() {
             </div>
             <div className="flex-1 bg-slate-50 overflow-auto">
               <DocViewer 
-                documents={[{ uri: previewDoc.url, fileName: previewDoc.name }]} 
+                documents={[{ 
+                  uri: typeof window !== 'undefined' ? `${window.location.origin}${previewDoc.url}` : previewDoc.url, 
+                  fileName: previewDoc.name 
+                }]} 
                 pluginRenderers={DocViewerRenderers} 
                 style={{ height: '100%' }}
                 config={{
