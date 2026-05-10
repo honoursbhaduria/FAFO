@@ -1,12 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { Search, User, Menu, ChevronDown, Globe, Command } from "lucide-react";
+import { User, Menu, ChevronDown, Globe } from "lucide-react";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
-const Logo = () => (
-  <span className="text-2xl font-black tracking-tighter text-brand-600">
+const Logo = ({ light }: { light?: boolean }) => (
+  <span className={`text-2xl font-black tracking-tighter transition-colors duration-500 ${
+    light ? "text-white" : "text-brand-600"
+  }`}>
     OneClickSathi
   </span>
 );
@@ -14,6 +17,9 @@ const Logo = () => (
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+  const lightHeader = isHome && !scrolled;
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -36,8 +42,8 @@ export default function Header() {
           }`}
         >
           <div className="flex items-center gap-10">
-            <Link href="/">
-              <Logo />
+            <Link href="/" className="active:scale-95 transition-transform">
+              <Logo light={lightHeader} />
             </Link>
             
             <nav className="hidden lg:flex items-center gap-6">
@@ -51,7 +57,9 @@ export default function Header() {
                 <Link 
                   key={item.label}
                   href={item.href}
-                  className="group flex items-center gap-1.5 text-sm font-bold text-slate-500 hover:text-brand-600 transition-colors"
+                  className={`group flex items-center gap-1.5 text-sm font-bold transition-colors ${
+                    lightHeader ? "text-white/80 hover:text-white" : "text-slate-500 hover:text-brand-600"
+                  }`}
                 >
                   {item.label}
                   <ChevronDown className="w-4 h-4 opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all" />
@@ -61,27 +69,35 @@ export default function Header() {
           </div>
 
           <div className="flex items-center gap-3">
-            <button className="hidden sm:flex items-center gap-2 p-2 text-slate-500 hover:text-brand-600 transition-colors">
+            <button className={`hidden sm:flex items-center gap-2 p-2 transition-colors ${
+              lightHeader ? "text-white/80 hover:text-white" : "text-slate-500 hover:text-brand-600"
+            }`}>
               <Globe className="w-5 h-5" />
               <span className="text-xs font-bold">EN</span>
             </button>
             
             <Link 
               href="/login" 
-              className="hidden sm:block text-sm font-bold text-brand-600 hover:text-brand-600 transition-colors px-2"
+              className={`hidden sm:block text-sm font-bold transition-colors px-2 ${
+                lightHeader ? "text-white hover:text-white" : "text-brand-600 hover:text-brand-600"
+              }`}
             >
               Sign In
             </Link>
             
             <Link 
               href="/login?mode=register" 
-              className="px-5 py-2.5 text-sm font-bold text-white bg-brand-600 rounded-xl hover:bg-brand-600 hover:shadow-xl hover:shadow-brand-100/50 transition-all active:scale-95 flex items-center gap-2"
+              className={`px-5 py-2.5 text-sm font-bold rounded-xl transition-all active:scale-95 flex items-center gap-2 ${
+                lightHeader
+                  ? "text-brand-700 bg-white hover:bg-white/90 hover:shadow-xl hover:shadow-black/20"
+                  : "text-white bg-brand-600 hover:bg-brand-600 hover:shadow-xl hover:shadow-brand-100/50"
+              }`}
             >
               Get Started
             </Link>
 
             <button 
-              className="lg:hidden p-2 text-brand-600"
+              className={`lg:hidden p-2 transition-colors ${lightHeader ? "text-white" : "text-brand-600"}`}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               <Menu className="w-6 h-6" />
@@ -107,7 +123,7 @@ export default function Header() {
                 <Link href="/compliance" className="text-lg font-bold text-brand-600">Compliance</Link>
                 <div className="pt-6 border-t border-slate-100 flex flex-col gap-4">
                   <Link href="/login" className="text-lg font-bold text-slate-500 text-center">Sign In</Link>
-                  <Link href="/login?mode=register" className="py-4 bg-brand-600 text-white font-bold rounded-2xl text-center shadow-xl shadow-brand-600/20">Get Started</Link>
+                  <Link href="/login?mode=register" className="py-4 bg-brand-600 text-white font-bold rounded-2xl text-center shadow-xl shadow-brand-100/20">Get Started</Link>
                 </div>
               </nav>
             </div>
@@ -117,4 +133,3 @@ export default function Header() {
     </header>
   );
 }
-
