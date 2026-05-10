@@ -105,8 +105,8 @@ export default function ModernLanding() {
           >
             <source src="/herosectionvideo.mp4?v=20260510" type="video/mp4" />
           </video>
-          <div className="absolute inset-0 bg-gradient-to-br from-white/85 via-white/40 to-brand-600/20" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.6),transparent_40%),radial-gradient(circle_at_80%_70%,rgba(28,37,54,0.35),transparent_45%)]" />
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-950/70 via-slate-900/40 to-brand-600/30" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(15,23,42,0.75),transparent_45%),radial-gradient(circle_at_80%_70%,rgba(2,6,23,0.8),transparent_50%)]" />
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
         </div>
 
@@ -116,23 +116,23 @@ export default function ModernLanding() {
           transition={{ duration: 0.8 }}
           className="relative z-10"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-50 border border-brand-100 mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/90 border border-white/40 mb-8 shadow-[0_10px_30px_rgba(2,6,23,0.35)]">
               <span className="flex h-2 w-2 rounded-full bg-brand-600 animate-pulse" />
-              <span className="text-[10px] font-black text-brand-600 uppercase tracking-widest">
+              <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">
                 Trusted by 28,000+ MSMEs across India
               </span>
           </div>
 
-          <h1 className="text-[clamp(4rem,12vw,12rem)] font-black leading-[0.85] tracking-tighter m-0 uppercase">
+          <h1 className="text-[clamp(4rem,12vw,12rem)] font-black leading-[0.85] tracking-tighter m-0 uppercase text-white drop-shadow-[0_20px_40px_rgba(2,6,23,0.65)]">
             SCALE <br />
-            <span className="text-slate-300">SAFE.</span>
+            <span className="text-white/80">SAFE.</span>
           </h1>
           
           <div className="flex flex-col md:flex-row items-end gap-12 mt-12">
-            <p className="text-xl md:text-2xl text-slate-500 max-w-[500px] font-medium leading-tight">
+            <p className="text-xl md:text-2xl text-white/90 max-w-[500px] font-semibold leading-tight drop-shadow-[0_10px_24px_rgba(2,6,23,0.5)]">
               The first automated compliance engine <br />
               built for the next generation of <br />
-              <span className="text-brand-600 font-bold italic underline decoration-brand-600/20">Indian Enterprise.</span>
+              <span className="text-white font-bold italic underline decoration-white/30">Indian Enterprise.</span>
             </p>
 
             <motion.div 
@@ -143,7 +143,7 @@ export default function ModernLanding() {
             >
               <Link 
                 href="/dashboard" 
-                className="flex items-center justify-center gap-2 px-8 py-5 bg-brand-600 text-white rounded-2xl font-bold text-lg hover:bg-brand-700 transition-all shadow-2xl shadow-brand-600/20 active:scale-95 group"
+                className="flex items-center justify-center gap-2 px-8 py-5 bg-white text-brand-700 rounded-2xl font-bold text-lg hover:bg-white/90 transition-all shadow-2xl shadow-black/20 active:scale-95 group"
               >
                 Access Dashboard
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -157,15 +157,15 @@ export default function ModernLanding() {
             <div className="space-y-4">
                 <div className="flex items-center gap-3">
                     <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                    <span className="text-sm font-black uppercase tracking-widest text-slate-400">GST Ready</span>
+                    <span className="text-sm font-black uppercase tracking-widest text-white/80 drop-shadow-[0_8px_16px_rgba(2,6,23,0.6)]">GST Ready</span>
                 </div>
                 <div className="flex items-center gap-3">
                     <ShieldCheck className="w-5 h-5 text-emerald-500" />
-                    <span className="text-sm font-black uppercase tracking-widest text-slate-400">ISO Certified</span>
+                    <span className="text-sm font-black uppercase tracking-widest text-white/80 drop-shadow-[0_8px_16px_rgba(2,6,23,0.6)]">ISO Certified</span>
                 </div>
                 <div className="flex items-center gap-3">
                     <Star className="w-5 h-5 text-amber-500 fill-amber-500" />
-                    <span className="text-sm font-black uppercase tracking-widest text-slate-400">4.9/5 Rating</span>
+                    <span className="text-sm font-black uppercase tracking-widest text-white/80 drop-shadow-[0_8px_16px_rgba(2,6,23,0.6)]">4.9/5 Rating</span>
                 </div>
             </div>
         </div>
