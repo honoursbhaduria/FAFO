@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import dynamic from "next/dynamic";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { 
   FileText, 
@@ -17,11 +16,6 @@ import {
   CheckCircle2
 } from "lucide-react";
 
-import { DocViewerRenderers } from "@cyntler/react-doc-viewer";
-
-// Dynamically import DocViewer component to avoid SSR issues
-const DocViewer = dynamic(() => import("@cyntler/react-doc-viewer"), { ssr: false });
-
 interface Document {
   id: string;
   name: string;
@@ -32,6 +26,7 @@ interface Document {
 }
 
 export default function DocumentVaultPage() {
+  const [isMounted, setIsMounted] = useState(false);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -57,6 +52,7 @@ export default function DocumentVaultPage() {
   };
 
   useEffect(() => {
+    setIsMounted(true);
     fetchDocuments();
   }, []);
 
@@ -237,7 +233,7 @@ export default function DocumentVaultPage() {
       </div>
 
       {/* Preview Modal */}
-      {previewDoc && (
+      {previewDoc && isMounted && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center px-4 md:p-10">
           <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-md" onClick={() => setPreviewDoc(null)} />
           <div className="relative bg-white w-full h-full max-w-5xl rounded-[40px] shadow-2xl overflow-hidden flex flex-col border border-white/10">
@@ -255,21 +251,22 @@ export default function DocumentVaultPage() {
                 </button>
               </div>
             </div>
-            <div className="flex-1 bg-slate-50 overflow-auto">
-              <DocViewer 
-                documents={[{ 
-                  uri: typeof window !== 'undefined' ? `${window.location.origin}${previewDoc.url}` : previewDoc.url, 
-                  fileName: previewDoc.name 
-                }]} 
-                pluginRenderers={DocViewerRenderers} 
-                style={{ height: '100%' }}
-                config={{
-                  header: {
-                    disableHeader: true,
-                    disableFileName: true,
-                  }
-                }}
-              />
+            <div className="flex-1 bg-slate-50 overflow-hidden flex items-center justify-center p-4 md:p-8">
+              {previewDoc.url.toLowerCase().endsWith('.pdf') ? (
+                <iframe 
+                  src={`${previewDoc.url}#toolbar=0&navpanes=0`} 
+                  className="w-full h-full rounded-2xl border-none bg-white shadow-2xl"
+                  title={previewDoc.name}
+                />
+              ) : (
+                <div className="relative w-full h-full flex items-center justify-center bg-slate-100/50 rounded-2xl overflow-auto">
+                  <img 
+                    src={previewDoc.url} 
+                    alt={previewDoc.name}
+                    className="max-w-full max-h-full object-contain shadow-2xl rounded-lg"
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -37,10 +37,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    // Generate unique filename to avoid collisions
+    // Generate unique filename to avoid collisions and encoding issues
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
+    const safeName = file.name.replace(/[^\x00-\x7F]/g, "").replace(/\s+/g, '-');
+    const fileName = `${Date.now()}-${safeName}`;
     const uploadPath = path.join(process.cwd(), "public/uploads", fileName);
 
     // Write file to public/uploads
