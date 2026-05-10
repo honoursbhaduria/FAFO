@@ -39,6 +39,37 @@ export default function DocumentVaultPage() {
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadType, setUploadType] = useState("Identity");
 
+  const buildPreviewUrl = (url?: string) => {
+    if (!url) return "";
+    if (/^https?:\/\//i.test(url) || url.startsWith("/")) return url;
+    return `/${url}`;
+  };
+
+  const buildAbsoluteUrl = (url: string) => {
+    if (!url) return "";
+    if (/^https?:\/\//i.test(url)) return url;
+    if (typeof window === "undefined") return url;
+    return `${window.location.origin}${url}`;
+  };
+
+  const isPdfDocument = (doc: Document) => {
+    const mimeType = doc.extractedData?.mimeType as string | undefined;
+    if (mimeType && mimeType.toLowerCase().includes("pdf")) return true;
+    return doc.url?.toLowerCase().endsWith(".pdf");
+  };
+
+  const isOfficeDocument = (doc: Document) => {
+    const mimeType = (doc.extractedData?.mimeType as string | undefined)?.toLowerCase();
+    if (mimeType && /(word|excel|powerpoint|officedocument)/.test(mimeType)) return true;
+    return /\.(docx?|xlsx?|pptx?)$/i.test(doc.url || "");
+  };
+
+  const buildOfficeViewerUrl = (url: string) => {
+    const absoluteUrl = buildAbsoluteUrl(url);
+    if (!absoluteUrl) return "";
+    return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(absoluteUrl)}`;
+  };
+
   const fetchDocuments = async () => {
     try {
       const res = await fetch("/api/documents");
@@ -243,28 +274,46 @@ export default function DocumentVaultPage() {
                 <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">{previewDoc.type}</p>
               </div>
               <div className="flex items-center gap-3">
-                <button className="p-3 bg-slate-50 text-slate-600 hover:bg-brand-50 hover:text-brand-600 rounded-2xl transition-all">
+                <a
+                  href={buildPreviewUrl(previewDoc.url)}
+                  download={previewDoc.name || "document"}
+                  className="p-3 bg-slate-50 text-slate-600 hover:bg-brand-50 hover:text-brand-600 rounded-2xl transition-all"
+                >
                   <Download size={20} />
-                </button>
+                </a>
                 <button onClick={() => setPreviewDoc(null)} className="p-3 bg-slate-50 text-slate-400 hover:text-brand-600 rounded-2xl transition-all">
                   <X size={20} />
                 </button>
               </div>
             </div>
             <div className="flex-1 bg-slate-50 overflow-hidden flex items-center justify-center p-4 md:p-8">
-              {previewDoc.url.toLowerCase().endsWith('.pdf') ? (
-                <iframe 
-                  src={`${previewDoc.url}#toolbar=0&navpanes=0`} 
-                  className="w-full h-full rounded-2xl border-none bg-white shadow-2xl"
-                  title={previewDoc.name}
-                />
-              ) : (
-                <div className="relative w-full h-full flex items-center justify-center bg-slate-100/50 rounded-2xl overflow-auto">
-                  <img 
-                    src={previewDoc.url} 
-                    alt={previewDoc.name}
-                    className="max-w-full max-h-full object-contain shadow-2xl rounded-lg"
+              {buildPreviewUrl(previewDoc.url) ? (
+                isPdfDocument(previewDoc) ? (
+                  <iframe
+                    src={`${buildPreviewUrl(previewDoc.url)}#toolbar=0&navpanes=0`}
+                    className="w-full h-full rounded-2xl border-none bg-white shadow-2xl"
+                    title={previewDoc.name}
                   />
+                ) : isOfficeDocument(previewDoc) ? (
+                  <iframe
+                    src={buildOfficeViewerUrl(buildPreviewUrl(previewDoc.url))}
+                    className="w-full h-full rounded-2xl border-none bg-white shadow-2xl"
+                    title={previewDoc.name}
+                  />
+                ) : (
+                  <div className="relative w-full h-full flex items-center justify-center bg-slate-100/50 rounded-2xl overflow-auto">
+                    <img
+                      src={buildPreviewUrl(previewDoc.url)}
+                      alt={previewDoc.name}
+                      className="max-w-full max-h-full object-contain shadow-2xl rounded-lg"
+                    />
+                  </div>
+                )
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center text-center text-slate-500">
+                  <FileText size={48} className="text-slate-300 mb-4" />
+                  <p className="font-bold">Preview unavailable</p>
+                  <p className="text-sm">This document does not have a valid file URL.</p>
                 </div>
               )}
             </div>
