@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { getAuthUserId } from "@/lib/auth";
+import { writeFile } from "fs/promises";
+import path from "path";
 
 export async function GET() {
   try {
@@ -35,15 +37,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    // Simulate URL for metadata
-    const mockUrl = `/uploads/${file.name}`; 
+    // Generate unique filename to avoid collisions
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
+    const uploadPath = path.join(process.cwd(), "public/uploads", fileName);
+
+    // Write file to public/uploads
+    await writeFile(uploadPath, buffer);
+    const fileUrl = `/uploads/${fileName}`; 
 
     const document = await prisma.document.create({
       data: {
         userId,
         name: file.name,
         type: type,
-        url: mockUrl,
+        url: fileUrl,
         extractedData: {
           size: `${(file.size / (1024 * 1024)).toFixed(2)} MB`,
           mimeType: file.type,
@@ -85,6 +94,8 @@ export async function DELETE(request: Request) {
       where: { id },
     });
 
+    // Note: In a real app, you should also delete the file from disk/S3 here
+    
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Delete Error:", error);

@@ -17,7 +17,9 @@ import {
   CheckCircle2
 } from "lucide-react";
 
-// Dynamically import DocViewer to avoid SSR issues
+import { DocViewerRenderers } from "@cyntler/react-doc-viewer";
+
+// Dynamically import DocViewer component to avoid SSR issues
 const DocViewer = dynamic(() => import("@cyntler/react-doc-viewer"), { ssr: false });
 
 interface Document {
@@ -256,7 +258,7 @@ export default function DocumentVaultPage() {
             <div className="flex-1 bg-slate-50 overflow-auto">
               <DocViewer 
                 documents={[{ uri: previewDoc.url, fileName: previewDoc.name }]} 
-                pluginRenderers={[]} // Standard renderers included in default if empty or not provided correctly
+                pluginRenderers={DocViewerRenderers} 
                 style={{ height: '100%' }}
                 config={{
                   header: {
