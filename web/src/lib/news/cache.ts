@@ -96,7 +96,6 @@ export async function markAsRead(
 export async function getBookmarkedArticles(
   userId: string
 ): Promise<FeedArticle[]> {
-  await ensureTables();
   // Get bookmarked article IDs
   const interactions = await getUserInteractions(userId);
   const bookmarkedIds = new Set(
@@ -263,23 +262,23 @@ export async function getOrFetchFeed(userId: string): Promise<{
 
   if (cached) {
     const expiresAt =
-      cached.expires_at instanceof Date
-        ? cached.expires_at
-        : new Date(cached.expires_at);
+      cached.expiresAt instanceof Date
+        ? cached.expiresAt
+        : new Date(cached.expiresAt);
 
     if (expiresAt.getTime() > Date.now()) {
       // Cache is valid
       const fetchedAt =
-        cached.fetched_at instanceof Date
-          ? cached.fetched_at.toISOString()
-          : String(cached.fetched_at);
+        cached.fetchedAt instanceof Date
+          ? cached.fetchedAt.toISOString()
+          : String(cached.fetchedAt);
 
       let cooldownEndsAt: string | undefined;
-      if (cached.last_manual_refresh) {
+      if (cached.lastManualRefresh) {
         const lastRefresh =
-          cached.last_manual_refresh instanceof Date
-            ? cached.last_manual_refresh
-            : new Date(String(cached.last_manual_refresh));
+          cached.lastManualRefresh instanceof Date
+            ? cached.lastManualRefresh
+            : new Date(String(cached.lastManualRefresh));
         const cooldownEnd = new Date(lastRefresh.getTime() + COOLDOWN_MS);
         if (cooldownEnd.getTime() > Date.now()) {
           cooldownEndsAt = cooldownEnd.toISOString();
@@ -291,7 +290,7 @@ export async function getOrFetchFeed(userId: string): Promise<{
         fetchedAt,
         expiresAt: expiresAt.toISOString(),
         cooldownEndsAt,
-        profileContext: cached.profile_context as any || undefined,
+        profileContext: cached.profileContext as any || undefined,
       };
     }
   }

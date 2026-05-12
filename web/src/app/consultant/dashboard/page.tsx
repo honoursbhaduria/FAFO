@@ -81,7 +81,7 @@ export default async function ConsultantDashboardPage() {
             </div>
           ) : (
             <div className="space-y-4">
-              {assignments.map((item) => (
+              {assignments.map((item: any) => (
                 <div key={item.id} className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
                   <div>
                     <p className="text-sm font-black text-slate-900">{item.user.name || "Client"}</p>

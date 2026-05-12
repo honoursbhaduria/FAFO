@@ -282,7 +282,6 @@ export class FetcherOrchestrator {
   private deduplicate(articles: RawArticle[]): RawArticle[] {
     const unique: RawArticle[] = [];
     const seenUrls = new Set<string>();
-    const uniqueTokenSets: Set<string>[] = [];
 
     for (const article of articles) {
       if (!article.url || article.url === "#") {
@@ -303,7 +302,6 @@ export class FetcherOrchestrator {
 
       seenUrls.add(article.url);
       unique.push(article);
-      uniqueTokenSets.push(currentTokens);
     }
 
     return unique;
