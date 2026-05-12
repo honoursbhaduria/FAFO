@@ -3,8 +3,6 @@ import Groq from "groq-sdk";
 import { prisma } from "@/lib/prisma";
 import crypto from "crypto";
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-
 // In-memory cache: key = schemeId:contentHash, value = { insights, timestamp }
 const insightCache = new Map<
   string,
@@ -30,6 +28,7 @@ function hashContent(data: string): string {
 
 export async function GET(request: Request) {
   try {
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
     const { searchParams } = new URL(request.url);
     const schemeId = searchParams.get("schemeId");
 
@@ -172,6 +171,19 @@ Rules:
     return NextResponse.json({ insights, cached: false });
   } catch (error: any) {
     console.error("Scheme Insight Error:", error);
+
+    // Check for specific Groq errors
+    if (error?.status === 401) {
+      return NextResponse.json(
+        { 
+          error: "Unauthorized", 
+          text: "The AI service is unauthorized. Please check your GROQ_API_KEY in the .env file.",
+          details: "401 Unauthorized"
+        },
+        { status: 401 }
+      );
+    }
+
     return NextResponse.json(
       {
         error: "Failed to generate insights",

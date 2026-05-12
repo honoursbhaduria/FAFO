@@ -79,6 +79,7 @@ export interface ArticleInteraction {
 export interface ProfileContext {
   sector: string;
   state: string;
+  stage: string;
   topKeywords: string[];
 }
 
@@ -90,6 +91,7 @@ export interface ProfileContext {
 export interface FeedArticle extends ScoredArticle {
   isRead: boolean;
   isBookmarked: boolean;
+  type: "alert" | "opportunity" | "regular";
 }
 
 /** Full feed response from GET /api/news/feed */

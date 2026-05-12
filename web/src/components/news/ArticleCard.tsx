@@ -31,84 +31,78 @@ export default function ArticleCard({
   return (
     <div
       id={`article-${article.id}`}
-      className={`group bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg hover:border-slate-200 transition-all duration-300 overflow-hidden ${
+      className={`group bg-white rounded-[32px] border border-slate-100 transition-all duration-500 overflow-hidden ${
         article.isRead ? "opacity-60" : ""
       }`}
     >
       {/* Image */}
       {article.imageUrl && (
-        <div className="relative h-44 overflow-hidden">
+        <div className="relative h-44 overflow-hidden border-b border-slate-50">
           <img
             src={article.imageUrl}
             alt={article.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
             onError={(e) => {
               (e.target as HTMLImageElement).style.display = "none";
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
         </div>
       )}
 
-      <div className="p-5">
+      <div className="p-6">
         {/* Meta row */}
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">
               {article.source}
             </span>
-            <span className="w-1 h-1 bg-slate-300 rounded-full" />
+            <span className="w-1 h-1 bg-slate-200 rounded-full" />
             <span className="flex items-center gap-1 text-[10px] font-bold text-slate-400">
               <Clock size={10} />
               {publishedDate}
             </span>
           </div>
-          <span className={`px-2 py-0.5 rounded-md text-[10px] font-black ${relevanceColors[level]}`}>
+          <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-wider border border-current/5 ${relevanceColors[level]}`}>
             {level}
           </span>
         </div>
 
         {/* Title */}
-        <h3 className="font-bold text-brand-600 leading-snug mb-2 line-clamp-2 group-hover:text-brand-600 transition-colors">
+        <h3 className="font-bold text-slate-900 text-base leading-tight mb-3 line-clamp-2 group-hover:text-brand-600 transition-colors">
           {article.title}
         </h3>
 
         {/* Description */}
-        <p className="text-sm text-slate-500 leading-relaxed line-clamp-3 mb-4">
+        <p className="text-xs text-slate-500 leading-relaxed line-clamp-3 mb-5 font-medium">
           {article.description}
         </p>
 
         {/* Matched keywords */}
         {article.matchedKeywords.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mb-4">
-            {article.matchedKeywords.slice(0, 5).map((kw) => (
+          <div className="flex flex-wrap gap-1.5 mb-5">
+            {article.matchedKeywords.slice(0, 3).map((kw) => (
               <span
                 key={kw}
-                className="px-2 py-0.5 bg-slate-50 border border-slate-100 rounded-md text-[10px] font-bold text-slate-500"
+                className="px-2 py-0.5 bg-slate-50 border border-slate-100 rounded-md text-[9px] font-bold text-slate-400 uppercase tracking-tighter"
               >
                 {kw}
               </span>
             ))}
-            {article.matchedKeywords.length > 5 && (
-              <span className="text-[10px] font-bold text-slate-400">
-                +{article.matchedKeywords.length - 5} more
-              </span>
-            )}
           </div>
         )}
 
         {/* Actions */}
-        <div className="flex items-center justify-between pt-3 border-t border-slate-50">
+        <div className="flex items-center justify-between pt-4 border-t border-slate-50">
           <div className="flex items-center gap-2">
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onBookmark(article.id);
               }}
-              className={`p-2 rounded-lg transition-all ${
+              className={`p-2 rounded-xl transition-all ${
                 article.isBookmarked
-                  ? "bg-brand-50 text-brand-600"
-                  : "text-slate-400 hover:bg-slate-50 hover:text-brand-600"
+                  ? "bg-slate-900 text-white"
+                  : "text-slate-400 hover:bg-slate-50 hover:text-slate-900"
               }`}
               title={article.isBookmarked ? "Remove bookmark" : "Bookmark"}
             >
@@ -120,7 +114,7 @@ export default function ArticleCard({
                   e.stopPropagation();
                   onRead(article.id);
                 }}
-                className="p-2 rounded-lg text-slate-400 hover:bg-slate-50 hover:text-emerald-600 transition-all"
+                className="p-2 rounded-xl text-slate-400 hover:bg-slate-50 hover:text-emerald-600 transition-all"
                 title="Mark as read"
               >
                 <Eye size={16} />
@@ -133,9 +127,9 @@ export default function ArticleCard({
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => onRead(article.id)}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-600 hover:bg-brand-50 rounded-lg transition-all"
+            className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-slate-900 hover:bg-slate-50 rounded-xl transition-all uppercase tracking-widest border border-slate-100"
           >
-            Read More
+            Read
             <ExternalLink size={12} />
           </a>
         </div>

@@ -37,31 +37,26 @@ export default function ResultsPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-8">
+      <div className="space-y-10">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <h1 className="text-3xl font-black text-brand-600 flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
-                <Sparkles size={20} className="text-white" />
-              </div>
-              Your Matched Schemes
-            </h1>
-            <p className="text-slate-500 mt-1">
-              {results.totalMatched} schemes matched your profile
+            <h1 className="text-4xl font-black text-slate-900 tracking-tight">Intelligence Matches</h1>
+            <p className="text-slate-500 mt-2 text-base font-medium">
+              {results.totalMatched} schemes matched your business profile via neural analysis.
             </p>
           </div>
           <div className="flex items-center gap-3">
             <button
               onClick={() => router.push("/questionnaire")}
-              className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl font-bold text-sm text-slate-600 hover:bg-slate-50 transition-all"
+              className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 rounded-[20px] font-black text-[10px] uppercase tracking-widest text-slate-500 hover:bg-slate-50 transition-all active:scale-95"
             >
               <RotateCw size={14} />
-              Retake
+              Retake Analysis
             </button>
             <button
               onClick={() => router.push("/dashboard")}
-              className="flex items-center gap-2 px-4 py-2.5 bg-brand-600 text-white rounded-xl font-bold text-sm hover:bg-brand-700 transition-all shadow-md shadow-brand-100"
+              className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-[20px] font-black text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all active:scale-95"
             >
               <ArrowLeft size={14} />
               Dashboard

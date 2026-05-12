@@ -25,20 +25,18 @@ export async function getRecommendations(
 ): Promise<RecommendationResponse> {
   const start = Date.now();
   const filtersApplied: string[] = [];
-  const conditions: string[] = [];
-  const params: any[] = [];
-  let paramIdx = 1;
-
   const state = answers.state as string;
   const sector = answers.sector as string;
   const isWomenOwned = answers.gender === "true";
   const isScSt = answers.caste === "true";
 
-  // --- Build dynamic WHERE conditions ---
+  const params: any[] = [];
+  let paramIdx = 1;
 
-  // 1. State filter: match beneficiaryState in raw_data JSONB or 'All'
+  // 1. Strict State Filter (Mandatory)
+  const stateConditions: string[] = [];
   if (state) {
-    conditions.push(`(
+    stateConditions.push(`(
       raw_data->'fields'->'beneficiaryState' @> $${paramIdx}::jsonb
       OR raw_data->'fields'->'beneficiaryState' @> '["All"]'::jsonb
       OR raw_data->'fields'->'beneficiaryState' IS NULL
@@ -48,106 +46,100 @@ export async function getRecommendations(
     filtersApplied.push(`State: ${state}`);
   }
 
-  // 2. Category / sector filter via categories JSONB or scheme_name/description text
+  // 2. Dynamic Scoring for Sector, Gender, Caste
+  const scoringParts: string[] = [];
+  
   if (sector) {
     const keywords = SECTOR_KEYWORDS[sector] || [sector];
-    const keywordConditions = keywords.map((kw) => {
+    const kwWeights = keywords.map((kw) => {
       const idx = paramIdx++;
       params.push(`%${kw}%`);
-      return `(
-        scheme_name ILIKE $${idx}
-        OR raw_data->'fields'->>'briefDescription' ILIKE $${idx}
-        OR categories::text ILIKE $${idx}
-        OR raw_data->'fields'->'tags'::text ILIKE $${idx}
-      )`;
+      return `CASE WHEN (scheme_name ILIKE $${idx} OR raw_data->'fields'->>'briefDescription' ILIKE $${idx} OR categories::text ILIKE $${idx}) THEN 50 ELSE 0 END`;
     });
-    conditions.push(`(${keywordConditions.join(" OR ")})`);
+    scoringParts.push(`(${kwWeights.join(" + ")})`);
     filtersApplied.push(`Sector: ${sector}`);
   }
 
-  // 3. Women-owned filter
   if (isWomenOwned) {
     const idx = paramIdx++;
     params.push("%Women%");
-    conditions.push(`(
-      categories::text ILIKE $${idx}
-      OR raw_data->'fields'->>'briefDescription' ILIKE $${idx}
-      OR scheme_name ILIKE $${idx}
-    )`);
+    scoringParts.push(`CASE WHEN (scheme_name ILIKE $${idx} OR raw_data->'fields'->>'briefDescription' ILIKE $${idx} OR categories::text ILIKE $${idx}) THEN 30 ELSE 0 END`);
     filtersApplied.push("Women-owned business");
   }
 
-  // 4. SC/ST filter
   if (isScSt) {
     const idx = paramIdx++;
     params.push("%SC/ST%");
     const idx2 = paramIdx++;
     params.push("%Scheduled%");
-    conditions.push(`(
-      categories::text ILIKE $${idx}
-      OR raw_data->'fields'->>'briefDescription' ILIKE $${idx}
-      OR categories::text ILIKE $${idx2}
-      OR raw_data->'fields'->>'briefDescription' ILIKE $${idx2}
-    )`);
+    scoringParts.push(`CASE WHEN (scheme_name ILIKE $${idx} OR raw_data->'fields'->>'briefDescription' ILIKE $${idx} OR categories::text ILIKE $${idx2}) THEN 30 ELSE 0 END`);
     filtersApplied.push("SC/ST category");
   }
 
-  // Build the final query
-  const whereClause = conditions.length > 0
-    ? `WHERE ${conditions.join(" AND ")}`
-    : "";
+  const scoreExpr = scoringParts.length > 0 ? scoringParts.join(" + ") : "0";
+  const whereClause = stateConditions.length > 0 ? `WHERE ${stateConditions.join(" AND ")}` : "";
 
   const query = `
-    SELECT api_id, scheme_name, slug, categories, raw_data
+    SELECT api_id, scheme_name, slug, categories, raw_data,
+           (${scoreExpr}) as relevance_score
     FROM schemes
     ${whereClause}
-    ORDER BY fetched_at DESC
+    ORDER BY relevance_score DESC, fetched_at DESC
     LIMIT 50
   `;
 
   let rows: any[];
   try {
     rows = await prisma.$queryRawUnsafe(query, ...params);
+    // If we have state filter but 0 results, try broad fallback (no state filter)
+    if (rows.length === 0 && state) {
+        const fallbackQuery = `
+            SELECT api_id, scheme_name, slug, categories, raw_data,
+                   (${scoreExpr}) as relevance_score
+            FROM schemes
+            ORDER BY relevance_score DESC, fetched_at DESC
+            LIMIT 30
+        `;
+        // Re-align params (remove the first param which was state)
+        const fallbackParams = params.slice(1);
+        // Correct parameter indexes in fallBack query would be complex, 
+        // so let's just do a simple broad search as fallback
+        rows = await prisma.$queryRawUnsafe(
+            `SELECT api_id, scheme_name, slug, categories, raw_data, 0 as relevance_score
+             FROM schemes ORDER BY fetched_at DESC LIMIT 30`
+        );
+        filtersApplied.push("(Fallback: broad search)");
+    }
   } catch (err) {
     console.error("[RecommendationEngine] Query error:", err);
-    // Fallback: return all schemes if query fails
     rows = await prisma.$queryRawUnsafe(
-      `SELECT api_id, scheme_name, slug, categories, raw_data
+      `SELECT api_id, scheme_name, slug, categories, raw_data, 0 as relevance_score
        FROM schemes ORDER BY fetched_at DESC LIMIT 30`
     );
-    filtersApplied.push("(Fallback: broad search)");
+    filtersApplied.push("(Fallback: query error)");
   }
 
-  // --- Score and format results ---
+  // --- Map and return results ---
   const schemes: SchemeResult[] = rows.map((row: any) => {
     const fields = row.raw_data?.fields || {};
     const cats: string[] = Array.isArray(row.categories) ? row.categories : [];
     const matchReasons: string[] = [];
 
-    // Compute match reasons
-    if (state) {
-      const bStates = fields.beneficiaryState || [];
-      if (bStates.includes(state) || bStates.includes("All")) {
-        matchReasons.push(`Available in ${state}`);
-      }
+    // Compute match reasons for UI display
+    if (state && (fields.beneficiaryState?.includes(state) || fields.beneficiaryState?.includes("All"))) {
+      matchReasons.push(`Available in ${state}`);
     }
     if (sector) {
       const keywords = SECTOR_KEYWORDS[sector] || [sector];
       const text = `${row.scheme_name} ${fields.briefDescription || ""} ${cats.join(" ")}`.toLowerCase();
-      for (const kw of keywords) {
-        if (text.includes(kw.toLowerCase())) {
-          matchReasons.push(`Matches ${kw}`);
-          break;
-        }
+      if (keywords.some(kw => text.includes(kw.toLowerCase()))) {
+        matchReasons.push(`Matches ${sector} sector`);
       }
     }
-    if (isWomenOwned && `${cats.join(" ")} ${fields.briefDescription || ""}`.toLowerCase().includes("women")) {
+    if (isWomenOwned && `${row.scheme_name} ${fields.briefDescription || ""}`.toLowerCase().includes("women")) {
       matchReasons.push("Supports women entrepreneurs");
     }
-    if (isScSt && `${cats.join(" ")} ${fields.briefDescription || ""}`.toLowerCase().includes("sc")) {
-      matchReasons.push("SC/ST eligible");
-    }
-    if (matchReasons.length === 0) matchReasons.push("General eligibility");
+    if (matchReasons.length === 0) matchReasons.push("Relevant to your profile");
 
     return {
       api_id: row.api_id,
@@ -160,12 +152,9 @@ export async function getRecommendations(
       documents: fields.documents || [],
       ministry: fields.nodalMinistryName || "",
       slug: row.slug || "",
-      relevanceScore: matchReasons.length * 10,
+      relevanceScore: parseInt(row.relevance_score) || 10,
     };
   });
-
-  // Sort by relevance
-  schemes.sort((a, b) => b.relevanceScore - a.relevanceScore);
 
   return {
     schemes,

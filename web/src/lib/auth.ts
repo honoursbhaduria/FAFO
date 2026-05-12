@@ -16,3 +16,20 @@ export async function getAuthUserId() {
     return null;
   }
 }
+
+export async function getAuthUser() {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+
+    if (!token) return null;
+
+    const decoded: any = jwt.verify(token, JWT_SECRET);
+    return {
+      userId: decoded.userId as string,
+      role: decoded.role as string | undefined,
+    };
+  } catch (error) {
+    return null;
+  }
+}

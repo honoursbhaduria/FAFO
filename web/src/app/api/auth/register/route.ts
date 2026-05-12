@@ -12,8 +12,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Database client error" }, { status: 500 });
     }
     
-    const { name, email, password } = await request.json();
-    console.log("Registration attempt:", { name, email });
+    const body = await request.json();
+    const { name, email, password, role, consultantProfile } = body;
+    console.log("Registration attempt:", { name, email, role });
 
     if (!email || !password || !name) {
       console.log("Missing fields in registration");
@@ -35,35 +36,63 @@ export async function POST(request: Request) {
     const hashedPassword = await bcrypt.hash(password, 12);
 
     // Create user
-    console.log("Creating user in DB...");
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-      },
-    });
+    console.log("Creating user in DB with role:", role || "USER");
+    
+    try {
+      const user = await prisma.user.create({
+        data: {
+          name,
+          email,
+          password: hashedPassword,
+          role: role || "USER",
+          ...(role === "CONSULTANT" && consultantProfile ? {
+            consultantProfile: {
+              create: {
+                title: consultantProfile.title || "Chartered Accountant",
+                specialization: consultantProfile.specialization || [],
+                experience: parseInt(consultantProfile.experience) || 0,
+                qualification: consultantProfile.qualification || "",
+                licenseNumber: consultantProfile.licenseNumber || "",
+                bio: consultantProfile.bio || "",
+                location: consultantProfile.location || "",
+                phone: consultantProfile.phone || "",
+                website: consultantProfile.website || "",
+                hourlyRate: consultantProfile.hourlyRate || "₹999/session",
+                verified: false,
+              }
+            }
+          } : {})
+        },
+      });
 
-    console.log("User created successfully:", user.id);
-    // Create token
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "7d" });
+      console.log("User created successfully:", user.id);
+      // Create token
+      const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: "7d" });
 
-    const response = NextResponse.json({ 
-      user: { id: user.id, name: user.name, email: user.email },
-      hasProfile: false,
-      message: "User created successfully" 
-    });
+      const response = NextResponse.json({ 
+        user: { id: user.id, name: user.name, email: user.email, role: user.role },
+        hasProfile: role === "CONSULTANT",
+        message: "User created successfully" 
+      });
 
-    // Set cookie
-    response.cookies.set("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-      path: "/",
-    });
+      // Set cookie
+      response.cookies.set("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+        path: "/",
+      });
 
-    return response;
+      return response;
+    } catch (dbError: any) {
+      console.error("Prisma Creation Error:", dbError);
+      return NextResponse.json({ 
+        error: "Database error during registration", 
+        details: dbError.message,
+        code: dbError.code 
+      }, { status: 500 });
+    }
   } catch (error: any) {
     console.error("Registration Error:", error);
     return NextResponse.json({ 

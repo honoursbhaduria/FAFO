@@ -1,12 +1,16 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getAuthUserId } from "@/lib/auth";
+import { getAuthUser } from "@/lib/auth";
 import { invalidateUserCache } from "@/lib/news/cache";
 
 export async function POST(request: Request) {
   try {
-    const userId = await getAuthUserId();
-    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await getAuthUser();
+    if (!auth?.userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (auth.role === "CONSULTANT") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    const userId = auth.userId;
 
     const body = await request.json();
     const {
@@ -78,8 +82,12 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-    const userId = await getAuthUserId();
-    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await getAuthUser();
+    if (!auth?.userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (auth.role === "CONSULTANT") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    const userId = auth.userId;
 
     const profile = await prisma.businessProfile.findUnique({
       where: { userId },

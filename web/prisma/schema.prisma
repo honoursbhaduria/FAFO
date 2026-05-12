@@ -23,97 +23,193 @@ model schemes {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  password      String
-  name          String?
-  profile       BusinessProfile?
-  documents     Document[]
-  applications  Application[]
-  tasks         ComplianceTask[]
-  savedSchemes  SavedScheme[]
-  newsBookmarks NewsBookmark[]
-  createdAt     DateTime  @default(now())
+  id                                String                 @id @default(cuid())
+  email                             String                 @unique
+  password                          String
+  name                              String?
+  role                              String                 @default("USER")
+  createdAt                         DateTime               @default(now())
+  profileImage                      String?
+  applications                      Application[]
+  profile                           BusinessProfile?
+  chatMessages                      ChatMessage[]
+  tasks                             ComplianceTask[]
+  consultantAssignmentsAsConsultant ConsultantAssignment[] @relation("AssignmentsAsConsultant")
+  consultantAssignmentsAsUser       ConsultantAssignment[] @relation("AssignmentsAsUser")
+  consultantProfile                 ConsultantProfile?
+  documents                         Document[]
+  newsBookmarks                     NewsBookmark[]
+  savedSchemes                      SavedScheme[]
+
+  @@index([email])
+}
+
+model ConsultantProfile {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  title          String
+  specialization String[]
+  experience     Int
+  qualification  String
+  licenseNumber  String   @unique
+  bio            String
+  location       String
+  availability   String   @default("Available")
+  rating         Float    @default(5.0)
+  reviewCount    Int      @default(0)
+  phone          String?
+  website        String?
+  hourlyRate     String?
+  verified       Boolean  @default(false)
+  profileImage   String?
+  resumeUrl      String?
+  documents      Json?
+  createdAt      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id])
+
+  @@index([rating])
+  @@index([verified])
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  userId    String
+  role      String
+  content   String
+  type      String   @default("text")
+  schemes   Json?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
 }
 
 model SavedScheme {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  schemeId  String   // api_id from schemes table
+  id         String   @id @default(cuid())
+  userId     String
+  schemeId   String
   schemeName String
-  savedAt   DateTime @default(now())
-  
+  savedAt    DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+
   @@unique([userId, schemeId])
+  @@index([userId, savedAt])
 }
 
 model NewsBookmark {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  articleId String
-  title     String
-  url       String
-  imageUrl  String?
-  source    String?
+  id          String    @id @default(cuid())
+  userId      String
+  articleId   String
+  title       String
+  url         String
+  imageUrl    String?
+  source      String?
   publishedAt DateTime?
-  savedAt   DateTime @default(now())
-  
+  savedAt     DateTime  @default(now())
+  user        User      @relation(fields: [userId], references: [id])
+
   @@unique([userId, articleId])
+  @@index([userId, savedAt])
 }
 
 model BusinessProfile {
-  id              String  @id @default(cuid())
-  userId          String  @unique
-  user            User    @relation(fields: [userId], references: [id])
-  businessName    String
-  industry        String
-  entityType      String
-  state           String
-  district        String
-  isWomenOwned    Boolean @default(false)
-  isScStOwned     Boolean @default(false)
-  isStartup       Boolean @default(false)
-  gstin           String?
-  udyamReg        String?
-  pan             String?
-  annualTurnover  String?
-  employeeCount   Int?
-  goals           String[]
-  questionnaireAnswers Json?   // Full questionnaire answers for news personalization
-  createdAt       DateTime @default(now())
+  id                   String   @id @default(cuid())
+  userId               String   @unique
+  businessName         String
+  industry             String
+  entityType           String
+  state                String
+  district             String
+  isWomenOwned         Boolean  @default(false)
+  isScStOwned          Boolean  @default(false)
+  isStartup            Boolean  @default(false)
+  gstin                String?
+  udyamReg             String?
+  pan                  String?
+  annualTurnover       String?
+  employeeCount        Int?
+  goals                String[]
+  questionnaireAnswers Json?
+  createdAt            DateTime @default(now())
+  user                 User     @relation(fields: [userId], references: [id])
 }
 
 model ComplianceTask {
   id          String   @id @default(cuid())
   userId      String
-  user        User     @relation(fields: [userId], references: [id])
   title       String
   description String?
   dueDate     DateTime
-  status      String   @default("PENDING") // PENDING, COMPLETED, OVERDUE
-  type        String   // GST, TDS, ITR, etc.
+  status      String   @default("PENDING")
+  type        String
   createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, status, dueDate])
 }
 
 model Document {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  name        String
-  type        String   // PAN, GST, etc.
-  url         String
+  id            String    @id @default(cuid())
+  userId        String
+  name          String
+  type          String
+  url           String
   extractedData Json?
-  expiryDate  DateTime?
-  createdAt   DateTime @default(now())
+  expiryDate    DateTime?
+  createdAt     DateTime  @default(now())
+  user          User      @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
 }
 
 model Application {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  schemeId    String
-  status      String   @default("DRAFT") // DRAFT, SUBMITTED, APPROVED
-  timeline    Json?    // Array of status changes
-  createdAt   DateTime @default(now())
+  id        String   @id @default(cuid())
+  userId    String
+  schemeId  String
+  status    String   @default("DRAFT")
+  timeline  Json?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model ConsultantAssignment {
+  id           String   @id @default(cuid())
+  userId       String
+  consultantId String
+  status       String   @default("PENDING")
+  note         String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  consultant   User     @relation("AssignmentsAsConsultant", fields: [consultantId], references: [id])
+  user         User     @relation("AssignmentsAsUser", fields: [userId], references: [id])
+
+  @@index([consultantId, status])
+  @@index([userId, status])
+}
+
+model UserNewsCache {
+  id                Int       @id @default(autoincrement())
+  userId            String    @unique @map("user_id")
+  articles          Json      @default("[]")
+  fetchedAt         DateTime  @default(now()) @map("fetched_at") @db.Timestamptz(6)
+  expiresAt         DateTime  @map("expires_at") @db.Timestamptz(6)
+  lastManualRefresh DateTime? @map("last_manual_refresh") @db.Timestamptz(6)
+  profileContext    Json?     @map("profile_context")
+
+  @@map("user_news_cache")
+}
+
+model UserNewsInteraction {
+  id           Int       @id @default(autoincrement())
+  userId       String    @map("user_id")
+  articleId    String    @map("article_id")
+  isRead       Boolean   @default(false) @map("is_read")
+  isBookmarked Boolean   @default(false) @map("is_bookmarked")
+  readAt       DateTime? @map("read_at") @db.Timestamptz(6)
+  bookmarkedAt DateTime? @map("bookmarked_at") @db.Timestamptz(6)
+
+  @@unique([userId, articleId])
+  @@map("user_news_interactions")
 }

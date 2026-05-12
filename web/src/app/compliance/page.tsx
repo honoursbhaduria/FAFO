@@ -121,30 +121,33 @@ export default function CompliancePage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="space-y-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <h1 className="text-3xl font-black text-brand-600">Compliance Calendar</h1>
-            <p className="text-slate-500 mt-1">Track your regulatory deadlines and avoid penalties.</p>
+            <h1 className="text-4xl font-black text-slate-900 tracking-tight">Compliance</h1>
+            <p className="text-slate-500 mt-2 text-base font-medium">
+              Track your regulatory deadlines and avoid penalties with our automated calendar.
+            </p>
           </div>
           <div className="flex gap-2">
-            <button className="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors">
+            <button className="flex items-center gap-2 px-6 py-3 border border-slate-200 rounded-[20px] text-xs font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-colors">
               <Download size={16} />
-              Export Schedule
+              Export
             </button>
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-xl text-sm font-bold hover:bg-brand-700 transition-colors shadow-xl shadow-brand-100/50"
+              className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-[20px] font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all active:scale-95"
             >
               <Plus size={16} />
-              Add Task
+              New Task
             </button>
           </div>
         </div>
 
+
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+          <div className="bg-white p-6 rounded-3xl border border-slate-100">
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Overdue</p>
             <div className="flex items-center justify-between mt-1">
               <span className="text-3xl font-black text-red-600">{stats.overdue}</span>
@@ -153,7 +156,7 @@ export default function CompliancePage() {
               </div>
             </div>
           </div>
-          <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+          <div className="bg-white p-6 rounded-3xl border border-slate-100">
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Pending Actions</p>
             <div className="flex items-center justify-between mt-1">
               <span className="text-3xl font-black text-amber-600">{stats.dueSoon}</span>
@@ -162,7 +165,7 @@ export default function CompliancePage() {
               </div>
             </div>
           </div>
-          <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+          <div className="bg-white p-6 rounded-3xl border border-slate-100">
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Completed</p>
             <div className="flex items-center justify-between mt-1">
               <span className="text-3xl font-black text-emerald-600">{stats.completed}</span>
@@ -174,7 +177,7 @@ export default function CompliancePage() {
         </div>
 
         {/* Task List */}
-        <div className="bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-[32px] border border-slate-100 overflow-hidden">
           <div className="p-8 border-b border-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               {['ALL', 'PENDING', 'COMPLETED'].map((f) => (
@@ -183,7 +186,7 @@ export default function CompliancePage() {
                   onClick={() => setFilter(f)}
                   className={`px-5 py-2 rounded-full text-xs font-black tracking-widest transition-all uppercase ${
                     filter === f 
-                      ? 'bg-brand-600 text-white shadow-lg shadow-brand-100' 
+                      ? 'bg-brand-600 text-white  -100' 
                       : 'bg-slate-50 text-slate-400 hover:bg-slate-100'
                   }`}
                 >
@@ -245,7 +248,7 @@ export default function CompliancePage() {
                     {task.status !== 'COMPLETED' ? (
                       <button 
                         onClick={() => handleStatusUpdate(task.id, 'COMPLETED')}
-                        className="px-6 py-3 bg-white border border-slate-200 rounded-2xl text-xs font-black uppercase tracking-widest text-slate-600 hover:bg-brand-600 hover:text-white hover:border-brand-600 transition-all shadow-sm flex items-center gap-2 group/btn active:scale-95"
+                        className="px-6 py-3 bg-white border border-slate-200 rounded-2xl text-xs font-black uppercase tracking-widest text-slate-600 hover:bg-brand-600 hover:text-white hover:border-brand-600 transition-all flex items-center gap-2 group/btn active:scale-95"
                       >
                         Mark Complete
                         <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
@@ -287,7 +290,7 @@ export default function CompliancePage() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative bg-white w-full max-w-lg rounded-[40px] shadow-2xl overflow-hidden"
+              className="relative bg-white w-full max-w-lg rounded-[40px] overflow-hidden"
             >
               <div className="p-8 border-b border-slate-100 flex items-center justify-between">
                 <div>
@@ -351,7 +354,7 @@ export default function CompliancePage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full py-5 bg-brand-600 text-white rounded-[24px] font-black text-lg hover:bg-brand-700 transition-all flex items-center justify-center gap-3 shadow-2xl shadow-brand-100 disabled:opacity-50"
+                  className="w-full py-5 bg-brand-600 text-white rounded-[24px] font-black text-lg hover:bg-brand-700 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                 >
                   {submitting ? <Loader2 size={24} className="animate-spin" /> : <><Plus size={24} /> Create Task</>}
                 </button>

@@ -1,9 +1,7 @@
-"use client";
-
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import SathiBot from "@/components/ui/SathiBot";
-import { usePathname } from "next/navigation";
+import ClientProviders from "@/components/providers/ClientProviders";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,17 +18,19 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const pathname = usePathname();
-  const isAuthPage = pathname === "/login";
-
   return (
     <html 
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-slate-50">
-        {children}
-        {!isAuthPage && <SathiBot />}
+      <body 
+        className="min-h-full flex flex-col bg-background text-foreground transition-colors duration-300"
+        suppressHydrationWarning
+      >
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+          <ClientProviders>{children}</ClientProviders>
+        </ThemeProvider>
       </body>
     </html>
   );

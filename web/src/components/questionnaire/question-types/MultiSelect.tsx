@@ -28,8 +28,8 @@ export default function MultiSelect({ options, value = [], onChange }: MultiSele
             onClick={() => toggle(opt.value)}
             className={`group flex items-center gap-4 p-5 rounded-2xl border-2 text-left transition-all duration-200 ${
               selected
-                ? "border-brand-600 bg-brand-50 shadow-lg shadow-blue-100"
-                : "border-slate-100 bg-white hover:border-slate-300 hover:shadow-md"
+                ? "border-brand-600 bg-brand-50"
+                : "border-slate-100 bg-white hover:border-slate-300"
             }`}
           >
             <div className={`w-5 h-5 rounded-md border-2 shrink-0 flex items-center justify-center transition-all ${

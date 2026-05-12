@@ -11,57 +11,12 @@ import type {
   FeedArticle,
   ArticleInteraction,
   FeedResponse,
+  ProfileContext,
+  RawArticle,
 } from "@/types/news";
 
 const CACHE_DURATION_MS = 12 * 60 * 60 * 1000; // 12 hours
 const COOLDOWN_MS = 30 * 60 * 1000; // 30 minutes
-
-// ────────────────────────────────────────────────────────────
-// DB table bootstrap (called lazily on first use)
-// ────────────────────────────────────────────────────────────
-
-let tablesEnsured = false;
-
-async function ensureTables() {
-  if (tablesEnsured) return;
-  try {
-    await prisma.$executeRawUnsafe(`
-      CREATE TABLE IF NOT EXISTS user_news_cache (
-        id SERIAL PRIMARY KEY,
-        user_id TEXT NOT NULL,
-        articles JSONB NOT NULL DEFAULT '[]',
-        fetched_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-        expires_at TIMESTAMPTZ NOT NULL,
-        last_manual_refresh TIMESTAMPTZ,
-        profile_context JSONB,
-        UNIQUE(user_id)
-      );
-    `);
-    await prisma.$executeRawUnsafe(`
-      CREATE TABLE IF NOT EXISTS user_news_interactions (
-        id SERIAL PRIMARY KEY,
-        user_id TEXT NOT NULL,
-        article_id TEXT NOT NULL,
-        is_read BOOLEAN NOT NULL DEFAULT FALSE,
-        is_bookmarked BOOLEAN NOT NULL DEFAULT FALSE,
-        read_at TIMESTAMPTZ,
-        bookmarked_at TIMESTAMPTZ,
-        UNIQUE(user_id, article_id)
-      );
-    `);
-    // Ensure profile_context column exists (migration-safe)
-    try {
-      await prisma.$executeRawUnsafe(`
-        ALTER TABLE user_news_cache ADD COLUMN IF NOT EXISTS profile_context JSONB;
-      `);
-    } catch {
-      // Column may already exist
-    }
-    tablesEnsured = true;
-  } catch (err) {
-    console.error("[Cache] Error ensuring tables:", err);
-  }
-}
 
 // ────────────────────────────────────────────────────────────
 // Interaction helpers
@@ -70,18 +25,22 @@ async function ensureTables() {
 export async function getUserInteractions(
   userId: string
 ): Promise<ArticleInteraction[]> {
-  await ensureTables();
-  const rows: any[] = await prisma.$queryRawUnsafe(
-    `SELECT article_id, is_read, is_bookmarked, read_at, bookmarked_at
-     FROM user_news_interactions WHERE user_id = $1`,
-    userId
-  );
+  const rows = await prisma.userNewsInteraction.findMany({
+    where: { userId },
+    select: {
+      articleId: true,
+      isRead: true,
+      isBookmarked: true,
+      readAt: true,
+      bookmarkedAt: true,
+    },
+  });
   return rows.map((r) => ({
-    articleId: r.article_id,
-    isRead: r.is_read,
-    isBookmarked: r.is_bookmarked,
-    readAt: r.read_at?.toISOString?.() || r.read_at || undefined,
-    bookmarkedAt: r.bookmarked_at?.toISOString?.() || r.bookmarked_at || undefined,
+    articleId: r.articleId,
+    isRead: r.isRead,
+    isBookmarked: r.isBookmarked,
+    readAt: r.readAt?.toISOString?.() || undefined,
+    bookmarkedAt: r.bookmarkedAt?.toISOString?.() || undefined,
   }));
 }
 
@@ -89,39 +48,49 @@ export async function toggleBookmark(
   userId: string,
   articleId: string
 ): Promise<boolean> {
-  await ensureTables();
-  // Upsert + toggle
-  await prisma.$executeRawUnsafe(
-    `INSERT INTO user_news_interactions (user_id, article_id, is_bookmarked, bookmarked_at)
-     VALUES ($1, $2, TRUE, NOW())
-     ON CONFLICT (user_id, article_id) DO UPDATE SET
-       is_bookmarked = NOT user_news_interactions.is_bookmarked,
-       bookmarked_at = CASE WHEN NOT user_news_interactions.is_bookmarked THEN NOW() ELSE NULL END`,
-    userId,
-    articleId
-  );
-  const rows: any[] = await prisma.$queryRawUnsafe(
-    `SELECT is_bookmarked FROM user_news_interactions WHERE user_id = $1 AND article_id = $2`,
-    userId,
-    articleId
-  );
-  return rows[0]?.is_bookmarked ?? false;
+  const existing = await prisma.userNewsInteraction.findUnique({
+    where: { userId_articleId: { userId, articleId } },
+  });
+
+  if (existing) {
+    const updated = await prisma.userNewsInteraction.update({
+      where: { userId_articleId: { userId, articleId } },
+      data: {
+        isBookmarked: !existing.isBookmarked,
+        bookmarkedAt: !existing.isBookmarked ? new Date() : null,
+      },
+    });
+    return updated.isBookmarked;
+  } else {
+    const created = await prisma.userNewsInteraction.create({
+      data: {
+        userId,
+        articleId,
+        isBookmarked: true,
+        bookmarkedAt: new Date(),
+      },
+    });
+    return created.isBookmarked;
+  }
 }
 
 export async function markAsRead(
   userId: string,
   articleId: string
 ): Promise<void> {
-  await ensureTables();
-  await prisma.$executeRawUnsafe(
-    `INSERT INTO user_news_interactions (user_id, article_id, is_read, read_at)
-     VALUES ($1, $2, TRUE, NOW())
-     ON CONFLICT (user_id, article_id) DO UPDATE SET
-       is_read = TRUE,
-       read_at = COALESCE(user_news_interactions.read_at, NOW())`,
-    userId,
-    articleId
-  );
+  await prisma.userNewsInteraction.upsert({
+    where: { userId_articleId: { userId, articleId } },
+    update: {
+      isRead: true,
+      readAt: new Date(),
+    },
+    create: {
+      userId,
+      articleId,
+      isRead: true,
+      readAt: new Date(),
+    },
+  });
 }
 
 export async function getBookmarkedArticles(
@@ -144,11 +113,15 @@ export async function getBookmarkedArticles(
 
   return (cached.articles as unknown as ScoredArticle[])
     .filter((a) => bookmarkedIds.has(a.id))
-    .map((a) => ({
-      ...a,
-      isRead: interactionMap.get(a.id)?.isRead ?? false,
-      isBookmarked: true,
-    }));
+    .map((a): FeedArticle => {
+      const type = a.isUrgent ? "alert" : isOpportunityArticle(a) ? "opportunity" : "regular";
+      return {
+        ...a,
+        isRead: interactionMap.get(a.id)?.isRead ?? false,
+        isBookmarked: true,
+        type,
+      };
+    });
 }
 
 // ────────────────────────────────────────────────────────────
@@ -160,15 +133,13 @@ export async function getBookmarkedArticles(
  * Call this whenever the user's BusinessProfile or questionnaire answers change.
  */
 export async function invalidateUserCache(userId: string): Promise<void> {
-  await ensureTables();
   try {
-    await prisma.$executeRawUnsafe(
-      `DELETE FROM user_news_cache WHERE user_id = $1`,
-      userId
-    );
+    await prisma.userNewsCache.delete({
+      where: { userId },
+    });
     console.log(`[Cache] Invalidated news cache for user ${userId}`);
   } catch (err) {
-    console.error("[Cache] Error invalidating cache:", err);
+    // Ignore if cache doesn't exist
   }
 }
 
@@ -176,52 +147,39 @@ export async function invalidateUserCache(userId: string): Promise<void> {
 // Cache read / write
 // ────────────────────────────────────────────────────────────
 
-interface CacheRow {
-  articles: unknown;
-  fetched_at: Date | string;
-  expires_at: Date | string;
-  last_manual_refresh: Date | string | null;
-  profile_context: unknown;
-}
-
-async function getCachedArticles(userId: string): Promise<CacheRow | null> {
-  await ensureTables();
-  const rows: CacheRow[] = await prisma.$queryRawUnsafe(
-    `SELECT articles, fetched_at, expires_at, last_manual_refresh, profile_context
-     FROM user_news_cache WHERE user_id = $1 LIMIT 1`,
-    userId
-  );
-  return rows[0] ?? null;
+async function getCachedArticles(userId: string) {
+  return prisma.userNewsCache.findUnique({
+    where: { userId },
+  });
 }
 
 async function writeCachedArticles(
   userId: string,
   articles: ScoredArticle[],
   isManualRefresh: boolean,
-  profileContext?: { sector: string; state: string; topKeywords: string[] }
+  profileContext?: ProfileContext
 ): Promise<{ fetchedAt: string; expiresAt: string }> {
-  await ensureTables();
   const now = new Date();
   const expiresAt = new Date(now.getTime() + CACHE_DURATION_MS);
 
-  const manualRefreshClause = isManualRefresh
-    ? ", last_manual_refresh = NOW()"
-    : "";
-
-  await prisma.$executeRawUnsafe(
-    `INSERT INTO user_news_cache (user_id, articles, fetched_at, expires_at, profile_context${isManualRefresh ? ", last_manual_refresh" : ""})
-     VALUES ($1, $2::jsonb, NOW(), $3, $4::jsonb${isManualRefresh ? ", NOW()" : ""})
-     ON CONFLICT (user_id) DO UPDATE SET
-       articles = $2::jsonb,
-       fetched_at = NOW(),
-       expires_at = $3,
-       profile_context = $4::jsonb
-       ${manualRefreshClause}`,
-    userId,
-    JSON.stringify(articles),
-    expiresAt,
-    JSON.stringify(profileContext || null)
-  );
+  await prisma.userNewsCache.upsert({
+    where: { userId },
+    update: {
+      articles: articles as any,
+      fetchedAt: now,
+      expiresAt: expiresAt,
+      profileContext: profileContext as any,
+      ...(isManualRefresh ? { lastManualRefresh: now } : {}),
+    },
+    create: {
+      userId,
+      articles: articles as any,
+      fetchedAt: now,
+      expiresAt: expiresAt,
+      profileContext: profileContext as any,
+      ...(isManualRefresh ? { lastManualRefresh: now } : {}),
+    },
+  });
 
   return {
     fetchedAt: now.toISOString(),
@@ -235,7 +193,7 @@ async function writeCachedArticles(
 
 async function runFullPipeline(userId: string): Promise<{
   articles: ScoredArticle[];
-  profileContext: { sector: string; state: string; topKeywords: string[] };
+  profileContext: ProfileContext;
 }> {
   // 1. Build keyword profile
   const profile = await buildUserKeywordProfile(userId);
@@ -251,9 +209,10 @@ async function runFullPipeline(userId: string): Promise<{
   }
 
   // 3. Build profile context for UI display
-  const profileContext = {
+  const profileContext: ProfileContext = {
     sector: profile.sectorLabel || "General",
     state: profile.rawAnswers.state || "",
+    stage: profile.rawAnswers.stage || "Established",
     topKeywords: profile.keywords.slice(0, 8).map((k) => k.term),
   };
 
@@ -268,7 +227,19 @@ async function runFullPipeline(userId: string): Promise<{
   );
 
   // 6. Score articles
-  const scored = scoreArticles(rawArticles, profile.keywords, readIds);
+  let scored = scoreArticles(rawArticles, profile.keywords, readIds);
+
+  // 7. Fallback: If no articles meet the threshold, return the raw articles sorted by date
+  // This ensures the feed is NEVER empty if the API returned anything.
+  if (scored.length === 0 && rawArticles.length > 0) {
+    console.warn(`[NewsPipeline] No articles met threshold for user ${userId}, using raw articles fallback.`);
+    scored = rawArticles.slice(0, 20).map((a): ScoredArticle => ({
+      ...a,
+      relevanceScore: 5,
+      matchedKeywords: [],
+      isUrgent: false,
+    }));
+  }
 
   return { articles: scored, profileContext };
 }
@@ -286,7 +257,7 @@ export async function getOrFetchFeed(userId: string): Promise<{
   fetchedAt: string;
   expiresAt: string;
   cooldownEndsAt?: string;
-  profileContext?: { sector: string; state: string; topKeywords: string[] };
+  profileContext?: ProfileContext;
 }> {
   const cached = await getCachedArticles(userId);
 
@@ -343,16 +314,16 @@ export async function getOrFetchFeed(userId: string): Promise<{
 export async function forceRefreshFeed(
   userId: string
 ): Promise<
-  | { articles: ScoredArticle[]; fetchedAt: string; expiresAt: string; profileContext?: { sector: string; state: string; topKeywords: string[] } }
+  | { articles: ScoredArticle[]; fetchedAt: string; expiresAt: string; profileContext?: ProfileContext }
   | { error: string; cooldownEndsAt: string }
 > {
   const cached = await getCachedArticles(userId);
 
-  if (cached?.last_manual_refresh) {
+  if (cached?.lastManualRefresh) {
     const lastRefresh =
-      cached.last_manual_refresh instanceof Date
-        ? cached.last_manual_refresh
-        : new Date(String(cached.last_manual_refresh));
+      cached.lastManualRefresh instanceof Date
+        ? cached.lastManualRefresh
+        : new Date(String(cached.lastManualRefresh));
     const cooldownEnd = new Date(lastRefresh.getTime() + COOLDOWN_MS);
 
     if (cooldownEnd.getTime() > Date.now()) {
@@ -387,20 +358,18 @@ export async function buildFeedResponse(userId: string): Promise<FeedResponse> {
 
   const feedArticles: FeedArticle[] = articles.map((a) => {
     const interaction = interactionMap.get(a.id);
+    const type = a.isUrgent ? "alert" : isOpportunityArticle(a) ? "opportunity" : "regular";
     return {
       ...a,
       isRead: interaction?.isRead ?? false,
       isBookmarked: interaction?.isBookmarked ?? false,
+      type,
     };
   });
 
-  const urgentAlerts = feedArticles.filter((a) => a.isUrgent);
-  const opportunities = feedArticles.filter(
-    (a) => !a.isUrgent && isOpportunityArticle(a)
-  );
-  const regularFeed = feedArticles.filter(
-    (a) => !a.isUrgent && !isOpportunityArticle(a)
-  );
+  const urgentAlerts = feedArticles.filter((a) => a.type === "alert");
+  const opportunities = feedArticles.filter((a) => a.type === "opportunity");
+  const regularFeed = feedArticles.filter((a) => a.type === "regular");
 
   return {
     urgentAlerts,
@@ -412,4 +381,3 @@ export async function buildFeedResponse(userId: string): Promise<FeedResponse> {
     profileContext,
   };
 }
-

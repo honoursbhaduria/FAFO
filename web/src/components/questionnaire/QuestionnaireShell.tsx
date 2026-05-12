@@ -187,7 +187,7 @@ export default function QuestionnaireShell() {
                   className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all ${
                     currentIdx === 0
                       ? "text-slate-300 cursor-not-allowed"
-                      : "text-slate-600 hover:bg-white hover:shadow-md"
+                      : "text-slate-600 hover:bg-white "
                   }`}
                 >
                   <ArrowLeft size={16} />
@@ -202,8 +202,8 @@ export default function QuestionnaireShell() {
                     !answers[current.id] && current.required
                       ? "bg-slate-200 text-slate-400 cursor-not-allowed"
                       : isLast
-                      ? "bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-200"
-                      : "bg-brand-600 text-white hover:bg-brand-700 shadow-lg shadow-brand-100"
+                      ? "bg-emerald-600 text-white hover:bg-emerald-700"
+                      : "bg-brand-600 text-white hover:bg-brand-700"
                   }`}
                 >
                   {submitting ? (

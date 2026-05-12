@@ -7,6 +7,25 @@
   --color-brand-500: #334155;
   --color-brand-600: #1c2536;
   --color-brand-700: #0f172a;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
 }
 
 @font-face {
@@ -57,6 +76,22 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Recia';
+  src: url('/fonts/Recia-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Telma';
+  src: url('/fonts/Telma-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --background: #fcfcfd;
   --foreground: #09090b;
@@ -83,6 +118,36 @@
   --chart-4: #8b5cf6;
   --chart-5: #f43f5e;
   --radius: 0.625rem;
+  --font-logo: 'Recia', sans-serif;
+  --font-logo-alt: 'Telma', sans-serif;
+  --font-logo-modern: var(--font-geist-sans), sans-serif;
+}
+
+.dark {
+  --background: #09090b;
+  --foreground: #f8fafc;
+  --card: #09090b;
+  --card-foreground: #f8fafc;
+  --popover: #09090b;
+  --popover-foreground: #f8fafc;
+  --primary: #f8fafc;
+  --primary-foreground: #09090b;
+  --secondary: #1c2536;
+  --secondary-foreground: #f8fafc;
+  --muted: #1c2536;
+  --muted-foreground: #94a3b8;
+  --accent: #1c2536;
+  --accent-foreground: #f8fafc;
+  --destructive: #7f1d1d;
+  --destructive-foreground: #f8fafc;
+  --border: #1e293b;
+  --input: #1e293b;
+  --ring: #cbd5e1;
+  --chart-1: #2563eb;
+  --chart-2: #059669;
+  --chart-3: #d97706;
+  --chart-4: #7c3aed;
+  --chart-5: #db2777;
 }
 
 @layer base {
@@ -93,6 +158,7 @@
     background-color: var(--background);
     color: var(--foreground);
     font-family: var(--font-sans);
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   }
 }
 
@@ -115,5 +181,13 @@
     background: linear-gradient(to right, #1c2536, #475569);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }

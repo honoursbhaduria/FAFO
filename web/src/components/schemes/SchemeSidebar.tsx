@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink, Bookmark, Share2, Calendar, Sparkles, Check, Loader2, ChevronDown, ChevronUp } from "lucide-react";
+import { ExternalLink, Bookmark, Share2, Calendar, Sparkles, Check, Loader2, ChevronDown, ChevronUp, CheckCircle2, Search, AlertTriangle, Target, AlertCircle, Lightbulb, LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
@@ -48,8 +48,11 @@ export default function SchemeSidebar({ schemeName, externalUrl, apiId }: Scheme
     setExpanded(false);
 
     fetch(`/api/schemes/insights?schemeId=${encodeURIComponent(apiId)}`)
-      .then(res => {
-        if (!res.ok) throw new Error("Failed to fetch insights");
+      .then(async res => {
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({}));
+          throw new Error(errorData.text || errorData.error || "Failed to fetch insights");
+        }
         return res.json();
       })
       .then(data => {
@@ -118,12 +121,12 @@ export default function SchemeSidebar({ schemeName, externalUrl, apiId }: Scheme
   };
 
   // Helper to render insight sections
-  const renderInsightSection = (title: string, items: string[], emoji: string) => {
+  const renderInsightSection = (title: string, items: string[], Icon: LucideIcon) => {
     if (!items || items.length === 0) return null;
     return (
       <div className="mb-4">
         <h5 className="text-[10px] font-black uppercase tracking-widest text-white/60 mb-2 flex items-center gap-1.5">
-          <span>{emoji}</span> {title}
+          <Icon size={12} className="shrink-0" /> {title}
         </h5>
         <ul className="space-y-1.5">
           {items.map((item, i) => (
@@ -139,11 +142,11 @@ export default function SchemeSidebar({ schemeName, externalUrl, apiId }: Scheme
 
   return (
     <div className="sticky top-32 space-y-6">
-      <div className="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100">
+      <div className="bg-white p-8 rounded-[32px] border border-slate-100">
         <div className="space-y-4">
           <button 
             onClick={handleApplyClick}
-            className="w-full py-5 bg-brand-600 text-white font-bold rounded-2xl hover:bg-brand-600 shadow-2xl shadow-brand-600/10 flex items-center justify-center gap-3 group transition-all active:scale-95"
+            className="w-full py-5 bg-brand-600 text-white font-bold rounded-2xl hover:bg-brand-600 -600/10 flex items-center justify-center gap-3 group transition-all active:scale-95"
           >
             {externalUrl ? "Apply Now" : "Apply via MyScheme"}
             <ExternalLink size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
@@ -190,7 +193,7 @@ export default function SchemeSidebar({ schemeName, externalUrl, apiId }: Scheme
       </div>
 
       {/* AI Quick Insight — Dynamic */}
-      <div className="bg-gradient-to-br from-indigo-600 via-brand-700 to-brand-600 p-8 rounded-[32px] shadow-2xl shadow-brand-500/20 text-white relative overflow-hidden group">
+      <div className="bg-gradient-to-br from-indigo-600 via-brand-700 to-brand-600 p-8 rounded-[32px] -500/20 text-white relative overflow-hidden group">
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-4">
             <Sparkles className="text-white/80" size={24} />
@@ -225,13 +228,13 @@ export default function SchemeSidebar({ schemeName, externalUrl, apiId }: Scheme
               {/* Expandable detailed insights */}
               {expanded && (
                 <div className="border-t border-white/10 pt-5 mt-2 space-y-1">
-                  {renderInsightSection("Key Benefits", insights.keyBenefits, "✅")}
-                  {renderInsightSection("Hidden Requirements", insights.hiddenEligibility, "🔍")}
-                  {renderInsightSection("Important Deadlines", insights.importantDeadlines, "📅")}
-                  {renderInsightSection("Common Mistakes", insights.commonMistakes, "⚠️")}
-                  {renderInsightSection("Who Should Apply", insights.whoShouldApply, "🎯")}
-                  {renderInsightSection("Warnings", insights.warnings, "🚨")}
-                  {renderInsightSection("Recommendations", insights.recommendations, "💡")}
+                  {renderInsightSection("Key Benefits", insights.keyBenefits, CheckCircle2)}
+                  {renderInsightSection("Hidden Requirements", insights.hiddenEligibility, Search)}
+                  {renderInsightSection("Important Deadlines", insights.importantDeadlines, Calendar)}
+                  {renderInsightSection("Common Mistakes", insights.commonMistakes, AlertTriangle)}
+                  {renderInsightSection("Who Should Apply", insights.whoShouldApply, Target)}
+                  {renderInsightSection("Warnings", insights.warnings, AlertCircle)}
+                  {renderInsightSection("Recommendations", insights.recommendations, Lightbulb)}
                 </div>
               )}
 
@@ -254,7 +257,7 @@ export default function SchemeSidebar({ schemeName, externalUrl, apiId }: Scheme
 
           <Link 
             href={`/ai?q=${encodeURIComponent(schemeName)}`} 
-            className="inline-flex items-center gap-3 px-6 py-3 bg-white text-brand-700 font-bold rounded-xl hover:bg-brand-50 transition-all shadow-lg text-sm"
+            className="inline-flex items-center gap-3 px-6 py-3 bg-white text-brand-700 font-bold rounded-xl hover:bg-brand-50 transition-all text-sm"
           >
             ASK AI MORE
           </Link>

@@ -4,14 +4,15 @@ from psycopg2.extras import execute_values
 import json
 import sys
 import time
+import os
 
 # API Details
-API_URL = "https://api.myscheme.gov.in/search/v6/schemes"
-API_KEY = "tYTy5eEhlu9rFjyxuCr7ra7ACp4dv1RH8gWuHTDc"
-BATCH_SIZE = 100
+API_URL = os.environ.get("MYSCHEME_API_URL", "https://api.myscheme.gov.in/search/v6/schemes")
+API_KEY = os.environ.get("MYSCHEME_API_KEY", "tYTy5eEhlu9rFjyxuCr7ra7ACp4dv1RH8gWuHTDc")
+BATCH_SIZE = int(os.environ.get("BATCH_SIZE", "100"))
 
 # DB Details
-DB_URL = "postgresql://neondb_owner:npg_H3x5anWdNKGk@ep-floral-firefly-apbrpzjv-pooler.c-7.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+DB_URL = os.environ.get("DATABASE_URL", "postgresql://neondb_owner:npg_H3x5anWdNKGk@ep-floral-firefly-apbrpzjv-pooler.c-7.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require")
 
 def get_headers():
     return {

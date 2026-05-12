@@ -58,37 +58,33 @@ export default function BookmarksPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-8">
-        {/* Header */}
-        <div>
-          <h1 className="text-3xl font-black text-brand-600 flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-brand-600 to-indigo-600 rounded-xl flex items-center justify-center">
-              <Bookmark size={20} className="text-white" />
-            </div>
-            Bookmarks
-          </h1>
-          <p className="text-slate-500 mt-1 text-sm">
-            Your saved articles for later reading
-          </p>
+      <div className="space-y-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <h1 className="text-4xl font-black text-slate-900 tracking-tight">Saved Intelligence</h1>
+            <p className="text-slate-500 mt-2 text-base font-medium">
+              Access your shortlisted articles and regulatory insights.
+            </p>
+          </div>
         </div>
 
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-32 gap-4">
-            <Loader2 className="w-8 h-8 text-brand-600 animate-spin" />
-            <p className="font-bold text-slate-600">Loading bookmarks...</p>
+            <Loader2 className="w-10 h-10 text-slate-900 animate-spin" />
+            <p className="text-slate-500 font-black text-xs uppercase tracking-widest animate-pulse">Syncing Knowledge Vault...</p>
           </div>
         ) : bookmarks.length === 0 ? (
-          <div className="py-16 text-center">
-            <div className="w-16 h-16 mx-auto rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
-              <Newspaper className="w-8 h-8 text-slate-400" />
+          <div className="bg-white rounded-[40px] border border-slate-100 p-16 text-center">
+            <div className="w-24 h-24 bg-slate-50 rounded-[32px] flex items-center justify-center mx-auto mb-8 text-slate-200 border border-slate-100">
+              <Newspaper size={48} />
             </div>
-            <p className="font-bold text-slate-600">No bookmarks yet</p>
-            <p className="text-sm text-slate-400 mt-1">
-              Bookmark articles from your Smart Feed to save them here
+            <h3 className="text-2xl font-black text-slate-900 mb-2">Empty vault</h3>
+            <p className="text-slate-500 max-w-sm mx-auto mb-10 font-medium">
+              Bookmark articles from your Smart Feed to build your personalized knowledge base.
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {bookmarks.map((article) => (
               <ArticleCard
                 key={article.id}

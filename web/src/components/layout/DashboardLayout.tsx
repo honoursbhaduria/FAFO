@@ -14,7 +14,6 @@ import {
   Newspaper,
   BookmarkCheck,
   Menu,
-  X,
   ChevronRight,
   LogOut,
 } from "lucide-react";
@@ -27,19 +26,30 @@ interface SidebarItemProps {
   onClick?: () => void;
 }
 
+const Logo = () => (
+  <div className="flex items-center px-2">
+    <span 
+      className="text-xl font-black text-slate-900 tracking-tighter"
+      style={{ fontFamily: 'var(--font-logo)' }}
+    >
+      OneClickSathi
+    </span>
+  </div>
+);
+
 const SidebarItem = ({ href, icon: Icon, label, active, onClick }: SidebarItemProps) => (
   <Link
     href={href}
     onClick={onClick}
-    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
+    className={`flex items-center gap-3 px-4 py-3.5 rounded-[14px] transition-all duration-300 group ${
       active
-        ? "bg-brand-600 text-white shadow-lg shadow-brand-100"
-        : "text-slate-600 hover:bg-slate-100 hover:text-brand-600"
+        ? "bg-slate-900 text-white"
+        : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
     }`}
   >
-    <Icon size={20} className={active ? "text-white" : "text-slate-500 group-hover:text-brand-600"} />
-    <span className="font-medium">{label}</span>
-    {active && <ChevronRight size={16} className="ml-auto" />}
+    <Icon size={20} className={active ? "text-white" : "text-slate-400 group-hover:text-slate-900 transition-colors"} />
+    <span className={`font-bold text-sm ${active ? "text-white" : "text-slate-500 group-hover:text-slate-900"}`}>{label}</span>
+    {active && <ChevronRight size={14} className="ml-auto opacity-50" />}
   </Link>
 );
 
@@ -67,78 +77,93 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
   };
 
-  const menuItems = [
-    { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    { href: "/news", icon: Newspaper, label: "Smart Feed" },
-    { href: "/schemes", icon: FileText, label: "Schemes" },
-    { href: "/compliance", icon: ShieldCheck, label: "Compliance" },
-    { href: "/consultant", icon: UserRound, label: "Consultant Hub" },
-    { href: "/documents", icon: FolderOpen, label: "Documents" },
-    { href: "/ai", icon: MessageSquare, label: "AI Assistant" },
-    { href: "/schemes/saved", icon: BookmarkCheck, label: "Saved Schemes" },
-    { href: "/news/bookmarks", icon: BookmarkCheck, label: "News Bookmarks" },
-    { href: "/profile", icon: User, label: "Profile" },
-  ];
+  const isConsultant = user?.role === "CONSULTANT";
+  const menuItems = isConsultant
+    ? [
+        { href: "/consultant/dashboard", icon: LayoutDashboard, label: "CA Dashboard" },
+        { href: "/consultant/assignments", icon: FileText, label: "Client Requests" },
+        { href: "/consultant/profile", icon: UserRound, label: "CA Profile" },
+      ]
+    : [
+        { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+        { href: "/news", icon: Newspaper, label: "Smart Feed" },
+        { href: "/schemes", icon: FileText, label: "Schemes" },
+        { href: "/compliance", icon: ShieldCheck, label: "Compliance" },
+        { href: "/consultant", icon: UserRound, label: "Consultant Hub" },
+        { href: "/documents", icon: FolderOpen, label: "Documents" },
+        { href: "/ai", icon: MessageSquare, label: "AI Assistant" },
+        { href: "/schemes/saved", icon: BookmarkCheck, label: "Saved Schemes" },
+        { href: "/news/bookmarks", icon: BookmarkCheck, label: "News Bookmarks" },
+        { href: "/profile", icon: User, label: "Profile" },
+      ];
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="min-h-screen bg-[#F8FAFC] flex">
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-slate-200 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static ${
+        className={`fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-slate-100 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="h-full flex flex-col p-6">
-          <div className="flex items-center gap-3 mb-10 px-2">
-            <div className="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center">
-              <span className="text-white font-bold text-xl">O</span>
-            </div>
-            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-brand-600 to-indigo-600">
-              OneClickSathi
-            </span>
+          <div className="mb-10">
+            <Logo />
           </div>
 
-          <nav className="flex-1 space-y-2">
+          <nav className="flex-1 space-y-1">
             {menuItems.map((item) => (
               <SidebarItem
                 key={item.href}
                 {...item}
-                active={pathname === item.href}
+                active={pathname === item.href || pathname.startsWith(`${item.href}/`)}
                 onClick={() => setIsSidebarOpen(false)}
               />
             ))}
           </nav>
 
-          <div className="mt-auto space-y-4">
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+          <div className="mt-auto pt-6 space-y-4">
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 group hover:border-brand-200 transition-all cursor-pointer">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 font-bold uppercase">
-                  {user?.name ? user.name.substring(0, 2) : "JD"}
+                <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white font-black text-xs uppercase overflow-hidden">
+                  {user?.profileImage ? (
+                    <img src={user.profileImage} alt={user.name} className="w-full h-full object-cover" />
+                  ) : (
+                    user?.name ? user.name.substring(0, 2) : (user === null ? "..." : "??")
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-brand-600 truncate">
-                    {user?.name || "John Doe"}
-                  </p>
-                  <p className="text-xs text-slate-500 truncate">
-                    {user?.email || "Premium Plan"}
-                  </p>
+                  {user ? (
+                    <>
+                      <p className="text-xs font-black text-slate-900 truncate">
+                        {user.name}
+                      </p>
+                      <p className="text-[10px] font-bold text-slate-400 truncate">
+                        {user.email}
+                      </p>
+                    </>
+                  ) : (
+                    <div className="space-y-2 animate-pulse">
+                      <div className="h-2 w-16 bg-slate-200 rounded" />
+                      <div className="h-1.5 w-24 bg-slate-100 rounded" />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
-            
+
             <button 
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all font-medium"
+              className="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all font-bold text-sm group"
             >
-              <LogOut size={20} />
+              <LogOut size={18} className="group-hover:rotate-12 transition-transform" />
               Sign Out
             </button>
           </div>
@@ -147,29 +172,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Header */}
-        <header className="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-6 sticky top-0 z-30">
+        {/* Mobile Header */}
+        <header className="h-16 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-6 sticky top-0 z-30 lg:hidden">
           <button
-            className="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg"
+            className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg"
             onClick={() => setIsSidebarOpen(true)}
           >
             <Menu size={24} />
           </button>
-
-          <div className="flex-1 lg:ml-0 ml-4">
-            <h1 className="text-lg font-semibold text-brand-600">
-              {menuItems.find((item) => item.href === pathname)?.label || "Dashboard"}
-            </h1>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <button className="p-2 text-slate-500 hover:text-brand-600 hover:bg-slate-100 rounded-lg transition-colors">
-              <User size={20} />
-            </button>
-          </div>
+          <Logo />
+          <div className="w-10" /> {/* Spacer */}
         </header>
 
-        <main className="flex-1 overflow-y-auto p-6 lg:p-10">
+        <main className="flex-1 overflow-y-auto p-8 lg:p-12">
           <div className="max-w-7xl mx-auto">{children}</div>
         </main>
       </div>

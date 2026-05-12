@@ -3,26 +3,41 @@ import Groq from "groq-sdk";
 import { getAuthUserId } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+const WIKI_API_URL = process.env.WIKI_API_URL || "https://en.wikipedia.org/w/api.php";
+const WIKI_BASE_URL = process.env.WIKI_BASE_URL || "https://en.wikipedia.org/wiki/";
 
 // Wikipedia search helpers (inline to avoid cross-route imports)
 async function searchWikipedia(query: string) {
-  const searchQuery = `${query} government scheme India`;
-  const url = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(searchQuery)}&srlimit=8&format=json&origin=*`;
-  const res = await fetch(url);
-  if (!res.ok) return [];
-  const data = await res.json();
-  return data.query?.search || [];
+  try {
+    const searchQuery = `${query} government scheme India`;
+    const url = `${WIKI_API_URL}?action=query&list=search&srsearch=${encodeURIComponent(searchQuery)}&srlimit=8&format=json&origin=*`;
+    console.log("Searching Wikipedia:", url);
+    const res = await fetch(url);
+    if (!res.ok) {
+      console.error("Wikipedia Search Failed:", res.status, res.statusText);
+      return [];
+    }
+    const data = await res.json();
+    return data.query?.search || [];
+  } catch (error) {
+    console.error("Wikipedia Search Error:", error);
+    return [];
+  }
 }
 
 async function getPageExtract(pageId: number): Promise<string> {
-  const url = `https://en.wikipedia.org/w/api.php?action=query&pageids=${pageId}&prop=extracts&exintro=true&explaintext=true&exsentences=4&format=json&origin=*`;
-  const res = await fetch(url);
-  if (!res.ok) return "";
-  const data = await res.json();
-  const pages = data.query?.pages;
-  if (!pages) return "";
-  return pages[String(pageId)]?.extract || "";
+  try {
+    const url = `${WIKI_API_URL}?action=query&pageids=${pageId}&prop=extracts&exintro=true&explaintext=true&exsentences=4&format=json&origin=*`;
+    const res = await fetch(url);
+    if (!res.ok) return "";
+    const data = await res.json();
+    const pages = data.query?.pages;
+    if (!pages) return "";
+    return pages[String(pageId)]?.extract || "";
+  } catch (error) {
+    console.error("Wikipedia Extract Error:", error);
+    return "";
+  }
 }
 
 function detectCategory(title: string, summary: string): string {
@@ -56,7 +71,7 @@ async function fetchSchemes(topic: string) {
       return {
         title: result.title,
         summary: cleanSummary,
-        url: `https://en.wikipedia.org/wiki/${encodeURIComponent(result.title.replace(/ /g, "_"))}`,
+        url: `${WIKI_BASE_URL}${encodeURIComponent(result.title.replace(/ /g, "_"))}`,
         category: detectCategory(result.title, cleanSummary),
       };
     })
@@ -71,13 +86,13 @@ const tools: Groq.Chat.Completions.ChatCompletionTool[] = [
     type: "function",
     function: {
       name: "search_government_schemes",
-      description: "Search for Indian government schemes related to a given topic. Use this tool whenever the user asks about government schemes, yojanas, subsidies, or welfare programs in India. Always call this tool for scheme-related queries.",
+      description: "Search for Indian government schemes and yojanas by topic.",
       parameters: {
         type: "object",
         properties: {
           topic: {
             type: "string",
-            description: "The topic or sector to search schemes for, e.g. 'agriculture', 'education', 'MSME', 'women empowerment', 'healthcare'"
+            description: "Sector or topic (e.g. 'MSME', 'farming')"
           }
         },
         required: ["topic"]
@@ -86,10 +101,56 @@ const tools: Groq.Chat.Completions.ChatCompletionTool[] = [
   }
 ];
 
+export async function GET() {
+  try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const messages = await prisma.chatMessage.findMany({
+      where: { userId },
+      orderBy: { createdAt: "asc" },
+    });
+
+    return NextResponse.json(messages);
+  } catch (error: any) {
+    console.error("Fetch Chat History Error:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch chat history" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE() {
+  try {
+    const userId = await getAuthUserId();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    await prisma.chatMessage.deleteMany({
+      where: { userId },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    console.error("Delete Chat History Error:", error);
+    return NextResponse.json(
+      { error: "Failed to delete chat history" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const userId = await getAuthUserId();
     const { message, history } = await request.json();
+
+    console.log("Runtime check - Global fetch available:", typeof fetch !== 'undefined');
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
     let userContext = "";
     if (userId) {
@@ -117,29 +178,56 @@ export async function POST(request: Request) {
     const messages: Groq.Chat.Completions.ChatCompletionMessageParam[] = [
       {
         role: "system",
-        content: `You are OneClickSathi AI, a premium assistant for MSMEs and citizens in India. 
+        content: `You are OneClickSathi AI, an assistant for MSMEs and citizens in India. 
 
-STRICT TOOL USAGE RULES:
-1. You have ONLY ONE tool available: 'search_government_schemes'.
-2. You MUST use 'search_government_schemes' when a user mentions a scheme, yojana, or asks for information about a specific program.
-3. NEVER attempt to call tools named 'brave_search', 'google_search', 'web_search', or any tool other than 'search_government_schemes'.
-4. If you need to find information, you MUST use 'search_government_schemes' with a 'topic' parameter.
+Tool Usage:
+- Use 'search_government_schemes' to find information about yojanas and welfare programs.
+- Only provide the 'topic' parameter.
+- Do not attempt to use any other tools.
 
-Be professional, concise, and prioritize using your provided search tool for real-time information.${userContext}`
+Be professional and concise.${userContext}`
       },
       ...formattedHistory,
       { role: "user", content: message }
     ];
 
+    // Save user message to database
+    if (userId) {
+      await prisma.chatMessage.create({
+        data: {
+          userId,
+          role: "user",
+          content: message,
+          type: "text"
+        }
+      });
+    }
+
     // First call: let Groq decide if it needs to use tools
-    const firstResponse = await groq.chat.completions.create({
-      messages,
-      model: "llama-3.1-8b-instant",
-      tools,
-      tool_choice: "auto",
-    });
+    console.log("Groq API Key length:", process.env.GROQ_API_KEY?.length || 0);
+    console.log("Calling Groq (first pass)...");
+    
+    let firstResponse;
+    try {
+      firstResponse = await groq.chat.completions.create({
+        messages,
+        model: "llama-3.1-8b-instant",
+        tools,
+        tool_choice: "auto",
+      });
+    } catch (err: any) {
+      console.error("Groq First Pass Detailed Error:", {
+        message: err.message,
+        stack: err.stack,
+        cause: err.cause,
+        status: err.status,
+        type: err.type
+      });
+      throw err; // Re-throw to be caught by the outer catch
+    }
 
     const firstChoice = firstResponse.choices[0]?.message;
+    console.log("Groq responded (first pass). Tool calls:", firstChoice?.tool_calls?.length || 0);
 
     // Check if Groq wants to call a tool
     if (firstChoice?.tool_calls && firstChoice.tool_calls.length > 0) {
@@ -147,16 +235,29 @@ Be professional, concise, and prioritize using your provided search tool for rea
       const toolName = toolCall.function.name;
 
       if (toolName === "search_government_schemes") {
-        const args = JSON.parse(toolCall.function.arguments);
-        const topic = args.topic || message;
+        let topic = message;
+        try {
+          const args = JSON.parse(toolCall.function.arguments);
+          topic = args.topic || message;
+        } catch (e) {
+          console.warn("Failed to parse tool arguments, falling back to original message:", e);
+        }
 
         // Fetch schemes from Wikipedia
+        console.log("Fetching schemes for topic:", topic);
         const schemes = await fetchSchemes(topic);
 
         // Send tool result back to Groq for a nice summary
+        // Ensure the assistant message in history is correctly formatted
+        const assistantToolCallMessage = {
+          role: "assistant",
+          content: firstChoice.content || null,
+          tool_calls: firstChoice.tool_calls,
+        };
+
         const followUpMessages: Groq.Chat.Completions.ChatCompletionMessageParam[] = [
           ...messages,
-          firstChoice as Groq.Chat.Completions.ChatCompletionMessageParam,
+          assistantToolCallMessage as Groq.Chat.Completions.ChatCompletionMessageParam,
           {
             role: "tool",
             tool_call_id: toolCall.id,
@@ -164,12 +265,27 @@ Be professional, concise, and prioritize using your provided search tool for rea
           }
         ];
 
+        console.log("Calling Groq (second pass - following tool result)...");
         const secondResponse = await groq.chat.completions.create({
           messages: followUpMessages,
           model: "llama-3.1-8b-instant",
         });
 
         const responseText = secondResponse.choices[0]?.message?.content || "Here are the government schemes I found:";
+        console.log("Groq responded (second pass).");
+
+        // Save AI response to database
+        if (userId) {
+          await prisma.chatMessage.create({
+            data: {
+              userId,
+              role: "model",
+              content: responseText,
+              type: "schemes",
+              schemes: schemes as any
+            }
+          });
+        }
 
         return NextResponse.json({
           text: responseText,
@@ -177,20 +293,61 @@ Be professional, concise, and prioritize using your provided search tool for rea
           schemes,
         });
       } else {
+        const responseText = firstChoice.content || "I'm looking into that for you. Could you please specify which sector or scheme you're interested in?";
+        
+        // Save AI response to database
+        if (userId) {
+          await prisma.chatMessage.create({
+            data: {
+              userId,
+              role: "model",
+              content: responseText,
+              type: "text"
+            }
+          });
+        }
+
         return NextResponse.json({
-          text: firstChoice.content || "I'm looking into that for you. Could you please specify which sector or scheme you're interested in?",
+          text: responseText,
           type: "text"
         });
       }
     }
 
+    const responseText = firstChoice?.content || "";
+
+    // Save AI response to database
+    if (userId && responseText) {
+      await prisma.chatMessage.create({
+        data: {
+          userId,
+          role: "model",
+          content: responseText,
+          type: "text"
+        }
+      });
+    }
+
     // No tool call — return regular response
     return NextResponse.json({
-      text: firstChoice?.content || "",
+      text: responseText,
       type: "text",
     });
   } catch (error: any) {
     console.error("AI Chat Error Details:", error);
+    
+    // Check for specific Groq errors
+    if (error?.status === 401) {
+      return NextResponse.json(
+        { 
+          error: "Unauthorized", 
+          text: "The AI service is unauthorized. Please check your GROQ_API_KEY in the .env file.",
+          details: "401 Unauthorized"
+        },
+        { status: 401 }
+      );
+    }
+
     return NextResponse.json(
       { 
         error: "Failed to get response from AI", 

@@ -62,18 +62,18 @@
     "subtitle": "This helps us find industry-specific subsidies and grants.",
     "inputType": "single_select",
     "options": [
-      { "label": "IT / Software", "value": "IT/Software", "description": "Software, SaaS, digital services", "icon": "💻" },
-      { "label": "Manufacturing", "value": "Manufacturing", "description": "Factories, production, assembly", "icon": "🏭" },
-      { "label": "Food & Beverage", "value": "Food & Beverage", "description": "Restaurants, food processing, catering", "icon": "🍽️" },
-      { "label": "Agriculture", "value": "Agriculture", "description": "Farming, dairy, horticulture", "icon": "🌾" },
-      { "label": "Healthcare", "value": "Healthcare", "description": "Clinics, pharma, medical devices", "icon": "🏥" },
-      { "label": "Retail / Trading", "value": "Retail/Trading", "description": "Shops, e-commerce, trading", "icon": "🛒" },
-      { "label": "Education", "value": "Education", "description": "Schools, coaching, edtech", "icon": "📚" },
-      { "label": "Textile & Handicraft", "value": "Textile", "description": "Garments, handloom, crafts", "icon": "🧵" },
-      { "label": "Construction", "value": "Construction", "description": "Real estate, infrastructure", "icon": "🏗️" },
-      { "label": "Transport & Logistics", "value": "Transport", "description": "Fleet, warehousing, delivery", "icon": "🚚" },
-      { "label": "Services", "value": "Service", "description": "Consulting, BPO, professional services", "icon": "💼" },
-      { "label": "Other", "value": "Other", "description": "Any other sector", "icon": "📦" }
+      { "label": "IT / Software", "value": "IT/Software", "description": "Software, SaaS, digital services", "icon": "Monitor" },
+      { "label": "Manufacturing", "value": "Manufacturing", "description": "Factories, production, assembly", "icon": "Factory" },
+      { "label": "Food & Beverage", "value": "Food & Beverage", "description": "Restaurants, food processing, catering", "icon": "Utensils" },
+      { "label": "Agriculture", "value": "Agriculture", "description": "Farming, dairy, horticulture", "icon": "Sprout" },
+      { "label": "Healthcare", "value": "Healthcare", "description": "Clinics, pharma, medical devices", "icon": "Activity" },
+      { "label": "Retail / Trading", "value": "Retail/Trading", "description": "Shops, e-commerce, trading", "icon": "ShoppingBag" },
+      { "label": "Education", "value": "Education", "description": "Schools, coaching, edtech", "icon": "GraduationCap" },
+      { "label": "Textile & Handicraft", "value": "Textile", "description": "Garments, handloom, crafts", "icon": "Scissors" },
+      { "label": "Construction", "value": "Construction", "description": "Real estate, infrastructure", "icon": "Building" },
+      { "label": "Transport & Logistics", "value": "Transport", "description": "Fleet, warehousing, delivery", "icon": "Truck" },
+      { "label": "Services", "value": "Service", "description": "Consulting, BPO, professional services", "icon": "Briefcase" },
+      { "label": "Other", "value": "Other", "description": "Any other sector", "icon": "Package" }
     ],
     "dbFilterColumn": "industry",
     "dbFilterTable": "BusinessProfile",
@@ -88,10 +88,10 @@
     "subtitle": "Different schemes target different business maturity levels.",
     "inputType": "single_select",
     "options": [
-      { "label": "Ideation", "value": "Ideation", "description": "Just an idea or planning phase", "icon": "💡" },
-      { "label": "Startup (< 2 years)", "value": "Startup", "description": "Recently launched", "icon": "🚀" },
-      { "label": "Growth (2-5 years)", "value": "Growth", "description": "Scaling operations", "icon": "📈" },
-      { "label": "Established (5+ years)", "value": "Established", "description": "Mature business", "icon": "🏢" }
+      { "label": "Ideation", "value": "Ideation", "description": "Just an idea or planning phase", "icon": "Lightbulb" },
+      { "label": "Startup (< 2 years)", "value": "Startup", "description": "Recently launched", "icon": "Rocket" },
+      { "label": "Growth (2-5 years)", "value": "Growth", "description": "Scaling operations", "icon": "TrendingUp" },
+      { "label": "Established (5+ years)", "value": "Established", "description": "Mature business", "icon": "Building2" }
     ],
     "dbFilterColumn": "entityType",
     "dbFilterTable": "BusinessProfile",
@@ -147,8 +147,8 @@
     "subtitle": "Several government schemes exclusively support women entrepreneurs.",
     "inputType": "single_select",
     "options": [
-      { "label": "Yes, women-owned", "value": "true", "icon": "👩‍💼" },
-      { "label": "No", "value": "false", "icon": "👤" }
+      { "label": "Yes, women-owned", "value": "true", "icon": "UserRound" },
+      { "label": "No", "value": "false", "icon": "User" }
     ],
     "dbFilterColumn": "isWomenOwned",
     "dbFilterTable": "BusinessProfile",
@@ -163,7 +163,7 @@
     "subtitle": "Special schemes exist for SC/ST entrepreneurs under Stand-Up India.",
     "inputType": "single_select",
     "options": [
-      { "label": "Yes, SC/ST", "value": "true", "icon": "✅" },
+      { "label": "Yes, SC/ST", "value": "true", "icon": "CheckCircle" },
       { "label": "No", "value": "false" },
       { "label": "Prefer not to say", "value": "skip" }
     ],
@@ -180,7 +180,7 @@
     "subtitle": "DPIIT-recognized startups get access to exclusive schemes.",
     "inputType": "single_select",
     "options": [
-      { "label": "Yes, DPIIT recognized", "value": "true", "icon": "🏅" },
+      { "label": "Yes, DPIIT recognized", "value": "true", "icon": "Award" },
       { "label": "No / Not yet", "value": "false" },
       { "label": "I don't know", "value": "unknown" }
     ],
@@ -239,13 +239,13 @@
     "subtitle": "Different tech categories qualify for different incentives.",
     "inputType": "single_select",
     "options": [
-      { "label": "SaaS / Cloud", "value": "SaaS", "icon": "☁️" },
-      { "label": "Mobile App", "value": "MobileApp", "icon": "📱" },
-      { "label": "AI / ML", "value": "AI/ML", "icon": "🤖" },
-      { "label": "Fintech", "value": "Fintech", "icon": "💳" },
-      { "label": "Cybersecurity", "value": "Cybersecurity", "icon": "🔒" },
-      { "label": "IT Services / Consulting", "value": "ITServices", "icon": "🖥️" },
-      { "label": "Other Tech", "value": "OtherTech", "icon": "⚙️" }
+      { "label": "SaaS / Cloud", "value": "SaaS", "icon": "Cloud" },
+      { "label": "Mobile App", "value": "MobileApp", "icon": "Smartphone" },
+      { "label": "AI / ML", "value": "AI/ML", "icon": "Cpu" },
+      { "label": "Fintech", "value": "Fintech", "icon": "CreditCard" },
+      { "label": "Cybersecurity", "value": "Cybersecurity", "icon": "Lock" },
+      { "label": "IT Services / Consulting", "value": "ITServices", "icon": "Monitor" },
+      { "label": "Other Tech", "value": "OtherTech", "icon": "Settings" }
     ],
     "required": false,
     "displayOrder": 100,
@@ -273,13 +273,13 @@
     "questionText": "What type of products do you manufacture?",
     "inputType": "single_select",
     "options": [
-      { "label": "Consumer Goods", "value": "ConsumerGoods", "icon": "🛍️" },
-      { "label": "Industrial / Machinery", "value": "Industrial", "icon": "⚙️" },
-      { "label": "Electronics", "value": "Electronics", "icon": "🔌" },
-      { "label": "Chemicals", "value": "Chemicals", "icon": "🧪" },
-      { "label": "Textiles", "value": "Textiles", "icon": "🧶" },
-      { "label": "Auto Components", "value": "AutoParts", "icon": "🔧" },
-      { "label": "Other", "value": "Other", "icon": "📦" }
+      { "label": "Consumer Goods", "value": "ConsumerGoods", "icon": "ShoppingBag" },
+      { "label": "Industrial / Machinery", "value": "Industrial", "icon": "Settings" },
+      { "label": "Electronics", "value": "Electronics", "icon": "Zap" },
+      { "label": "Chemicals", "value": "Chemicals", "icon": "TestTube" },
+      { "label": "Textiles", "value": "Textiles", "icon": "Pencil" },
+      { "label": "Auto Components", "value": "AutoParts", "icon": "Wrench" },
+      { "label": "Other", "value": "Other", "icon": "Package" }
     ],
     "required": false,
     "displayOrder": 100,
@@ -305,7 +305,7 @@
     "questionText": "Do you have an FSSAI license?",
     "inputType": "single_select",
     "options": [
-      { "label": "Yes", "value": "yes", "icon": "✅" },
+      { "label": "Yes", "value": "yes", "icon": "CheckCircle" },
       { "label": "Applied / In process", "value": "in_process" },
       { "label": "No", "value": "no" }
     ],
@@ -319,12 +319,12 @@
     "questionText": "What type of food business is it?",
     "inputType": "single_select",
     "options": [
-      { "label": "Restaurant / Cafe", "value": "Restaurant", "icon": "🍽️" },
-      { "label": "Food Processing", "value": "Processing", "icon": "🏭" },
-      { "label": "Bakery / Confectionery", "value": "Bakery", "icon": "🍰" },
-      { "label": "Packaged Foods", "value": "Packaged", "icon": "📦" },
-      { "label": "Dairy Products", "value": "Dairy", "icon": "🥛" },
-      { "label": "Organic / Health Food", "value": "Organic", "icon": "🥬" }
+      { "label": "Restaurant / Cafe", "value": "Restaurant", "icon": "Utensils" },
+      { "label": "Food Processing", "value": "Processing", "icon": "Factory" },
+      { "label": "Bakery / Confectionery", "value": "Bakery", "icon": "Cake" },
+      { "label": "Packaged Foods", "value": "Packaged", "icon": "Package" },
+      { "label": "Dairy Products", "value": "Dairy", "icon": "Milk" },
+      { "label": "Organic / Health Food", "value": "Organic", "icon": "Leaf" }
     ],
     "required": false,
     "displayOrder": 101,
@@ -350,12 +350,12 @@
     "questionText": "What type of agricultural activity?",
     "inputType": "single_select",
     "options": [
-      { "label": "Crop Farming", "value": "crop", "icon": "🌾" },
-      { "label": "Horticulture", "value": "horticulture", "icon": "🍎" },
-      { "label": "Dairy / Animal Husbandry", "value": "dairy", "icon": "🐄" },
-      { "label": "Fisheries / Aquaculture", "value": "fisheries", "icon": "🐟" },
-      { "label": "Agri-processing", "value": "processing", "icon": "🏭" },
-      { "label": "Organic Farming", "value": "organic", "icon": "🌿" }
+      { "label": "Crop Farming", "value": "crop", "icon": "Sprout" },
+      { "label": "Horticulture", "value": "horticulture", "icon": "Apple" },
+      { "label": "Dairy / Animal Husbandry", "value": "dairy", "icon": "Beef" },
+      { "label": "Fisheries / Aquaculture", "value": "fisheries", "icon": "Fish" },
+      { "label": "Agri-processing", "value": "processing", "icon": "Factory" },
+      { "label": "Organic Farming", "value": "organic", "icon": "Leaf" }
     ],
     "required": false,
     "displayOrder": 101,
@@ -367,11 +367,11 @@
     "questionText": "What type of healthcare business?",
     "inputType": "single_select",
     "options": [
-      { "label": "Clinic / Hospital", "value": "clinic", "icon": "🏥" },
-      { "label": "Pharmacy", "value": "pharmacy", "icon": "💊" },
-      { "label": "Medical Devices", "value": "devices", "icon": "🩺" },
-      { "label": "Health Tech / Telemedicine", "value": "healthtech", "icon": "📱" },
-      { "label": "Ayurveda / Wellness", "value": "wellness", "icon": "🧘" }
+      { "label": "Clinic / Hospital", "value": "clinic", "icon": "Activity" },
+      { "label": "Pharmacy", "value": "pharmacy", "icon": "Stethoscope" },
+      { "label": "Medical Devices", "value": "devices", "icon": "ClipboardList" },
+      { "label": "Health Tech / Telemedicine", "value": "healthtech", "icon": "Smartphone" },
+      { "label": "Ayurveda / Wellness", "value": "wellness", "icon": "HeartPulse" }
     ],
     "required": false,
     "displayOrder": 100,
@@ -383,7 +383,7 @@
     "questionText": "Are you GST registered?",
     "inputType": "single_select",
     "options": [
-      { "label": "Yes", "value": "yes", "icon": "✅" },
+      { "label": "Yes", "value": "yes", "icon": "CheckCircle" },
       { "label": "Applied / In process", "value": "in_process" },
       { "label": "Not yet / Exempt", "value": "no" }
     ],
@@ -412,11 +412,11 @@
     "questionText": "What type of educational institution?",
     "inputType": "single_select",
     "options": [
-      { "label": "School (K-12)", "value": "school", "icon": "🏫" },
-      { "label": "Coaching / Tutoring", "value": "coaching", "icon": "📝" },
-      { "label": "EdTech Platform", "value": "edtech", "icon": "💻" },
-      { "label": "Vocational Training", "value": "vocational", "icon": "🔧" },
-      { "label": "Higher Education", "value": "higher", "icon": "🎓" }
+      { "label": "School (K-12)", "value": "school", "icon": "School" },
+      { "label": "Coaching / Tutoring", "value": "coaching", "icon": "BookOpen" },
+      { "label": "EdTech Platform", "value": "edtech", "icon": "Monitor" },
+      { "label": "Vocational Training", "value": "vocational", "icon": "Settings" },
+      { "label": "Higher Education", "value": "higher", "icon": "GraduationCap" }
     ],
     "required": false,
     "displayOrder": 100,

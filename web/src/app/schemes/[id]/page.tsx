@@ -48,7 +48,7 @@ export default async function SchemeDetailsPage({ params }: { params: Promise<{ 
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-slate-50 pt-32 pb-20">
+      <main className="min-h-screen bg-slate-50 dark:bg-slate-950 pt-32 pb-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
           <Link 
             href="/schemes" 
@@ -63,7 +63,7 @@ export default async function SchemeDetailsPage({ params }: { params: Promise<{ 
             <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6 auto-rows-min">
               
               {/* Large Card: Main Info */}
-              <div className="md:col-span-2 bg-white p-8 rounded-[32px] shadow-sm border border-slate-100">
+              <div className="md:col-span-2 bg-white p-8 rounded-[32px] border border-slate-100">
                 <div className="flex flex-wrap gap-2 mb-6">
                   {(scheme.categories as string[])?.map((cat) => (
                     <span key={cat} className="px-4 py-1.5 bg-brand-50 text-brand-600 text-[10px] font-black uppercase tracking-widest rounded-full">
@@ -114,7 +114,7 @@ export default async function SchemeDetailsPage({ params }: { params: Promise<{ 
               </div>
 
               {/* Bento Card: Eligibility */}
-              <div className="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100">
+              <div className="bg-white p-8 rounded-[32px] border border-slate-100">
                 <h3 className="text-lg font-black text-brand-600 mb-6 flex items-center gap-3">
                   <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center">
                     <CheckCircle2 className="text-emerald-500" size={20} />
@@ -142,7 +142,7 @@ export default async function SchemeDetailsPage({ params }: { params: Promise<{ 
               </div>
 
               {/* Bento Card: Benefits */}
-              <div className="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100">
+              <div className="bg-white p-8 rounded-[32px] border border-slate-100">
                 <h3 className="text-lg font-black text-brand-600 mb-6 flex items-center gap-3">
                   <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center">
                     <Zap className="text-amber-500" size={20} />
@@ -156,7 +156,7 @@ export default async function SchemeDetailsPage({ params }: { params: Promise<{ 
 
               {/* Bento Card: Process (Wide) */}
               {data.application && (
-                <div className="md:col-span-2 bg-white p-8 rounded-[32px] shadow-sm border border-slate-100">
+                <div className="md:col-span-2 bg-white p-8 rounded-[32px] border border-slate-100">
                   <h3 className="text-lg font-black text-brand-600 mb-6 flex items-center gap-3">
                     <div className="w-10 h-10 bg-brand-50 rounded-xl flex items-center justify-center">
                       <FileText className="text-brand-500" size={20} />

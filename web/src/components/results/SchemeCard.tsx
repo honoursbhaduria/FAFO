@@ -11,22 +11,22 @@ interface SchemeCardProps {
 
 export default function SchemeCard({ scheme, rank }: SchemeCardProps) {
   return (
-    <div className="group bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-blue-200 transition-all duration-300 overflow-hidden">
+    <div className="group bg-white rounded-xl border border-slate-200 transition-all duration-300 overflow-hidden">
       {/* Top accent */}
-      <div className="h-1 bg-gradient-to-r from-brand-600 to-indigo-600" />
+      <div className="h-0.5 bg-slate-200" />
 
-      <div className="p-6">
+      <div className="p-4">
         {/* Header */}
-        <div className="flex items-start gap-4 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center text-brand-600 font-black text-sm shrink-0">
+        <div className="flex items-start gap-3 mb-3">
+          <div className="w-8 h-8 rounded-lg bg-brand-50 flex items-center justify-center text-brand-700 font-black text-xs shrink-0 border border-brand-100">
             #{rank}
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-brand-600 leading-snug group-hover:text-brand-600 transition-colors">
+            <h3 className="font-bold text-slate-900 text-sm leading-tight group-hover:text-brand-600 transition-colors">
               {scheme.scheme_name}
             </h3>
             {scheme.ministry && (
-              <p className="flex items-center gap-1 text-xs text-slate-500 mt-1">
+              <p className="flex items-center gap-1 text-[10px] text-slate-500 mt-1 font-medium">
                 <Building2 size={10} />
                 {scheme.ministry}
               </p>
@@ -35,14 +35,14 @@ export default function SchemeCard({ scheme, rank }: SchemeCardProps) {
         </div>
 
         {/* Description */}
-        <p className="text-sm text-slate-600 leading-relaxed mb-4 line-clamp-3">
+        <p className="text-[11px] text-slate-600 leading-snug mb-3 line-clamp-3 font-medium">
           {scheme.description || "Government scheme — click to learn more."}
         </p>
 
         {/* Match reasons */}
-        <div className="flex flex-wrap gap-1.5 mb-4">
+        <div className="flex flex-wrap gap-1 mb-3">
           {scheme.matchReasons.map((r, i) => (
-            <span key={i} className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded-full border border-emerald-100">
+            <span key={i} className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-emerald-50 text-emerald-700 text-[9px] font-bold rounded border border-emerald-100">
               <Award size={8} />
               {r}
             </span>
@@ -51,9 +51,9 @@ export default function SchemeCard({ scheme, rank }: SchemeCardProps) {
 
         {/* Categories */}
         {scheme.categories.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mb-4">
+          <div className="flex flex-wrap gap-1 mb-3">
             {scheme.categories.slice(0, 3).map((cat, i) => (
-              <span key={i} className="px-2 py-0.5 bg-slate-50 text-slate-500 text-[10px] font-bold rounded-md">
+              <span key={i} className="px-1.5 py-0.5 bg-slate-100 text-slate-500 text-[9px] font-bold rounded border border-slate-200">
                 {cat}
               </span>
             ))}
@@ -61,17 +61,17 @@ export default function SchemeCard({ scheme, rank }: SchemeCardProps) {
         )}
 
         {/* CTA */}
-        <div className="flex items-center justify-between pt-3 border-t border-slate-50">
-          <div className="flex items-center gap-1 text-xs font-bold text-brand-600">
+        <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+          <div className="flex items-center gap-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
             <div className="w-1.5 h-1.5 rounded-full bg-brand-600" />
             Score: {scheme.relevanceScore}
           </div>
           <Link
             href={`/schemes/${scheme.api_id}`}
-            className="flex items-center gap-1.5 px-4 py-2 bg-brand-600 text-white text-xs font-bold rounded-lg hover:bg-brand-700 transition-all"
+            className="flex items-center gap-1 px-3 py-1.5 bg-brand-600 text-white text-[10px] font-bold rounded hover:bg-brand-700 transition-all uppercase tracking-wider"
           >
-            View Details
-            <ChevronRight size={14} />
+            Details
+            <ChevronRight size={12} />
           </Link>
         </div>
       </div>

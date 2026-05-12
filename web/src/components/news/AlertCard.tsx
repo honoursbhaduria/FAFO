@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, ExternalLink, Bookmark, Clock } from "lucide-react";
+import { AlertTriangle, ExternalLink, Bookmark, Clock, AlertCircle } from "lucide-react";
 import type { FeedArticle } from "@/types/news";
 
 interface AlertCardProps {
@@ -18,20 +18,18 @@ export default function AlertCard({ article, onBookmark, onRead }: AlertCardProp
   return (
     <div
       id={`alert-${article.id}`}
-      className="group relative bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl border-2 border-red-200/60 shadow-sm hover:shadow-lg hover:border-red-300 transition-all duration-300 overflow-hidden"
+      className="group relative bg-white rounded-[32px] border border-red-100 transition-all duration-500 overflow-hidden"
     >
-      {/* Urgency accent bar */}
-      <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-red-500 to-orange-500" />
-
-      <div className="p-5 pt-6">
+      <div className="p-6 pt-8">
         {/* Header */}
-        <div className="flex items-start gap-3 mb-3">
-          <div className="p-2 bg-red-100 rounded-xl shrink-0">
-            <AlertTriangle size={18} className="text-red-600" />
+        <div className="flex items-start gap-4 mb-4">
+          <div className="p-2.5 bg-red-50 rounded-2xl border border-red-100 shrink-0">
+            <AlertTriangle size={20} className="text-red-600" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="px-2 py-0.5 bg-red-500 text-white text-[10px] font-black uppercase tracking-wider rounded-md">
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="flex items-center gap-1.5 px-2 py-0.5 bg-red-600 text-white text-[9px] font-black uppercase tracking-[0.15em] rounded-md border-b-2 border-red-800">
+                <span className="w-1 h-1 bg-white rounded-full animate-pulse" />
                 Urgent
               </span>
               <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
@@ -39,48 +37,48 @@ export default function AlertCard({ article, onBookmark, onRead }: AlertCardProp
                 {publishedDate}
               </span>
             </div>
-            <h3 className="font-bold text-brand-600 leading-snug group-hover:text-red-700 transition-colors">
+            <h3 className="font-bold text-slate-900 text-base leading-tight group-hover:text-red-700 transition-colors">
               {article.title}
             </h3>
           </div>
         </div>
 
         {/* Description */}
-        <p className="text-sm text-slate-600 leading-relaxed line-clamp-2 mb-3 pl-12">
+        <p className="text-xs text-slate-600 leading-relaxed line-clamp-2 mb-4 pl-14 font-medium">
           {article.description}
         </p>
 
         {/* Urgency reason */}
         {article.urgencyReason && (
-          <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider mb-3 pl-12">
-            ⚠ {article.urgencyReason}
+          <p className="text-[10px] font-black text-red-600 uppercase tracking-widest mb-4 pl-14 flex items-center gap-1.5">
+            <AlertCircle size={12} /> {article.urgencyReason}
           </p>
         )}
 
         {/* Actions */}
-        <div className="flex items-center justify-between pl-12 pt-3 border-t border-red-100">
-          <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+        <div className="flex items-center justify-between pl-14 pt-4 border-t border-slate-50">
+          <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
             {article.source}
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => onBookmark(article.id)}
-              className={`p-1.5 rounded-lg transition-all ${
+              className={`p-2 rounded-xl transition-all ${
                 article.isBookmarked
-                  ? "bg-brand-50 text-brand-600"
-                  : "text-slate-400 hover:text-brand-600"
+                  ? "bg-slate-900 text-white "
+                  : "text-slate-400 hover:text-red-600 hover:bg-red-50"
               }`}
             >
-              <Bookmark size={14} fill={article.isBookmarked ? "currentColor" : "none"} />
+              <Bookmark size={16} fill={article.isBookmarked ? "currentColor" : "none"} />
             </button>
             <a
               href={article.url}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => onRead(article.id)}
-              className="flex items-center gap-1 px-3 py-1.5 bg-red-600 text-white text-xs font-bold rounded-lg hover:bg-red-700 transition-all"
+              className="flex items-center gap-2 px-5 py-2.5 bg-red-600 text-white text-xs font-black rounded-xl hover:bg-red-700 transition-all uppercase tracking-widest"
             >
-              View Now
+              View
               <ExternalLink size={12} />
             </a>
           </div>

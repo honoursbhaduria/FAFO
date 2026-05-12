@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { fetchAndStoreExternalSchemes } from "@/lib/external-schemes";
+import { Prisma } from "@prisma/client";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -10,7 +12,7 @@ export async function GET(request: Request) {
   const skip = (page - 1) * pageSize;
 
   try {
-    const where: any = {};
+    const where: Prisma.schemesWhereInput = {};
 
     if (category) {
       where.categories = {
@@ -25,7 +27,10 @@ export async function GET(request: Request) {
       };
     }
 
-    const [total, items] = await Promise.all([
+    let total: number;
+    let items: Record<string, unknown>[];
+
+    const [dbTotal, dbItems] = await Promise.all([
       prisma.schemes.count({ where }),
       prisma.schemes.findMany({
         where,
@@ -34,6 +39,20 @@ export async function GET(request: Request) {
         orderBy: { fetched_at: 'desc' }
       })
     ]);
+
+    total = dbTotal;
+    items = dbItems;
+
+    // Fallback: If no items found locally, fetch from external API and store
+    if (items.length === 0) {
+      console.log("No local schemes found. Fetching from external API...");
+      const externalData = await fetchAndStoreExternalSchemes(query || "", category || "", page);
+      
+      if (externalData.items.length > 0) {
+        items = externalData.items;
+        total = externalData.total;
+      }
+    }
 
     return NextResponse.json({
       items,

@@ -136,24 +136,27 @@ export default function DocumentVaultPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-10">
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <h1 className="text-3xl font-black text-brand-600">Document Vault</h1>
-            <p className="text-slate-500 mt-1">Securely store and manage your business compliance documents.</p>
+            <h1 className="text-4xl font-black text-slate-900 tracking-tight">Document Vault</h1>
+            <p className="text-slate-500 mt-2 text-base font-medium">
+              Securely store and manage your business compliance documents.
+            </p>
           </div>
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 px-6 py-3 bg-brand-600 text-white font-black rounded-2xl shadow-xl shadow-brand-100 hover:bg-brand-600 transition-all active:scale-95"
+            className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-[20px] font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all active:scale-95 border border-slate-800"
           >
             <Upload size={20} />
             Upload Document
           </button>
         </div>
 
+
         {/* Filters & Search */}
-        <div className="flex flex-col sm:flex-row items-center gap-4 bg-white p-4 rounded-3xl border border-slate-100 shadow-sm">
+        <div className="flex flex-col sm:flex-row items-center gap-4 bg-white p-4 rounded-3xl border border-slate-100">
           <div className="relative flex-1 w-full">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
             <input 
@@ -184,7 +187,7 @@ export default function DocumentVaultPage() {
         </div>
 
         {/* Documents Table */}
-        <div className="bg-white rounded-[32px] border border-slate-100 shadow-xl overflow-hidden">
+        <div className="bg-white rounded-[32px] border border-slate-100 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
@@ -267,7 +270,7 @@ export default function DocumentVaultPage() {
       {previewDoc && isMounted && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center px-4 md:p-10">
           <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-md" onClick={() => setPreviewDoc(null)} />
-          <div className="relative bg-white w-full h-full max-w-5xl rounded-[40px] shadow-2xl overflow-hidden flex flex-col border border-white/10">
+          <div className="relative bg-white w-full h-full max-w-5xl rounded-[40px] overflow-hidden flex flex-col border border-white/10">
             <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-white">
               <div>
                 <h2 className="text-xl font-black text-brand-600 truncate max-w-[300px]">{previewDoc.name}</h2>
@@ -291,13 +294,13 @@ export default function DocumentVaultPage() {
                 isPdfDocument(previewDoc) ? (
                   <iframe
                     src={`${buildPreviewUrl(previewDoc.url)}#toolbar=0&navpanes=0`}
-                    className="w-full h-full rounded-2xl border-none bg-white shadow-2xl"
+                    className="w-full h-full rounded-2xl border-none bg-white"
                     title={previewDoc.name}
                   />
                 ) : isOfficeDocument(previewDoc) ? (
                   <iframe
                     src={buildOfficeViewerUrl(buildPreviewUrl(previewDoc.url))}
-                    className="w-full h-full rounded-2xl border-none bg-white shadow-2xl"
+                    className="w-full h-full rounded-2xl border-none bg-white"
                     title={previewDoc.name}
                   />
                 ) : (
@@ -305,7 +308,7 @@ export default function DocumentVaultPage() {
                     <img
                       src={buildPreviewUrl(previewDoc.url)}
                       alt={previewDoc.name}
-                      className="max-w-full max-h-full object-contain shadow-2xl rounded-lg"
+                      className="max-w-full max-h-full object-contain rounded-lg"
                     />
                   </div>
                 )
@@ -325,7 +328,7 @@ export default function DocumentVaultPage() {
       {isModalOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
-          <div className="relative bg-white w-full max-w-lg rounded-[40px] shadow-2xl overflow-hidden border border-slate-100">
+          <div className="relative bg-white w-full max-w-lg rounded-[40px] overflow-hidden border border-slate-100">
             <div className="p-8 border-b border-slate-100 flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-black text-brand-600">Upload Document</h2>
@@ -385,7 +388,7 @@ export default function DocumentVaultPage() {
                       onClick={() => setUploadType(type)}
                       className={`px-4 py-3 rounded-2xl text-xs font-black transition-all border ${
                         uploadType === type 
-                          ? "bg-brand-600 border-brand-600 text-white shadow-xl shadow-brand-100" 
+                          ? "bg-brand-600 border-brand-600 text-white  -100" 
                           : "bg-white border-slate-100 text-slate-400 hover:border-slate-300"
                       }`}
                     >
@@ -398,7 +401,7 @@ export default function DocumentVaultPage() {
               <button
                 type="submit"
                 disabled={!uploadFile || uploading}
-                className="w-full py-5 bg-brand-600 text-white rounded-[24px] font-black text-lg hover:bg-brand-600 disabled:opacity-50 transition-all flex items-center justify-center gap-3 shadow-2xl shadow-brand-100"
+                className="w-full py-5 bg-brand-600 text-white rounded-[24px] font-black text-lg hover:bg-brand-600 disabled:opacity-50 transition-all flex items-center justify-center gap-3"
               >
                 {uploading ? (
                   <>

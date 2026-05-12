@@ -43,10 +43,10 @@ function recencyScore(publishedAt: string): number {
   const daysSince = (now - pubDate) / (1000 * 60 * 60 * 24);
 
   if (daysSince <= 1) return 10;
-  if (daysSince <= 2) return 7;
-  if (daysSince <= 4) return 4;
-  if (daysSince <= 7) return 1;
-  return 0;
+  if (daysSince <= 2) return 8;
+  if (daysSince <= 4) return 5;
+  if (daysSince <= 7) return 2;
+  return 1; // Always give at least 1 point for recency
 }
 
 // ────────────────────────────────────────────────────────────
@@ -66,13 +66,13 @@ function getKeywordRegex(term: string): RegExp {
 }
 
 function countExactMatches(text: string, term: string): number {
-  const regex = getKeywordRegex(term);
+  if (!text || !term) return 0;
+  const regex = new RegExp(`\\b${escapeRegex(term)}\\b`, "gi");
   return (text.match(regex) || []).length;
 }
 
 function countPartialMatches(text: string, term: string): number {
-  // Stem-like partial: check if the term (length >= 4) appears as a substring
-  if (term.length < 4) return 0;
+  if (!text || !term || term.length < 4) return 0;
   const lower = text.toLowerCase();
   const termLower = term.toLowerCase();
   let count = 0;
@@ -132,20 +132,23 @@ export function isOpportunityArticle(article: RawArticle | ScoredArticle): boole
  *   + recency_score
  *   - (read_penalty if article was already read)
  *
- * Only articles with SCORE >= 10 are included.
+ * Threshold lowered to 5 to ensure more articles reach the feed.
  */
 export function scoreArticles(
   articles: RawArticle[],
   keywords: WeightedKeyword[],
   readArticleIds: Set<string> = new Set()
 ): ScoredArticle[] {
-  const THRESHOLD = 10;
+  const THRESHOLD = 5;
   const scored: ScoredArticle[] = [];
 
   for (const article of articles) {
     let score = 0;
     const matchedKeywords: string[] = [];
     const fullText = `${article.title} ${article.description} ${article.content}`;
+
+    // Base score for simply being fetched
+    score += 2;
 
     for (const { term, weight } of keywords) {
       const exact = countExactMatches(fullText, term);

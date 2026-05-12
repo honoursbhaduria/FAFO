@@ -45,26 +45,26 @@ export function SchemeCard({ scheme }: { scheme: Scheme }) {
       layout
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`group relative rounded-2xl border ${style.border} bg-white hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden`}
+      className={`group relative rounded-xl border ${style.border} bg-white transition-all duration-300 cursor-pointer overflow-hidden`}
       onClick={() => setIsExpanded(!isExpanded)}
     >
       {/* Gradient accent top bar */}
-      <div className="h-1 w-full bg-gradient-to-r from-orange-400 via-white to-green-500 opacity-70" />
+      <div className="h-0.5 w-full bg-slate-200" />
 
-      <div className="p-4">
+      <div className="p-3">
         {/* Header row */}
         <div className="flex items-start justify-between gap-2">
-          <div className="flex items-start gap-3 flex-1 min-w-0">
-            <div className={`w-9 h-9 rounded-xl ${style.bg} flex items-center justify-center flex-shrink-0 mt-0.5`}>
-              <Landmark className={`w-4 h-4 ${style.text}`} />
+          <div className="flex items-start gap-2.5 flex-1 min-w-0">
+            <div className={`w-8 h-8 rounded-lg ${style.bg} flex items-center justify-center flex-shrink-0 mt-0.5`}>
+              <Landmark className={`w-3.5 h-3.5 ${style.text}`} />
             </div>
             <div className="min-w-0 flex-1">
-              <h4 className="text-sm font-bold text-brand-600 leading-tight truncate">
+              <h4 className="text-xs font-bold text-slate-900 leading-tight">
                 {scheme.title}
               </h4>
-              <div className="flex items-center gap-2 mt-1.5">
-                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${style.bg} ${style.text}`}>
-                  <Tag className="w-2.5 h-2.5" />
+              <div className="flex items-center gap-2 mt-1">
+                <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${style.bg} ${style.text} border border-current/10`}>
+                  <Tag className="w-2 h-2" />
                   {scheme.category}
                 </span>
               </div>
@@ -75,13 +75,13 @@ export function SchemeCard({ scheme }: { scheme: Scheme }) {
             transition={{ duration: 0.2 }}
             className="flex-shrink-0 mt-1"
           >
-            <ChevronDown className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-colors" />
+            <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 transition-colors" />
           </motion.div>
         </div>
 
         {/* Collapsed preview */}
         {!isExpanded && (
-          <p className="text-xs text-slate-500 mt-2 leading-relaxed line-clamp-2">
+          <p className="text-[11px] text-slate-500 mt-1.5 leading-snug line-clamp-2 font-medium">
             {shortSummary}
           </p>
         )}

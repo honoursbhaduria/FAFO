@@ -48,19 +48,19 @@ export default function FilterBar({
               key={f.key}
               id={`filter-${f.key}`}
               onClick={() => onFilterChange(f.key)}
-              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+              className={`px-5 py-2.5 rounded-[18px] text-[11px] font-black uppercase tracking-widest transition-all ${
                 activeFilter === f.key
-                  ? "bg-brand-600 text-white shadow-md shadow-brand-100"
-                  : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:border-slate-300"
+                  ? "bg-slate-900 text-white border border-slate-900"
+                  : "bg-white text-slate-400 border border-slate-100 hover:bg-slate-50 hover:text-slate-600"
               }`}
             >
               {f.label}
               {count > 0 && (
                 <span
-                  className={`ml-1.5 px-1.5 py-0.5 text-[10px] font-black rounded-md ${
+                  className={`ml-2 px-1.5 py-0.5 text-[9px] font-black rounded-md ${
                     activeFilter === f.key
                       ? "bg-white/20 text-white"
-                      : "bg-slate-100 text-slate-500"
+                      : "bg-slate-100 text-slate-400"
                   }`}
                 >
                   {count}
@@ -72,13 +72,13 @@ export default function FilterBar({
       </div>
 
       {/* Sort dropdown */}
-      <div className="flex items-center gap-2">
-        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Sort by</span>
+      <div className="flex items-center gap-3">
+        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Priority</span>
         <select
           id="sort-select"
           value={activeSort}
           onChange={(e) => onSortChange(e.target.value as FeedSort)}
-          className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:border-brand-500 cursor-pointer"
+          className="px-4 py-2.5 bg-white border border-slate-100 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900/5 cursor-pointer appearance-none"
         >
           {sorts.map((s) => (
             <option key={s.key} value={s.key}>

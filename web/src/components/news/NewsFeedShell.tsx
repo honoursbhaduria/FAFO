@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { Newspaper, AlertTriangle, Sparkles, Loader2, MapPin, Briefcase, Tag, ArrowRight } from "lucide-react";
+import { Newspaper, AlertTriangle, Sparkles, Loader2, MapPin, Briefcase, Tag, ArrowRight, Monitor, Factory, Utensils, Sprout, Activity, ShoppingBag, GraduationCap, Scissors, Building, Truck, Palette, Zap, Building2, BarChart, Target, LucideIcon } from "lucide-react";
 import type { FeedResponse, FeedArticle, FeedFilter, FeedSort } from "@/types/news";
 import SearchBar from "./SearchBar";
 import FilterBar from "./FilterBar";
@@ -12,22 +12,22 @@ import OpportunityCard from "./OpportunityCard";
 import Link from "next/link";
 
 /** Sector icon mapping */
-const SECTOR_ICONS: Record<string, string> = {
-  "IT / Software": "💻",
-  "Manufacturing": "🏭",
-  "Food & Beverage": "🍽️",
-  "Agriculture": "🌾",
-  "Healthcare": "🏥",
-  "Retail / Trading": "🛒",
-  "Education": "📚",
-  "Textile & Handicraft": "🧵",
-  "Construction": "🏗️",
-  "Transport & Logistics": "🚚",
-  "Services": "💼",
-  "Handicraft": "🎨",
-  "Renewable Energy": "⚡",
-  "Tourism & Hospitality": "🏨",
-  "General": "📊",
+const SECTOR_ICONS: Record<string, LucideIcon> = {
+  "IT / Software": Monitor,
+  "Manufacturing": Factory,
+  "Food & Beverage": Utensils,
+  "Agriculture": Sprout,
+  "Healthcare": Activity,
+  "Retail / Trading": ShoppingBag,
+  "Education": GraduationCap,
+  "Textile & Handicraft": Scissors,
+  "Construction": Building,
+  "Transport & Logistics": Truck,
+  "Services": Briefcase,
+  "Handicraft": Palette,
+  "Renewable Energy": Zap,
+  "Tourism & Hospitality": Building2,
+  "General": BarChart,
 };
 
 export default function NewsFeedShell() {
@@ -48,10 +48,10 @@ export default function NewsFeedShell() {
       setError(null);
       const res = await fetch("/api/news/feed");
       if (!res.ok) throw new Error("Failed to fetch feed");
-      const data: FeedResponse = await res.json();
+      const data = await res.json();
       setFeed(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      setError(err instanceof Error ? err.message : "Failed to load news feed");
     } finally {
       setIsLoading(false);
     }
@@ -61,448 +61,324 @@ export default function NewsFeedShell() {
     fetchFeed();
   }, [fetchFeed]);
 
-  // ── Refresh ─────────────────────────────────────────────
   const handleRefresh = async () => {
+    setIsRefreshing(true);
     try {
-      setIsRefreshing(true);
-      const res = await fetch("/api/news/refresh", { method: "POST", body: JSON.stringify({}) });
-      if (res.status === 429) {
+      const res = await fetch("/api/news/refresh", { method: "POST" });
+      if (!res.ok) {
         const data = await res.json();
-        if (feed) setFeed({ ...feed, cooldownEndsAt: data.cooldownEndsAt });
-        return;
+        if (data.error) {
+          // If refresh failed due to cooldown, just refetch the current feed to update cooldown UI
+          await fetchFeed();
+          return;
+        }
+        throw new Error("Failed to refresh feed");
       }
-      if (!res.ok) throw new Error("Refresh failed");
-      const data: FeedResponse = await res.json();
+      const data = await res.json();
       setFeed(data);
     } catch (err) {
-      console.error(err);
+      console.error("Refresh failed:", err);
+      // Fallback to regular fetch on error
+      await fetchFeed();
     } finally {
       setIsRefreshing(false);
     }
   };
 
-  // ── Bookmark / Read handlers ────────────────────────────
-  const handleBookmark = async (articleId: string) => {
+  // ── Handlers ────────────────────────────────────────────
+  const toggleBookmark = async (articleId: string) => {
+    if (!feed) return;
+    
+    // Optimistic update
+    const updatedFeed = { ...feed };
+    const article = [...updatedFeed.regularFeed, ...updatedFeed.urgentAlerts, ...updatedFeed.opportunities]
+      .find(a => a.id === articleId);
+    
+    if (article) {
+      article.isBookmarked = !article.isBookmarked;
+      setFeed(updatedFeed);
+    }
+
     try {
-      const res = await fetch("/api/news/bookmark", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ articleId }),
-      });
-      const data = await res.json();
-      if (feed) {
-        const updateArticle = (a: FeedArticle) =>
-          a.id === articleId ? { ...a, isBookmarked: data.isBookmarked } : a;
-        setFeed({
-          ...feed,
-          urgentAlerts: feed.urgentAlerts.map(updateArticle),
-          opportunities: feed.opportunities.map(updateArticle),
-          regularFeed: feed.regularFeed.map(updateArticle),
-        });
-      }
+      await fetch(`/api/news/bookmark?id=${articleId}`, { method: "POST" });
     } catch (err) {
-      console.error(err);
+      console.error("Failed to update bookmark:", err);
     }
   };
 
-  const handleRead = async (articleId: string) => {
+  const markAsRead = async (articleId: string) => {
+    if (!feed) return;
+    
+    // Optimistic update
+    const updatedFeed = { ...feed };
+    const article = [...updatedFeed.regularFeed, ...updatedFeed.urgentAlerts, ...updatedFeed.opportunities]
+      .find(a => a.id === articleId);
+    
+    if (article && !article.isRead) {
+      article.isRead = true;
+      setFeed(updatedFeed);
+    }
+
     try {
-      await fetch("/api/news/read", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ articleId }),
-      });
-      if (feed) {
-        const updateArticle = (a: FeedArticle) =>
-          a.id === articleId ? { ...a, isRead: true } : a;
-        setFeed({
-          ...feed,
-          urgentAlerts: feed.urgentAlerts.map(updateArticle),
-          opportunities: feed.opportunities.map(updateArticle),
-          regularFeed: feed.regularFeed.map(updateArticle),
-        });
-      }
+      await fetch(`/api/news/read?id=${articleId}`, { method: "POST" });
     } catch (err) {
-      console.error(err);
+      console.error("Failed to mark as read:", err);
     }
   };
 
-  // ── All articles merged for filtering ───────────────────
-  const allArticles = useMemo(() => {
+  // ── Filtering & Sorting ─────────────────────────────────
+  const processedArticles = useMemo(() => {
     if (!feed) return [];
-    return [
-      ...feed.urgentAlerts,
-      ...feed.opportunities,
-      ...feed.regularFeed,
-    ];
-  }, [feed]);
 
-  // ── Search filter ───────────────────────────────────────
-  const searchFiltered = useMemo(() => {
-    if (!searchQuery.trim()) return allArticles;
-    const q = searchQuery.toLowerCase();
-    return allArticles.filter(
-      (a) =>
-        a.title.toLowerCase().includes(q) ||
+    const regularFeed = feed.regularFeed || [];
+    const urgentAlerts = feed.urgentAlerts || [];
+    const opportunities = feed.opportunities || [];
+
+    let articles: FeedArticle[] = [];
+    if (activeFilter === "all") {
+      articles = [...regularFeed, ...urgentAlerts, ...opportunities];
+    } else if (activeFilter === "alerts") {
+      articles = urgentAlerts;
+    } else if (activeFilter === "opportunities") {
+      articles = opportunities;
+    } else if (activeFilter === "bookmarked") {
+      articles = [...regularFeed, ...urgentAlerts, ...opportunities].filter(a => a.isBookmarked);
+    } else if (activeFilter === "unread") {
+      articles = [...regularFeed, ...urgentAlerts, ...opportunities].filter(a => !a.isRead);
+    }
+
+    // Search filter
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      articles = articles.filter(a => 
+        a.title.toLowerCase().includes(q) || 
         a.description.toLowerCase().includes(q) ||
-        a.source.toLowerCase().includes(q) ||
-        a.matchedKeywords.some((kw) => kw.toLowerCase().includes(q))
-    );
-  }, [allArticles, searchQuery]);
-
-  // ── Category filter ─────────────────────────────────────
-  const categoryFiltered = useMemo(() => {
-    switch (activeFilter) {
-      case "alerts":
-        return searchFiltered.filter((a) => a.isUrgent);
-      case "opportunities":
-        return searchFiltered.filter((a) =>
-          feed?.opportunities.some((o) => o.id === a.id)
-        );
-      case "bookmarked":
-        return searchFiltered.filter((a) => a.isBookmarked);
-      case "unread":
-        return searchFiltered.filter((a) => !a.isRead);
-      default:
-        return searchFiltered;
+        a.matchedKeywords.some(k => k.toLowerCase().includes(q))
+      );
     }
-  }, [searchFiltered, activeFilter, feed]);
 
-  // ── Sort ────────────────────────────────────────────────
-  const sorted = useMemo(() => {
-    const arr = [...categoryFiltered];
-    switch (activeSort) {
-      case "newest":
-        return arr.sort(
-          (a, b) =>
-            new Date(b.publishedAt).getTime() -
-            new Date(a.publishedAt).getTime()
-        );
-      case "oldest":
-        return arr.sort(
-          (a, b) =>
-            new Date(a.publishedAt).getTime() -
-            new Date(b.publishedAt).getTime()
-        );
-      default:
-        return arr.sort((a, b) => b.relevanceScore - a.relevanceScore);
-    }
-  }, [categoryFiltered, activeSort]);
+    // Sort
+    return articles.sort((a, b) => {
+      if (activeSort === "newest") return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+      if (activeSort === "oldest") return new Date(a.publishedAt).getTime() - new Date(b.publishedAt).getTime();
+      return b.relevanceScore - a.relevanceScore;
+    });
+  }, [feed, activeFilter, searchQuery, activeSort]);
 
-  // ── Pagination ──────────────────────────────────────────
-  const paginatedArticles = sorted.slice(0, page * ITEMS_PER_PAGE);
-  const hasMore = paginatedArticles.length < sorted.length;
+  // Pagination
+  const totalArticles = processedArticles.length;
+  const currentArticles = processedArticles.slice(0, page * ITEMS_PER_PAGE);
+  const hasMore = currentArticles.length < totalArticles;
 
   // ── Counts ──────────────────────────────────────────────
   const counts = useMemo(() => {
+    if (!feed) return { all: 0, alerts: 0, opportunities: 0, bookmarked: 0, unread: 0 };
+    
+    const regularFeed = feed.regularFeed || [];
+    const urgentAlerts = feed.urgentAlerts || [];
+    const opportunities = feed.opportunities || [];
+    const all = [...regularFeed, ...urgentAlerts, ...opportunities];
+
     return {
-      all: allArticles.length,
-      alerts: allArticles.filter((a) => a.isUrgent).length,
-      opportunities: feed?.opportunities.length ?? 0,
-      bookmarked: allArticles.filter((a) => a.isBookmarked).length,
-      unread: allArticles.filter((a) => !a.isRead).length,
+      all: all.length,
+      alerts: urgentAlerts.length,
+      opportunities: opportunities.length,
+      bookmarked: all.filter(a => a.isBookmarked).length,
+      unread: all.filter(a => !a.isRead).length,
     };
-  }, [allArticles, feed]);
+  }, [feed]);
 
   // ── Profile context ─────────────────────────────────────
   const ctx = feed?.profileContext;
   const hasProfile = ctx && ctx.sector && ctx.sector !== "General";
-  const sectorIcon = ctx ? (SECTOR_ICONS[ctx.sector] || "📊") : "📊";
+  const SectorIcon = ctx ? (SECTOR_ICONS[ctx.sector] || BarChart) : BarChart;
 
   // ── Loading state ───────────────────────────────────────
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-32 gap-4">
-        <div className="relative">
-          <div className="w-16 h-16 rounded-2xl bg-brand-100 flex items-center justify-center">
-            <Loader2 className="w-8 h-8 text-brand-600 animate-spin" />
-          </div>
-        </div>
-        <div className="text-center">
-          <p className="font-bold text-brand-600">Building your feed...</p>
-          <p className="text-sm text-slate-500 mt-1">
-            Analyzing your profile and fetching relevant news
-          </p>
-        </div>
+        <Loader2 className="w-10 h-10 text-slate-900 animate-spin" />
+        <p className="text-slate-500 font-black text-xs uppercase tracking-widest animate-pulse">Syncing with Intelligence Network...</p>
       </div>
     );
   }
 
-  // ── Error state ─────────────────────────────────────────
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center py-32 gap-4">
-        <div className="w-16 h-16 rounded-2xl bg-red-100 flex items-center justify-center">
-          <AlertTriangle className="w-8 h-8 text-red-600" />
-        </div>
-        <div className="text-center">
-          <p className="font-bold text-brand-600">Unable to load feed</p>
-          <p className="text-sm text-slate-500 mt-1">{error}</p>
-          <button
-            onClick={fetchFeed}
-            className="mt-4 px-6 py-2 bg-brand-600 text-white font-bold rounded-xl hover:bg-brand-700 transition-all"
-          >
-            Try Again
-          </button>
-        </div>
+      <div className="text-center py-20 px-6 bg-red-50 rounded-[32px] border border-red-100">
+        <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+        <h3 className="text-xl font-black text-red-900">Feed Offline</h3>
+        <p className="text-red-600 mt-2 font-medium">{error}</p>
+        <button 
+          onClick={fetchFeed}
+          className="mt-6 px-6 py-2.5 bg-red-600 text-white rounded-xl font-bold text-sm hover:bg-red-700 transition-all"
+        >
+          Try Again
+        </button>
       </div>
     );
   }
 
-  const lastUpdated = feed?.lastUpdated
-    ? new Date(feed.lastUpdated).toLocaleString("en-IN", {
-        day: "numeric",
-        month: "short",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    : "";
-
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-black text-brand-600 flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-brand-600 to-indigo-600 rounded-xl flex items-center justify-center">
-              <Newspaper size={20} className="text-white" />
-            </div>
-            Smart Feed
+          <h1 className="text-4xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+             Smart Feed
           </h1>
-          <p className="text-slate-500 mt-1 text-sm">
-            Last updated: {lastUpdated}
+          <p className="text-slate-500 mt-2 text-base font-medium max-w-2xl">
+            Real-time regulatory alerts, industry opportunities, and tailored business intelligence.
           </p>
         </div>
-        <RefreshButton
+        <RefreshButton 
+          onRefresh={handleRefresh} 
+          isLoading={isRefreshing} 
           cooldownEndsAt={feed?.cooldownEndsAt}
-          onRefresh={handleRefresh}
-          isLoading={isRefreshing}
         />
       </div>
 
-      {/* Personalization Banner */}
-      {hasProfile ? (
-        <div
-          id="personalization-banner"
-          className="relative overflow-hidden bg-gradient-to-r from-brand-50 via-indigo-50 to-violet-50 rounded-2xl border border-brand-100 p-5"
-        >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-brand-200/20 to-transparent rounded-bl-full" />
-          <div className="relative flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <div className="flex items-center gap-3 flex-1">
-              <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-2xl shrink-0">
-                {sectorIcon}
-              </div>
-              <div>
-                <p className="text-sm font-bold text-brand-700">
-                  Personalized for your business
-                </p>
-                <div className="flex items-center gap-3 mt-1 flex-wrap">
-                  <span className="inline-flex items-center gap-1 text-xs font-bold text-brand-600">
-                    <Briefcase size={12} />
-                    {ctx.sector}
-                  </span>
-                  {ctx.state && (
-                    <>
-                      <span className="w-1 h-1 bg-brand-300 rounded-full" />
-                      <span className="inline-flex items-center gap-1 text-xs font-bold text-brand-600">
-                        <MapPin size={12} />
-                        {ctx.state}
-                      </span>
-                    </>
-                  )}
+      {/* Action Bar */}
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 items-start">
+        <div className="xl:col-span-3 space-y-6">
+          <SearchBar onSearch={setSearchQuery} />
+          <FilterBar 
+            activeFilter={activeFilter} 
+            activeSort={activeSort} 
+            onFilterChange={setActiveFilter} 
+            onSortChange={setActiveSort}
+            counts={counts}
+          />
+        </div>
+        
+        {/* Profile Summary Card */}
+        {hasProfile ? (
+          <div 
+            className="relative overflow-hidden bg-slate-900 rounded-[32px] p-6 group"
+          >
+            <div className="relative z-10">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-white/10 backdrop-blur-xl rounded-2xl flex items-center justify-center border border-white/10 group-hover:scale-110 transition-transform duration-500">
+                  <SectorIcon className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Live Profile</p>
+                  <p className="text-sm font-black text-white truncate">{ctx.sector}</p>
                 </div>
               </div>
-            </div>
-
-            {/* Top matched keywords */}
-            {ctx.topKeywords && ctx.topKeywords.length > 0 && (
-              <div className="flex flex-wrap gap-1.5">
-                {ctx.topKeywords
-                  .filter((kw) => !["india", "indian", "msme", "government scheme", "subsidy", "compliance", "regulation india", "business india", "policy", "ministry"].includes(kw.toLowerCase()))
-                  .slice(0, 5)
-                  .map((kw) => (
-                    <span
-                      key={kw}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 bg-white/80 border border-brand-100 rounded-lg text-[10px] font-bold text-brand-600 shadow-sm"
-                    >
-                      <Tag size={8} />
-                      {kw}
-                    </span>
-                  ))}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-[10px] font-bold text-white/60 uppercase tracking-widest">
+                  <MapPin size={10} />
+                  {ctx.state || "All India"}
+                </div>
+                <div className="flex items-center gap-2 text-[10px] font-bold text-white/60 uppercase tracking-widest">
+                  <Briefcase size={10} />
+                  {ctx.stage || "Established"}
+                </div>
               </div>
-            )}
+              <Link 
+                href="/questionnaire"
+                className="mt-6 block w-full py-3 text-center bg-white text-slate-900 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95"
+              >
+                Update Profile
+              </Link>
+            </div>
+            {/* Abstract Background Elements */}
+            <div className="absolute -top-10 -right-10 w-40 h-40 bg-brand-600 rounded-full blur-[80px] opacity-20" />
+            <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-emerald-600 rounded-full blur-[80px] opacity-20" />
           </div>
-        </div>
-      ) : (
-        /* No profile CTA */
-        <div
-          id="no-profile-cta"
-          className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border border-amber-200 p-5"
-        >
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-2xl shrink-0">
-              🎯
+        ) : (
+          /* No profile CTA */
+          <div
+            id="no-profile-cta"
+            className="bg-white rounded-[32px] border border-slate-100 p-6 flex flex-col items-center text-center group"
+          >
+            <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-500">
+              <Target className="w-8 h-8 text-slate-900" />
             </div>
-            <div className="flex-1">
-              <p className="font-bold text-amber-800">
-                Get personalized news for your business
-              </p>
-              <p className="text-xs text-amber-600 mt-0.5">
-                Complete the questionnaire to see sector-specific news, regulations, and opportunities tailored to your business.
-              </p>
-            </div>
+            <h3 className="text-lg font-black text-slate-900 leading-tight">Personalize Feed</h3>
+            <p className="text-xs text-slate-500 mt-2 font-medium leading-relaxed">
+              Complete your profile to see sector-specific regulations and opportunities.
+            </p>
             <Link
               href="/questionnaire"
-              className="flex items-center gap-2 px-5 py-2.5 bg-amber-600 text-white font-bold text-sm rounded-xl hover:bg-amber-700 transition-all shadow-md shadow-amber-200 shrink-0"
+              className="mt-6 w-full py-3 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all active:scale-95"
             >
-              Complete Profile
-              <ArrowRight size={14} />
+              Get Started
             </Link>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* Search */}
-      <SearchBar onSearch={setSearchQuery} />
-
-      {/* Filter bar */}
-      <FilterBar
-        activeFilter={activeFilter}
-        activeSort={activeSort}
-        onFilterChange={(f) => {
-          setActiveFilter(f);
-          setPage(1);
-        }}
-        onSortChange={(s) => {
-          setActiveSort(s);
-          setPage(1);
-        }}
-        counts={counts}
-      />
-
-      {/* Urgent Alerts Section */}
-      {activeFilter === "all" &&
-        feed &&
-        feed.urgentAlerts.length > 0 &&
-        !searchQuery && (
-          <section>
-            <h2 className="text-lg font-black text-brand-600 flex items-center gap-2 mb-4">
-              <AlertTriangle size={18} className="text-red-500" />
-              Important Alerts
-              <span className="ml-1 px-2 py-0.5 bg-red-100 text-red-600 text-[10px] font-black rounded-md">
-                {feed.urgentAlerts.length}
-              </span>
-            </h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {feed.urgentAlerts.map((article) => (
-                <AlertCard
-                  key={article.id}
-                  article={article}
-                  onBookmark={handleBookmark}
-                  onRead={handleRead}
-                />
-              ))}
+      {/* Feed Content */}
+      <section className="space-y-8">
+        {processedArticles.length === 0 ? (
+          <div className="text-center py-32 bg-white rounded-[40px] border border-slate-100">
+            <div className="w-24 h-24 bg-slate-50 rounded-[32px] flex items-center justify-center mx-auto mb-6 text-slate-200 border border-slate-100">
+              <Newspaper size={48} />
             </div>
-          </section>
-        )}
-
-      {/* Opportunities Section */}
-      {activeFilter === "all" &&
-        feed &&
-        feed.opportunities.length > 0 &&
-        !searchQuery && (
-          <section>
-            <h2 className="text-lg font-black text-brand-600 flex items-center gap-2 mb-4">
-              <Sparkles size={18} className="text-emerald-500" />
-              Latest Opportunities
-              <span className="ml-1 px-2 py-0.5 bg-emerald-100 text-emerald-600 text-[10px] font-black rounded-md">
-                {feed.opportunities.length}
-              </span>
-            </h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {feed.opportunities.map((article) => (
-                <OpportunityCard
-                  key={article.id}
-                  article={article}
-                  onBookmark={handleBookmark}
-                  onRead={handleRead}
-                />
-              ))}
-            </div>
-          </section>
-        )}
-
-      {/* Main feed / filtered view */}
-      <section>
-        {(activeFilter !== "all" || searchQuery) && (
-          <h2 className="text-lg font-black text-brand-600 mb-4">
-            {searchQuery
-              ? `Results for "${searchQuery}"`
-              : activeFilter === "alerts"
-              ? "All Alerts"
-              : activeFilter === "opportunities"
-              ? "All Opportunities"
-              : activeFilter === "bookmarked"
-              ? "Your Bookmarks"
-              : activeFilter === "unread"
-              ? "Unread Articles"
-              : "Your Personalized Feed"}
-            <span className="ml-2 text-sm font-bold text-slate-400">
-              ({sorted.length})
-            </span>
-          </h2>
-        )}
-
-        {activeFilter === "all" && !searchQuery && (
-          <h2 className="text-lg font-black text-brand-600 mb-4">
-            Your Personalized Feed
-            {hasProfile && (
-              <span className="ml-2 text-sm font-bold text-slate-400">
-                {sectorIcon} {ctx?.sector}
-              </span>
-            )}
-            <span className="ml-2 text-sm font-bold text-slate-400">
-              ({feed?.regularFeed.length ?? 0})
-            </span>
-          </h2>
-        )}
-
-        {paginatedArticles.length === 0 ? (
-          <div className="py-16 text-center">
-            <div className="w-16 h-16 mx-auto rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
-              <Newspaper className="w-8 h-8 text-slate-400" />
-            </div>
-            <p className="font-bold text-slate-600">No articles found</p>
-            <p className="text-sm text-slate-400 mt-1">
-              {searchQuery
-                ? "Try a different search term"
-                : "Check back later for new articles"}
-            </p>
+            <h3 className="text-2xl font-black text-slate-900 mb-2">No items found</h3>
+            <p className="text-slate-500 max-w-xs mx-auto text-sm font-medium">Try clearing filters or search to explore the latest business intelligence.</p>
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {(activeFilter === "all" && !searchQuery
-                ? (feed?.regularFeed ?? []).slice(0, page * ITEMS_PER_PAGE)
-                : paginatedArticles
-              ).map((article) => (
-                <ArticleCard
-                  key={article.id}
-                  article={article}
-                  onBookmark={handleBookmark}
-                  onRead={handleRead}
-                />
-              ))}
+            {/* Personalized Header */}
+            {activeFilter === "all" && !searchQuery && (
+              <h2 className="text-xs font-black text-slate-400 uppercase tracking-[0.3em] mb-6 flex items-center px-2">
+                Your Intelligence Stream
+                {hasProfile && (
+                  <span className="ml-4 flex items-center gap-1.5 text-brand-600">
+                    <SectorIcon size={12} /> {ctx?.sector}
+                  </span>
+                )}
+                <span className="ml-auto opacity-50">
+                  {processedArticles.length} units
+                </span>
+              </h2>
+            )}
+
+            {/* Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {currentArticles.map((article) => {
+                if (article.type === "alert") {
+                  return (
+                    <AlertCard
+                      key={article.id}
+                      article={article}
+                      onBookmark={toggleBookmark}
+                      onRead={markAsRead}
+                    />
+                  );
+                }
+                if (article.type === "opportunity") {
+                  return (
+                    <OpportunityCard
+                      key={article.id}
+                      article={article}
+                      onBookmark={toggleBookmark}
+                      onRead={markAsRead}
+                    />
+                  );
+                }
+                return (
+                  <ArticleCard
+                    key={article.id}
+                    article={article}
+                    onBookmark={toggleBookmark}
+                    onRead={markAsRead}
+                  />
+                );
+              })}
             </div>
 
-            {/* Load more */}
+            {/* Load More */}
             {hasMore && (
-              <div className="flex justify-center pt-8">
+              <div className="flex justify-center pt-10">
                 <button
                   onClick={() => setPage((p) => p + 1)}
-                  className="px-8 py-3 bg-white border-2 border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all"
+                  className="px-10 py-4 bg-white border border-slate-200 rounded-[20px] font-black text-xs text-slate-900 uppercase tracking-widest hover:bg-slate-50 hover:border-slate-300 transition-all active:scale-95"
                 >
-                  Load More Articles
+                  Load More Intelligence
                 </button>
               </div>
             )}

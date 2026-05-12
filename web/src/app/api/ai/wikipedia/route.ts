@@ -13,6 +13,9 @@ interface SchemeResult {
   category: string;
 }
 
+const WIKI_API_URL = process.env.WIKI_API_URL || "https://en.wikipedia.org/w/api.php";
+const WIKI_BASE_URL = process.env.WIKI_BASE_URL || "https://en.wikipedia.org/wiki/";
+
 // Category detection based on keywords in title/summary
 function detectCategory(title: string, summary: string): string {
   const text = `${title} ${summary}`.toLowerCase();
@@ -41,7 +44,7 @@ function detectCategory(title: string, summary: string): string {
 
 async function searchWikipedia(query: string): Promise<WikiSearchResult[]> {
   const searchQuery = `${query} government scheme India`;
-  const url = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(searchQuery)}&srlimit=8&format=json&origin=*`;
+  const url = `${WIKI_API_URL}?action=query&list=search&srsearch=${encodeURIComponent(searchQuery)}&srlimit=8&format=json&origin=*`;
 
   const res = await fetch(url);
   if (!res.ok) throw new Error("Wikipedia search failed");
@@ -51,7 +54,7 @@ async function searchWikipedia(query: string): Promise<WikiSearchResult[]> {
 }
 
 async function getPageExtract(pageId: number): Promise<string> {
-  const url = `https://en.wikipedia.org/w/api.php?action=query&pageids=${pageId}&prop=extracts&exintro=true&explaintext=true&exsentences=4&format=json&origin=*`;
+  const url = `${WIKI_API_URL}?action=query&pageids=${pageId}&prop=extracts&exintro=true&explaintext=true&exsentences=4&format=json&origin=*`;
 
   const res = await fetch(url);
   if (!res.ok) return "";
@@ -81,7 +84,7 @@ export async function POST(request: Request) {
         return {
           title: result.title,
           summary: summary || result.snippet.replace(/<[^>]*>/g, ""), // strip HTML from snippet
-          url: `https://en.wikipedia.org/wiki/${encodeURIComponent(result.title.replace(/ /g, "_"))}`,
+          url: `${WIKI_BASE_URL}${encodeURIComponent(result.title.replace(/ /g, "_"))}`,
           category: detectCategory(result.title, summary || result.snippet),
         };
       })
