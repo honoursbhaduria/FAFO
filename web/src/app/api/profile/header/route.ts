@@ -1,8 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { getAuthUserId } from "@/lib/auth";
-import { writeFile } from "fs/promises";
-import path from "path";
+import { put } from "@vercel/blob";
 
 export async function POST(request: Request) {
   try {
@@ -19,14 +18,11 @@ export async function POST(request: Request) {
     if (name) updateData.name = name;
 
     if (file) {
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      const safeName = file.name.replace(/[^\x00-\x7F]/g, "").replace(/\s+/g, '-');
-      const fileName = `profile-${userId}-${Date.now()}-${safeName}`;
-      const uploadPath = path.join(process.cwd(), "public/uploads", fileName);
-
-      await writeFile(uploadPath, buffer);
-      updateData.profileImage = `/uploads/${fileName}`;
+      const blob = await put(`profiles/${userId}-${Date.now()}-${file.name}`, file, {
+        access: "public",
+        addRandomSuffix: true,
+      });
+      updateData.profileImage = blob.url;
     }
 
     const user = await prisma.user.update({
@@ -34,15 +30,16 @@ export async function POST(request: Request) {
       data: updateData,
     });
 
-    return NextResponse.json({ 
-      success: true, 
-      user: { 
-        name: user.name, 
-        profileImage: user.profileImage 
-      } 
+    return NextResponse.json({
+      success: true,
+      user: {
+        name: user.name,
+        profileImage: user.profileImage
+      }
     });
-  } catch (error: any) {
-    console.error("Profile Header Update Error:", error);
-    return NextResponse.json({ error: "Failed to update profile", details: error.message }, { status: 500 });
+  } catch (error) {
+    console.error("Profile Update Error:", error);
+    return NextResponse.json({ error: "Failed to update profile" }, { status: 500 });
   }
 }
+

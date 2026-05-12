@@ -1,8 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { getAuthUserId } from "@/lib/auth";
-import { writeFile } from "fs/promises";
-import path from "path";
+import { put, del } from "@vercel/blob";
 
 export async function GET() {
   try {
@@ -37,23 +36,18 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    // Generate unique filename to avoid collisions and encoding issues
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const safeName = file.name.replace(/[^\x00-\x7F]/g, "").replace(/\s+/g, '-');
-    const fileName = `${Date.now()}-${safeName}`;
-    const uploadPath = path.join(process.cwd(), "public/uploads", fileName);
-
-    // Write file to public/uploads
-    await writeFile(uploadPath, buffer);
-    const fileUrl = `/uploads/${fileName}`; 
+    // Upload to Vercel Blob
+    const blob = await put(file.name, file, {
+      access: "public",
+      addRandomSuffix: true,
+    });
 
     const document = await prisma.document.create({
       data: {
         userId,
         name: file.name,
         type: type,
-        url: fileUrl,
+        url: blob.url,
         extractedData: {
           size: `${(file.size / (1024 * 1024)).toFixed(2)} MB`,
           mimeType: file.type,
@@ -64,7 +58,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ document });
   } catch (error) {
     console.error("Upload Error:", error);
-    return NextResponse.json({ error: "Failed to upload document" }, { status: 500 });
+    // Provide a more helpful error message if it's a configuration issue
+    const message = (error as any).message?.includes("BLOB_READ_WRITE_TOKEN")
+      ? "Storage configuration missing. Please set BLOB_READ_WRITE_TOKEN."
+      : "Failed to upload document";
+    
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
@@ -91,12 +90,20 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
+    // Delete from Vercel Blob if it's a blob URL
+    if (doc.url.includes("public.blob.vercel-storage.com")) {
+      try {
+        await del(doc.url);
+      } catch (err) {
+        console.error("Failed to delete blob:", err);
+        // We continue deleting the DB record even if blob deletion fails
+      }
+    }
+
     await prisma.document.delete({
       where: { id },
     });
 
-    // Note: In a real app, you should also delete the file from disk/S3 here
-    
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Delete Error:", error);
